@@ -1,0 +1,1195 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Наследие — План релиза</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --cream: #faf7f2;
+  --warm: #f5f0e8;
+  --parchment: #ede5d4;
+  --amber: #c8a96e;
+  --amber-light: #e8d5a3;
+  --sepia: #6b4f2a;
+  --sepia-dark: #4a3520;
+  --ink: #2c2317;
+  --ink-light: #5a4a38;
+  --ink-muted: #8a7a6a;
+  --red: #c47a70;
+  --orange: #d4944a;
+  --green: #5a8a6a;
+  --blue: #5a7a9a;
+  --purple: #7a6a9a;
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+body { font-family:'Jost',sans-serif; background:var(--cream); color:var(--ink); font-weight:300; font-size:16px; line-height:1.7; }
+a { color:var(--sepia); }
+
+/* HEADER */
+.doc-header {
+  background: var(--sepia-dark);
+  color: var(--cream);
+  padding: 64px 48px 56px;
+  position: relative;
+  overflow: hidden;
+}
+.doc-header::before {
+  content: '🌿';
+  position: absolute; right: 48px; top: 50%;
+  transform: translateY(-50%);
+  font-size: 120px; opacity: 0.08;
+}
+.doc-header-label {
+  font-size: 11px; letter-spacing: 0.25em; text-transform: uppercase;
+  color: var(--amber-light); margin-bottom: 12px; font-weight: 500;
+}
+.doc-header h1 {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 48px; font-weight: 400; line-height: 1.1;
+  color: white; margin-bottom: 16px;
+}
+.doc-header h1 em { color: var(--amber-light); font-style: italic; }
+.doc-header p { font-size: 17px; color: rgba(255,255,255,0.7); max-width: 580px; line-height: 1.8; }
+.doc-meta { margin-top: 32px; display: flex; gap: 32px; flex-wrap: wrap; }
+.doc-meta-item { font-size: 13px; color: rgba(255,255,255,0.6); display: flex; gap: 8px; align-items: center; }
+.doc-meta-item strong { color: var(--amber-light); }
+
+/* NAV */
+.doc-nav {
+  background: var(--warm);
+  border-bottom: 1px solid var(--parchment);
+  padding: 0 48px;
+  position: sticky; top: 40px; z-index: 50;
+  display: flex; gap: 4px; overflow-x: auto;
+}
+.doc-nav a {
+  display: flex; align-items: center; gap: 6px;
+  padding: 14px 16px;
+  font-size: 13px; color: var(--ink-muted);
+  text-decoration: none; white-space: nowrap;
+  border-bottom: 2px solid transparent; margin-bottom: -1px;
+  transition: all 0.2s;
+}
+.doc-nav a:hover { color: var(--sepia); border-bottom-color: var(--amber); }
+
+/* BODY */
+.doc-body { max-width: 960px; margin: 0 auto; padding: 56px 48px 80px; }
+
+/* OVERVIEW CARDS */
+.overview-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 16px; margin-bottom: 56px; }
+.ov-card {
+  border-radius: 6px; padding: 20px 18px; text-align: center;
+  border: 1px solid rgba(0,0,0,0.08);
+}
+.ov-card-icon { font-size: 28px; margin-bottom: 8px; }
+.ov-card-num { font-family:'Cormorant Garamond',serif; font-size: 36px; font-weight:400; line-height:1; }
+.ov-card-label { font-size: 12px; margin-top: 4px; opacity: 0.75; font-weight:400; }
+
+/* PHASE */
+.phase { margin-bottom: 56px; }
+.phase-header {
+  display: flex; align-items: center; gap: 16px;
+  margin-bottom: 24px;
+  padding-bottom: 16px;
+  border-bottom: 2px solid var(--parchment);
+}
+.phase-badge {
+  flex-shrink: 0;
+  width: 48px; height: 48px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 20px; font-weight: 700;
+  color: white;
+}
+.phase-header-text {}
+.phase-title { font-family:'Cormorant Garamond',serif; font-size: 28px; color:var(--sepia); font-weight:500; }
+.phase-subtitle { font-size: 14px; color:var(--ink-muted); margin-top: 2px; }
+.phase-timeline {
+  display: flex; align-items: center; gap: 8px;
+  margin-left: auto; flex-shrink:0;
+  background: var(--parchment); padding: 8px 14px; border-radius: 20px;
+}
+.phase-timeline-icon { font-size: 16px; }
+.phase-timeline-text { font-size: 13px; color: var(--sepia); font-weight: 500; }
+
+/* TASK */
+.task {
+  border: 1px solid var(--parchment);
+  border-radius: 6px;
+  margin-bottom: 12px;
+  overflow: hidden;
+  background: white;
+}
+.task-header {
+  display: flex; align-items: flex-start; gap: 14px;
+  padding: 18px 20px;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+.task-header:hover { background: var(--warm); }
+.task-num {
+  flex-shrink: 0;
+  width: 28px; height: 28px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 12px; font-weight: 600; color: white; margin-top: 2px;
+}
+.task-icon { font-size: 22px; flex-shrink:0; margin-top:2px; }
+.task-main { flex:1; }
+.task-title { font-family:'Cormorant Garamond',serif; font-size: 20px; color:var(--sepia); font-weight:500; }
+.task-desc { font-size: 14px; color:var(--ink-muted); margin-top: 3px; }
+.task-tags { display:flex; gap:6px; margin-top:8px; flex-wrap:wrap; }
+.task-tag {
+  font-size: 11px; padding: 3px 10px; border-radius: 12px;
+  font-weight: 500; letter-spacing: 0.04em;
+}
+.task-right { flex-shrink:0; display:flex; flex-direction:column; align-items:flex-end; gap:6px; }
+.task-time { font-size: 12px; color:var(--ink-muted); white-space:nowrap; }
+.task-chevron { font-size:14px; color:var(--ink-muted); transition: transform 0.2s; }
+.task.open .task-chevron { transform: rotate(180deg); }
+
+.task-body { display:none; padding: 0 20px 20px 62px; border-top: 1px solid var(--parchment); }
+.task.open .task-body { display: block; }
+.task-body-inner { padding-top: 16px; }
+
+/* STEPS inside task */
+.steps { list-style: none; counter-reset: step; display: flex; flex-direction: column; gap: 10px; }
+.steps li {
+  counter-increment: step;
+  position: relative;
+  padding: 12px 16px 12px 48px;
+  background: var(--cream);
+  border: 1px solid var(--parchment);
+  border-radius: 4px;
+  font-size: 14px; color: var(--ink);
+  line-height: 1.7;
+}
+.steps li::before {
+  content: counter(step);
+  position: absolute; left: 14px; top: 14px;
+  width: 22px; height: 22px; border-radius: 50%;
+  background: var(--amber-light);
+  color: var(--sepia);
+  font-size: 11px; font-weight: 600;
+  display: flex; align-items: center; justify-content: center;
+}
+.steps li strong { color: var(--sepia); font-weight: 600; }
+.steps li code {
+  font-family: monospace; font-size: 12px;
+  background: var(--parchment); padding: 1px 6px; border-radius: 3px;
+  color: var(--sepia-dark);
+}
+.steps li a { color: var(--amber); text-decoration: underline; }
+
+/* CODE BLOCK */
+.code-block {
+  background: var(--sepia-dark);
+  color: #e8d5a3;
+  padding: 16px 18px;
+  border-radius: 4px;
+  font-family: monospace;
+  font-size: 13px;
+  line-height: 1.7;
+  margin: 12px 0;
+  overflow-x: auto;
+  white-space: pre;
+}
+.code-label {
+  font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase;
+  color: var(--ink-muted); margin-bottom: 6px; font-weight: 500;
+}
+
+/* NOTE */
+.note {
+  border-left: 3px solid var(--amber);
+  background: var(--warm);
+  padding: 12px 16px;
+  border-radius: 0 4px 4px 0;
+  font-size: 14px; color: var(--ink-light);
+  margin: 12px 0; line-height: 1.7;
+}
+.note strong { color: var(--sepia); }
+.note.warning { border-color: var(--orange); background: #fdf5ed; }
+.note.danger { border-color: var(--red); background: #fdf0ee; }
+.note.success { border-color: var(--green); background: #edf5ee; }
+
+/* TABLE */
+.info-table { width: 100%; border-collapse: collapse; margin: 12px 0; font-size: 14px; }
+.info-table th { background: var(--parchment); padding: 10px 14px; text-align: left; font-weight:600; color:var(--sepia); font-size:12px; letter-spacing:0.05em; text-transform:uppercase; }
+.info-table td { padding: 10px 14px; border-bottom: 1px solid var(--parchment); color: var(--ink-light); }
+.info-table tr:last-child td { border-bottom: none; }
+.info-table tr:hover td { background: var(--warm); }
+.info-table td a { color: var(--amber); }
+
+/* DIVIDER */
+.section-divider { border: none; border-top: 1px solid var(--parchment); margin: 48px 0; }
+
+/* PRIORITY TAGS */
+.p-critical { background:#fde8e6; color:#9a3530; }
+.p-important { background:#fdf0e0; color:#8a5520; }
+.p-nice { background:#e6f0e6; color:#2a5a2a; }
+.c-free { background:#e8f0fd; color:#2a4a8a; }
+.c-paid { background:#f5e8fd; color:#5a2a8a; }
+.c-dev { background:#e8fde8; color:#1a5a1a; }
+
+/* SUMMARY */
+.summary-box {
+  background: var(--sepia-dark);
+  color: var(--cream);
+  border-radius: 8px;
+  padding: 36px 40px;
+  margin-top: 56px;
+}
+.summary-box h2 { font-family:'Cormorant Garamond',serif; font-size:32px; color:var(--amber-light); margin-bottom:24px; }
+.summary-week { margin-bottom: 20px; }
+.summary-week-title { font-size:14px; font-weight:600; color:var(--amber-light); letter-spacing:0.08em; text-transform:uppercase; margin-bottom:8px; }
+.summary-items { list-style:none; display:flex; flex-direction:column; gap:6px; }
+.summary-items li { font-size:14px; color:rgba(255,255,255,0.8); display:flex; gap:8px; align-items:flex-start; padding-left:0; }
+.summary-items li::before { content:'→'; color:var(--amber); flex-shrink:0; }
+
+/* PRINT */
+@media print {
+  .doc-nav { display:none; }
+  .task-body { display: block !important; }
+  .task-chevron { display:none; }
+  body { font-size: 13px; }
+}
+
+@media (max-width:700px) {
+  .doc-header { padding: 40px 24px; }
+  .doc-body { padding: 32px 20px; }
+  .overview-grid { grid-template-columns: 1fr 1fr; }
+  .phase-timeline { display:none; }
+}
+</style>
+</head>
+<body>
+
+<!-- PORTFOLIO WALKTHROUGH NAV -->
+<div style="position:sticky;top:0;left:0;right:0;height:40px;z-index:60;background:#2c2317;display:flex;align-items:center;justify-content:center;gap:4px;font-family:'Jost',sans-serif;box-shadow:0 1px 0 rgba(255,255,255,.06)">
+  <a href="landing.html" style="padding:9px 18px;font-size:12px;font-weight:500;letter-spacing:.06em;text-transform:uppercase;color:rgba(250,247,242,.55);border-bottom:2px solid transparent;transition:color .15s">Лендинг</a>
+  <a href="mvp.html" style="padding:9px 18px;font-size:12px;font-weight:500;letter-spacing:.06em;text-transform:uppercase;color:rgba(250,247,242,.55);border-bottom:2px solid transparent;transition:color .15s">MVP</a>
+  <a href="roadmap.html" style="padding:9px 18px;font-size:12px;font-weight:500;letter-spacing:.06em;text-transform:uppercase;color:#e8d5a3;border-bottom:2px solid #c8a96e;transition:color .15s">Роадмап</a>
+</div>
+
+<!-- HEADER -->
+<div class="doc-header">
+  <div class="doc-header-label">Проект «Наследие» — Документация</div>
+  <h1>План релиза<br><em>и развития проекта</em></h1>
+  <p>Пошаговое руководство: от HTML-прототипа до публичного запуска, готового к презентации инвесторам и подаче на гранты.</p>
+  <div class="doc-meta">
+    <div class="doc-meta-item">📅 <strong>Составлен:</strong> Апрель 2025</div>
+    <div class="doc-meta-item">⏱️ <strong>Общее время:</strong> ~6 недель</div>
+    <div class="doc-meta-item">💰 <strong>Бюджет старта:</strong> от 0 ₽</div>
+    <div class="doc-meta-item">🎯 <strong>Цель:</strong> Публичный запуск + грант</div>
+  </div>
+</div>
+
+<!-- NAV -->
+<nav class="doc-nav">
+  <a href="#overview">📊 Обзор</a>
+  <a href="#phase1">🔴 Фаза 1 — Публикация</a>
+  <a href="#phase2">🟡 Фаза 2 — Юридика</a>
+  <a href="#phase3">🟢 Фаза 3 — Функционал</a>
+  <a href="#phase4">🔵 Фаза 4 — Аудитория</a>
+  <a href="#phase5">🟣 Фаза 5 — Гранты</a>
+  <a href="#summary">📋 Итог</a>
+</nav>
+
+<div class="doc-body">
+
+  <!-- OVERVIEW -->
+  <div id="overview">
+    <div style="font-size:11px;letter-spacing:0.2em;text-transform:uppercase;color:var(--amber);margin-bottom:14px;font-weight:500">Обзор плана</div>
+    <h2 style="font-family:'Cormorant Garamond',serif;font-size:36px;color:var(--sepia);margin-bottom:12px">5 фаз от прототипа до гранта</h2>
+    <p style="font-size:16px;color:var(--ink-light);margin-bottom:32px;max-width:700px">Каждый пункт — конкретное действие с инструкцией. Нажмите на задачу, чтобы раскрыть пошаговое руководство.</p>
+
+    <div class="overview-grid">
+      <div class="ov-card" style="background:#fde8e6;color:#7a2a25">
+        <div class="ov-card-icon">🔴</div>
+        <div class="ov-card-num">4</div>
+        <div class="ov-card-label">Фаза 1<br>Публикация</div>
+      </div>
+      <div class="ov-card" style="background:#fdf0e0;color:#7a4a10">
+        <div class="ov-card-icon">🟡</div>
+        <div class="ov-card-num">3</div>
+        <div class="ov-card-label">Фаза 2<br>Юридика</div>
+      </div>
+      <div class="ov-card" style="background:#e6f5e6;color:#1a5a1a">
+        <div class="ov-card-icon">🟢</div>
+        <div class="ov-card-num">5</div>
+        <div class="ov-card-label">Фаза 3<br>Функционал</div>
+      </div>
+      <div class="ov-card" style="background:#e6eef5;color:#1a3a5a">
+        <div class="ov-card-icon">🔵</div>
+        <div class="ov-card-num">4</div>
+        <div class="ov-card-label">Фаза 4<br>Аудитория</div>
+      </div>
+    </div>
+
+    <div class="note success">
+      <strong>С чего начать прямо сейчас:</strong> Начните с Фазы 1 — опубликуйте сайт сегодня (займёт 10 минут). Всё остальное можно делать параллельно.
+    </div>
+  </div>
+
+  <hr class="section-divider">
+
+  <!-- PHASE 1 -->
+  <div class="phase" id="phase1">
+    <div class="phase-header">
+      <div class="phase-badge" style="background:var(--red)">1</div>
+      <div class="phase-header-text">
+        <div class="phase-title">🔴 Фаза 1 — Публикация сайта</div>
+        <div class="phase-subtitle">Выложить прототип в интернет, получить ссылку</div>
+      </div>
+      <div class="phase-timeline">
+        <span class="phase-timeline-icon">⏱️</span>
+        <span class="phase-timeline-text">День 1–2</span>
+      </div>
+    </div>
+
+    <!-- TASK 1.1 -->
+    <div class="task" onclick="toggleTask(this)">
+      <div class="task-header">
+        <div class="task-num" style="background:var(--red)">1</div>
+        <div class="task-icon">🚀</div>
+        <div class="task-main">
+          <div class="task-title">Опубликовать сайт на Netlify</div>
+          <div class="task-desc">Самый быстрый способ — бесплатно, без кода, за 5 минут</div>
+          <div class="task-tags">
+            <span class="task-tag p-critical">🔴 Критично</span>
+            <span class="task-tag c-free">Бесплатно</span>
+            <span class="task-tag c-dev">5 минут</span>
+          </div>
+        </div>
+        <div class="task-right">
+          <span class="task-time">⏱ 5 мин</span>
+          <span class="task-chevron">▼</span>
+        </div>
+      </div>
+      <div class="task-body">
+        <div class="task-body-inner">
+          <ol class="steps">
+            <li>Переименуйте файл <code>nasledie-mvp.html</code> в <strong>index.html</strong> — это важно, браузер открывает файл с таким именем по умолчанию</li>
+            <li>Зайдите на сайт <a href="https://app.netlify.com/drop" target="_blank">app.netlify.com/drop</a> — регистрация не нужна</li>
+            <li>Перетащите файл <code>index.html</code> в большую область на странице</li>
+            <li>Netlify автоматически создаст сайт и выдаст ссылку вида <code>random-name-123.netlify.app</code></li>
+            <li>Нажмите «Claim site» и зарегистрируйтесь (email + пароль) — это нужно, чтобы потом обновлять сайт</li>
+            <li>В разделе «Site settings → Site name» переименуйте в <code>nasledie-app</code> — получится ссылка <code>nasledie-app.netlify.app</code></li>
+          </ol>
+          <div class="note success" style="margin-top:16px">
+            <strong>Готово!</strong> Ваш сайт уже в интернете. Эту ссылку можно отправлять людям и указывать в заявках на гранты.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TASK 1.2 -->
+    <div class="task" onclick="toggleTask(this)">
+      <div class="task-header">
+        <div class="task-num" style="background:var(--red)">2</div>
+        <div class="task-icon">🌐</div>
+        <div class="task-main">
+          <div class="task-title">Купить домен nasledie.ru</div>
+          <div class="task-desc">Красивый домен добавляет доверие инвесторам и грантодателям</div>
+          <div class="task-tags">
+            <span class="task-tag p-important">🟡 Важно</span>
+            <span class="task-tag c-paid">~700 ₽/год</span>
+            <span class="task-tag c-dev">30 минут</span>
+          </div>
+        </div>
+        <div class="task-right">
+          <span class="task-time">⏱ 30 мин</span>
+          <span class="task-chevron">▼</span>
+        </div>
+      </div>
+      <div class="task-body">
+        <div class="task-body-inner">
+          <ol class="steps">
+            <li>Проверьте доступность домена на <a href="https://reg.ru" target="_blank">reg.ru</a> — введите <code>nasledie.ru</code> в поиск. Если занято — попробуйте <code>nasledie.online</code> (~200 ₽) или <code>moe-nasledie.ru</code></li>
+            <li>Зарегистрируйтесь на reg.ru, купите домен (обычно 700–900 ₽/год для .ru)</li>
+            <li>В Netlify зайдите в <strong>Site settings → Domain management → Add custom domain</strong></li>
+            <li>Введите ваш домен, Netlify покажет два DNS-сервера — скопируйте их</li>
+            <li>В личном кабинете reg.ru найдите раздел «DNS-серверы» для вашего домена и вставьте серверы от Netlify</li>
+            <li>Подождите 1–24 часа — домен заработает автоматически</li>
+            <li>В Netlify нажмите «Verify DNS configuration» → «Enable HTTPS» — SSL-сертификат установится бесплатно</li>
+          </ol>
+          <div class="note">
+            <strong>Альтернативы доменных регистраторов:</strong> nic.ru, domains.ru, 2domains.ru — везде примерно одинаковые цены и процесс.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TASK 1.3 -->
+    <div class="task" onclick="toggleTask(this)">
+      <div class="task-header">
+        <div class="task-num" style="background:var(--red)">3</div>
+        <div class="task-icon">🏷️</div>
+        <div class="task-main">
+          <div class="task-title">Добавить favicon и мета-теги</div>
+          <div class="task-desc">Иконка в браузере и красивая карточка при шеринге в соцсетях</div>
+          <div class="task-tags">
+            <span class="task-tag p-important">🟡 Важно</span>
+            <span class="task-tag c-free">Бесплатно</span>
+            <span class="task-tag c-dev">20 минут</span>
+          </div>
+        </div>
+        <div class="task-right">
+          <span class="task-time">⏱ 20 мин</span>
+          <span class="task-chevron">▼</span>
+        </div>
+      </div>
+      <div class="task-body">
+        <div class="task-body-inner">
+          <p style="font-size:14px;color:var(--ink-light);margin-bottom:12px">Вставьте этот код внутрь тега <code>&lt;head&gt;</code> в вашем <code>index.html</code>, сразу после строчки <code>&lt;meta charset...</code>:</p>
+          <div class="code-label">Вставить в &lt;head&gt; файла index.html</div>
+          <div class="code-block">&lt;!-- Иконка сайта --&gt;
+&lt;link rel="icon" href="data:image/svg+xml,&lt;svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'&gt;&lt;text y='.9em' font-size='90'&gt;🌿&lt;/text&gt;&lt;/svg&gt;"&gt;
+
+&lt;!-- Описание для поисковиков --&gt;
+&lt;meta name="description" content="Наследие — платформа для сохранения личной и семейной истории. Запишите интервью о своей жизни для будущих поколений."&gt;
+&lt;meta name="keywords" content="семейная история, воспоминания, интервью, наследие, память"&gt;
+
+&lt;!-- Карточка для соцсетей (ВКонтакте, Telegram) --&gt;
+&lt;meta property="og:title" content="Наследие — Живая память"&gt;
+&lt;meta property="og:description" content="Запишите историю своей жизни — для детей, внуков и будущих поколений"&gt;
+&lt;meta property="og:type" content="website"&gt;
+&lt;meta property="og:url" content="https://nasledie.ru"&gt;</div>
+          <div class="note">
+            <strong>Как обновить сайт на Netlify:</strong> Зайдите на netlify.com → ваш сайт → «Deploys» → перетащите обновлённый файл index.html.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TASK 1.4 -->
+    <div class="task" onclick="toggleTask(this)">
+      <div class="task-header">
+        <div class="task-num" style="background:var(--red)">4</div>
+        <div class="task-icon">📊</div>
+        <div class="task-main">
+          <div class="task-title">Подключить Яндекс.Метрику</div>
+          <div class="task-desc">Узнайте, кто посещает сайт — это важно для грантовых отчётов</div>
+          <div class="task-tags">
+            <span class="task-tag p-important">🟡 Важно</span>
+            <span class="task-tag c-free">Бесплатно</span>
+            <span class="task-tag c-dev">15 минут</span>
+          </div>
+        </div>
+        <div class="task-right">
+          <span class="task-time">⏱ 15 мин</span>
+          <span class="task-chevron">▼</span>
+        </div>
+      </div>
+      <div class="task-body">
+        <div class="task-body-inner">
+          <ol class="steps">
+            <li>Зайдите на <a href="https://metrika.yandex.ru" target="_blank">metrika.yandex.ru</a> и войдите через Яндекс-аккаунт</li>
+            <li>Нажмите «Добавить счётчик», введите адрес сайта (nasledie.ru)</li>
+            <li>Поставьте галочки: «Вебвизор», «Карта кликов», «Карта скроллинга»</li>
+            <li>Скопируйте код счётчика — он выглядит как несколько строк JavaScript</li>
+            <li>Вставьте этот код в ваш <code>index.html</code> перед закрывающим тегом <code>&lt;/head&gt;</code></li>
+            <li>Обновите файл на Netlify. Проверьте через 1–2 часа — в Метрике появятся первые данные</li>
+          </ol>
+          <div class="note">
+            Яндекс.Метрика покажет: сколько людей заходит, откуда, как долго остаются, на что нажимают. Это очень важно для грантовых заявок — вы сможете сказать «за месяц нас посетили X человек».
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <hr class="section-divider">
+
+  <!-- PHASE 2 -->
+  <div class="phase" id="phase2">
+    <div class="phase-header">
+      <div class="phase-badge" style="background:var(--orange)">2</div>
+      <div class="phase-header-text">
+        <div class="phase-title">🟡 Фаза 2 — Юридическая защита</div>
+        <div class="phase-subtitle">Обязательные документы по российскому законодательству</div>
+      </div>
+      <div class="phase-timeline">
+        <span class="phase-timeline-icon">⏱️</span>
+        <span class="phase-timeline-text">День 2–4</span>
+      </div>
+    </div>
+
+    <!-- TASK 2.1 -->
+    <div class="task" onclick="toggleTask(this)">
+      <div class="task-header">
+        <div class="task-num" style="background:var(--orange)">1</div>
+        <div class="task-icon">🔒</div>
+        <div class="task-main">
+          <div class="task-title">Написать политику конфиденциальности</div>
+          <div class="task-desc">Обязательна по 152-ФЗ. Без неё нельзя собирать email и имена</div>
+          <div class="task-tags">
+            <span class="task-tag p-critical">🔴 Критично</span>
+            <span class="task-tag c-free">Бесплатно</span>
+            <span class="task-tag c-dev">1–2 часа</span>
+          </div>
+        </div>
+        <div class="task-right">
+          <span class="task-time">⏱ 2 часа</span>
+          <span class="task-chevron">▼</span>
+        </div>
+      </div>
+      <div class="task-body">
+        <div class="task-body-inner">
+          <div class="note warning">
+            <strong>Важно:</strong> Политика конфиденциальности — это юридический документ. Для полноценного бизнеса лучше заказать у юриста (3 000–5 000 ₽). Для MVP можно использовать генератор.
+          </div>
+          <ol class="steps">
+            <li>Зайдите на <a href="https://privacypolicygenerator.info" target="_blank">privacypolicygenerator.info</a> или <a href="https://www.app-privacy-policy.com/live.php" target="_blank">app-privacy-policy.com</a> — бесплатные генераторы</li>
+            <li>Заполните форму: название компании/проекта «Наследие», email для контактов, адрес сайта</li>
+            <li>Укажите какие данные собираете: имя, email, загружаемые медиафайлы</li>
+            <li>Скачайте готовый текст и переведите на русский (через ChatGPT или DeepL)</li>
+            <li>Добавьте в HTML-файл отдельную страницу или ссылку внизу сайта</li>
+            <li>Разместите ссылку «Политика конфиденциальности» в футере сайта</li>
+          </ol>
+          <p style="font-size:13px;color:var(--ink-muted);margin-top:12px">Документ должен содержать: какие данные собираете, для чего, как долго храните, кому передаёте (никому), как пользователь может удалить данные.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- TASK 2.2 -->
+    <div class="task" onclick="toggleTask(this)">
+      <div class="task-header">
+        <div class="task-num" style="background:var(--orange)">2</div>
+        <div class="task-icon">✅</div>
+        <div class="task-main">
+          <div class="task-title">Добавить чекбокс согласия в регистрацию</div>
+          <div class="task-desc">Без явного согласия пользователя регистрация юридически незаконна</div>
+          <div class="task-tags">
+            <span class="task-tag p-critical">🔴 Критично</span>
+            <span class="task-tag c-free">Бесплатно</span>
+            <span class="task-tag c-dev">10 минут</span>
+          </div>
+        </div>
+        <div class="task-right">
+          <span class="task-time">⏱ 10 мин</span>
+          <span class="task-chevron">▼</span>
+        </div>
+      </div>
+      <div class="task-body">
+        <div class="task-body-inner">
+          <p style="font-size:14px;color:var(--ink-light);margin-bottom:12px">Найдите в <code>index.html</code> форму регистрации (раздел <code>auth-register</code>) и добавьте перед кнопкой «Создать архив»:</p>
+          <div class="code-label">HTML для чекбокса согласия</div>
+          <div class="code-block">&lt;div class="form-group" style="display:flex;gap:10px;align-items:flex-start"&gt;
+  &lt;input type="checkbox" id="agree-checkbox"
+    style="margin-top:4px;width:18px;height:18px;flex-shrink:0;cursor:pointer"&gt;
+  &lt;label for="agree-checkbox"
+    style="font-size:14px;color:var(--ink-light);cursor:pointer;line-height:1.6"&gt;
+    Я согласен с
+    &lt;a href="/privacy" style="color:var(--amber)"&gt;политикой конфиденциальности&lt;/a&gt;
+    и даю согласие на обработку персональных данных
+  &lt;/label&gt;
+&lt;/div&gt;</div>
+          <div class="code-label">Проверка в функции doRegister()</div>
+          <div class="code-block">function doRegister() {
+  const agreed = document.getElementById('agree-checkbox').checked;
+  if (!agreed) {
+    toast('Необходимо согласиться с политикой конфиденциальности', 'error');
+    return;
+  }
+  // остальной код регистрации...
+}</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TASK 2.3 -->
+    <div class="task" onclick="toggleTask(this)">
+      <div class="task-header">
+        <div class="task-num" style="background:var(--orange)">3</div>
+        <div class="task-icon">📋</div>
+        <div class="task-main">
+          <div class="task-title">Зарегистрировать ИП или самозанятость</div>
+          <div class="task-desc">Нужно для официальных грантов и работы с партнёрами</div>
+          <div class="task-tags">
+            <span class="task-tag p-important">🟡 Важно для грантов</span>
+            <span class="task-tag c-free">Бесплатно</span>
+            <span class="task-tag c-dev">1–3 дня</span>
+          </div>
+        </div>
+        <div class="task-right">
+          <span class="task-time">⏱ 1–3 дня</span>
+          <span class="task-chevron">▼</span>
+        </div>
+      </div>
+      <div class="task-body">
+        <div class="task-body-inner">
+          <p style="font-size:14px;color:var(--ink-light);margin-bottom:16px">Большинство российских грантов требуют юридическое лицо или ИП. Самый быстрый вариант — самозанятость.</p>
+          <ol class="steps">
+            <li><strong>Самозанятость</strong> (если доход до 2.4 млн ₽/год): Скачайте приложение «Мой налог» → «Зарегистрироваться» → через Госуслуги → готово за 10 минут</li>
+            <li><strong>ИП</strong> (если нужно нанимать людей или доход больше): Зайдите на <a href="https://nalog.ru" target="_blank">nalog.ru</a> → «Государственная регистрация» → заполните форму → подайте через Госуслуги. Пошлина — 0 ₽ при подаче онлайн</li>
+            <li>Откройте расчётный счёт в банке — Тинькофф, Сбер или Точка предлагают бесплатные счета для ИП</li>
+          </ol>
+          <div class="note">
+            <strong>Фонд Бортника и Сколково</strong> принимают заявки только от ИП или ООО. Росмолодёжь и ПФКИ — могут принимать физлиц, но ИП надёжнее.
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <hr class="section-divider">
+
+  <!-- PHASE 3 -->
+  <div class="phase" id="phase3">
+    <div class="phase-header">
+      <div class="phase-badge" style="background:var(--green)">3</div>
+      <div class="phase-header-text">
+        <div class="phase-title">🟢 Фаза 3 — Технический функционал</div>
+        <div class="phase-subtitle">Превратить прототип в работающий сервис</div>
+      </div>
+      <div class="phase-timeline">
+        <span class="phase-timeline-icon">⏱️</span>
+        <span class="phase-timeline-text">Неделя 2–3</span>
+      </div>
+    </div>
+
+    <!-- TASK 3.1 -->
+    <div class="task" onclick="toggleTask(this)">
+      <div class="task-header">
+        <div class="task-num" style="background:var(--green)">1</div>
+        <div class="task-icon">🗄️</div>
+        <div class="task-main">
+          <div class="task-title">Подключить базу данных Supabase</div>
+          <div class="task-desc">Чтобы данные пользователей сохранялись при закрытии браузера</div>
+          <div class="task-tags">
+            <span class="task-tag p-critical">🔴 Критично</span>
+            <span class="task-tag c-free">Бесплатно</span>
+            <span class="task-tag c-dev">2–4 часа</span>
+          </div>
+        </div>
+        <div class="task-right">
+          <span class="task-time">⏱ 2–4 часа</span>
+          <span class="task-chevron">▼</span>
+        </div>
+      </div>
+      <div class="task-body">
+        <div class="task-body-inner">
+          <p style="font-size:14px;color:var(--ink-light);margin-bottom:12px">Supabase — это бесплатная база данных с готовой авторизацией. Не нужен сервер.</p>
+          <ol class="steps">
+            <li>Зарегистрируйтесь на <a href="https://supabase.com" target="_blank">supabase.com</a> → «New project» → дайте имя «nasledie»</li>
+            <li>В разделе «Project Settings → API» скопируйте <strong>Project URL</strong> и <strong>anon public key</strong></li>
+            <li>Добавьте в <code>&lt;head&gt;</code> вашего HTML:<br>
+              <code>&lt;script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"&gt;&lt;/script&gt;</code></li>
+            <li>Инициализируйте Supabase в начале вашего JavaScript:<br>
+              <code>const supabase = window.supabase.createClient('ВАШ_URL', 'ВАШ_КЛЮЧ')</code></li>
+            <li>В разделе «Authentication → Providers» включите «Email» — теперь регистрация работает по-настоящему</li>
+            <li>Замените функцию <code>doLogin()</code> на вызов <code>supabase.auth.signInWithPassword()</code> — за помощью обратитесь ко мне</li>
+          </ol>
+          <div class="note success">
+            <strong>Бесплатный план Supabase:</strong> 500 МБ БД, 1 ГБ хранилища файлов, 50 000 пользователей — этого хватит на старт.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TASK 3.2 -->
+    <div class="task" onclick="toggleTask(this)">
+      <div class="task-header">
+        <div class="task-num" style="background:var(--green)">2</div>
+        <div class="task-icon">🎙️</div>
+        <div class="task-main">
+          <div class="task-title">Включить реальную запись аудио/видео</div>
+          <div class="task-desc">Сейчас запись имитируется. Нужно подключить настоящий микрофон</div>
+          <div class="task-tags">
+            <span class="task-tag p-critical">🔴 Критично</span>
+            <span class="task-tag c-free">Бесплатно</span>
+            <span class="task-tag c-dev">2–3 часа</span>
+          </div>
+        </div>
+        <div class="task-right">
+          <span class="task-time">⏱ 2–3 часа</span>
+          <span class="task-chevron">▼</span>
+        </div>
+      </div>
+      <div class="task-body">
+        <div class="task-body-inner">
+          <p style="font-size:14px;color:var(--ink-light);margin-bottom:12px">Браузер умеет записывать аудио через MediaRecorder API — без плагинов. Замените функции <code>startRecord()</code> и <code>stopRecord()</code> на этот код:</p>
+          <div class="code-label">Реальная запись аудио (заменить в script)</div>
+          <div class="code-block">let mediaRecorder, audioChunks = [], audioBlob;
+
+async function startRecord() {
+  try {
+    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+    mediaRecorder = new MediaRecorder(stream);
+    audioChunks = [];
+    mediaRecorder.ondataavailable = e => audioChunks.push(e.data);
+    mediaRecorder.onstop = () => {
+      audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
+      // Здесь можно сохранить audioBlob в Supabase Storage
+    };
+    mediaRecorder.start();
+    state.isRecording = true;
+    // ... обновление UI (таймер, кнопка и т.д.)
+  } catch(e) {
+    toast('Нет доступа к микрофону. Разрешите доступ в браузере.', 'error');
+  }
+}
+
+function stopRecord() {
+  if (mediaRecorder && mediaRecorder.state !== 'inactive') {
+    mediaRecorder.stop();
+    mediaRecorder.stream.getTracks().forEach(t => t.stop());
+  }
+  state.isRecording = false;
+  // ... обновление UI
+}</div>
+          <div class="note warning">
+            <strong>Важно:</strong> Браузер запросит разрешение на микрофон. Сайт должен работать по HTTPS — на Netlify это включено автоматически.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TASK 3.3 -->
+    <div class="task" onclick="toggleTask(this)">
+      <div class="task-header">
+        <div class="task-num" style="background:var(--green)">3</div>
+        <div class="task-icon">🤖</div>
+        <div class="task-main">
+          <div class="task-title">Подключить реальный ИИ (Claude API)</div>
+          <div class="task-desc">Чтобы вопросы генерировались персонально для каждого пользователя</div>
+          <div class="task-tags">
+            <span class="task-tag p-important">🟡 Важно</span>
+            <span class="task-tag c-paid">~$5/мес</span>
+            <span class="task-tag c-dev">3–4 часа</span>
+          </div>
+        </div>
+        <div class="task-right">
+          <span class="task-time">⏱ 3–4 часа</span>
+          <span class="task-chevron">▼</span>
+        </div>
+      </div>
+      <div class="task-body">
+        <div class="task-body-inner">
+          <ol class="steps">
+            <li>Зайдите на <a href="https://console.anthropic.com" target="_blank">console.anthropic.com</a> → API Keys → Create Key</li>
+            <li>Скопируйте ключ. <strong>Никогда не вставляйте его напрямую в HTML</strong> — его увидят все посетители</li>
+            <li>Создайте на Netlify «Edge Function» (бесплатно) — это серверный код, который скрывает ключ. Зайдите в документацию Netlify → Functions</li>
+            <li>В функции делайте запрос к API Claude с промптом: «Ты — интервьюер, задающий вопросы о жизни человека. Вот его предыдущий ответ: [ответ]. Задай следующий логичный вопрос.»</li>
+            <li>Из HTML вызывайте вашу Netlify Function, а не API напрямую</li>
+          </ol>
+          <div class="note">
+            Стоимость Claude API — около $0.003 за 1000 слов. При 100 пользователях в месяц это примерно $2–5/мес.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TASK 3.4 -->
+    <div class="task" onclick="toggleTask(this)">
+      <div class="task-header">
+        <div class="task-num" style="background:var(--green)">4</div>
+        <div class="task-icon">📝</div>
+        <div class="task-main">
+          <div class="task-title">Подключить автотранскрипцию речи</div>
+          <div class="task-desc">Автоматический перевод голоса в текст после записи</div>
+          <div class="task-tags">
+            <span class="task-tag p-important">🟡 Важно</span>
+            <span class="task-tag c-paid">~$0.006/мин</span>
+            <span class="task-tag c-dev">2–3 часа</span>
+          </div>
+        </div>
+        <div class="task-right">
+          <span class="task-time">⏱ 2–3 часа</span>
+          <span class="task-chevron">▼</span>
+        </div>
+      </div>
+      <div class="task-body">
+        <div class="task-body-inner">
+          <p style="font-size:14px;color:var(--ink-light);margin-bottom:12px">Два варианта — выберите один:</p>
+          <table class="info-table">
+            <tr><th>Сервис</th><th>Качество</th><th>Цена</th><th>Рекомендация</th></tr>
+            <tr><td><strong>OpenAI Whisper API</strong></td><td>⭐⭐⭐⭐⭐</td><td>$0.006/мин</td><td>Лучший выбор</td></tr>
+            <tr><td><strong>Яндекс SpeechKit</strong></td><td>⭐⭐⭐⭐⭐</td><td>~1 ₽/мин</td><td>Лучше для русского</td></tr>
+            <tr><td><strong>Web Speech API</strong></td><td>⭐⭐⭐</td><td>Бесплатно</td><td>Только Chrome, не для продакшн</td></tr>
+          </table>
+          <ol class="steps">
+            <li>Зарегистрируйтесь на <a href="https://platform.openai.com" target="_blank">platform.openai.com</a> → API Keys</li>
+            <li>После остановки записи отправьте <code>audioBlob</code> на ваш Netlify Function</li>
+            <li>Функция отправляет аудио в Whisper API и возвращает текст</li>
+            <li>Вставьте текст в поле ответа пользователя автоматически</li>
+          </ol>
+        </div>
+      </div>
+    </div>
+
+    <!-- TASK 3.5 -->
+    <div class="task" onclick="toggleTask(this)">
+      <div class="task-header">
+        <div class="task-num" style="background:var(--green)">5</div>
+        <div class="task-icon">📱</div>
+        <div class="task-main">
+          <div class="task-title">Проверить и улучшить мобильную версию</div>
+          <div class="task-desc">Большинство пожилых пользователей заходят с телефона</div>
+          <div class="task-tags">
+            <span class="task-tag p-important">🟡 Важно</span>
+            <span class="task-tag c-free">Бесплатно</span>
+            <span class="task-tag c-dev">2–3 часа</span>
+          </div>
+        </div>
+        <div class="task-right">
+          <span class="task-time">⏱ 2–3 часа</span>
+          <span class="task-chevron">▼</span>
+        </div>
+      </div>
+      <div class="task-body">
+        <div class="task-body-inner">
+          <ol class="steps">
+            <li>Откройте сайт на телефоне. Пройдите весь сценарий: главная → регистрация → интервью → медиа</li>
+            <li>В браузере Chrome нажмите F12 → иконка телефона → проверьте размеры 375px (iPhone) и 360px (Android)</li>
+            <li>Убедитесь, что все кнопки достаточно большие — минимум 44×44 пикселя (это стандарт доступности)</li>
+            <li>Шрифт основного текста — минимум 16px на мобильных (сейчас уже стоит, но проверьте)</li>
+            <li>Сайдбар в кабинете на мобильных скрыт — добавьте кнопку «Меню» внизу экрана (нижняя навигация)</li>
+          </ol>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <hr class="section-divider">
+
+  <!-- PHASE 4 -->
+  <div class="phase" id="phase4">
+    <div class="phase-header">
+      <div class="phase-badge" style="background:var(--blue)">4</div>
+      <div class="phase-header-text">
+        <div class="phase-title">🔵 Фаза 4 — Первые пользователи</div>
+        <div class="phase-subtitle">Собрать реальных людей и отзывы до подачи на гранты</div>
+      </div>
+      <div class="phase-timeline">
+        <span class="phase-timeline-icon">⏱️</span>
+        <span class="phase-timeline-text">Неделя 3–4</span>
+      </div>
+    </div>
+
+    <!-- TASK 4.1 -->
+    <div class="task" onclick="toggleTask(this)">
+      <div class="task-header">
+        <div class="task-num" style="background:var(--blue)">1</div>
+        <div class="task-icon">📣</div>
+        <div class="task-main">
+          <div class="task-title">Запустить в тематических сообществах</div>
+          <div class="task-desc">Группы ВКонтакте и Telegram с целевой аудиторией</div>
+          <div class="task-tags">
+            <span class="task-tag p-important">🟡 Важно</span>
+            <span class="task-tag c-free">Бесплатно</span>
+            <span class="task-tag c-dev">2–3 часа</span>
+          </div>
+        </div>
+        <div class="task-right">
+          <span class="task-time">⏱ 2–3 часа</span>
+          <span class="task-chevron">▼</span>
+        </div>
+      </div>
+      <div class="task-body">
+        <div class="task-body-inner">
+          <ol class="steps">
+            <li>Напишите короткий пост (3–4 предложения + ссылка) о проекте. Акцент: «помогите нам протестировать» — люди охотнее отвечают на просьбу о помощи, чем на рекламу</li>
+            <li>Опубликуйте в ВКонтакте: «Генеалогия», «Семейная история», «Клуб пенсионеров», «Воспоминания СССР»</li>
+            <li>Опубликуйте в Telegram-каналах: «Семейный архив», «История семьи», «Серебряный возраст»</li>
+            <li>Напишите в локальные библиотеки, дома культуры, клубы пенсионеров — предложите бесплатную презентацию</li>
+            <li>Попросите 10–20 друзей и родственников зарегистрироваться и записать первое интервью</li>
+          </ol>
+          <div class="note success">
+            <strong>Цель:</strong> 30–50 зарегистрированных пользователей и 5–10 письменных отзывов. Этого уже достаточно для грантовой заявки.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TASK 4.2 -->
+    <div class="task" onclick="toggleTask(this)">
+      <div class="task-header">
+        <div class="task-num" style="background:var(--blue)">2</div>
+        <div class="task-icon">🎥</div>
+        <div class="task-main">
+          <div class="task-title">Снять демо-видео проекта (2–3 минуты)</div>
+          <div class="task-desc">Видео — самый убедительный материал для инвесторов и грантодателей</div>
+          <div class="task-tags">
+            <span class="task-tag p-important">🟡 Важно</span>
+            <span class="task-tag c-free">Бесплатно</span>
+            <span class="task-tag c-dev">1 день</span>
+          </div>
+        </div>
+        <div class="task-right">
+          <span class="task-time">⏱ 1 день</span>
+          <span class="task-chevron">▼</span>
+        </div>
+      </div>
+      <div class="task-body">
+        <div class="task-body-inner">
+          <ol class="steps">
+            <li>Запишите экран с голосом — покажите весь путь пользователя: главная → регистрация → выбор темы → запись интервью → результат. Используйте OBS (бесплатно) или Loom</li>
+            <li>Структура видео: 30 сек — проблема («мы теряем истории близких»), 60 сек — решение (демонстрация), 30 сек — призыв к действию</li>
+            <li>Снимите реальное интервью с пожилым родственником — 1–2 минуты. Это лучшее доказательство ценности продукта</li>
+            <li>Загрузите на YouTube и прикрепите ссылку к грантовым заявкам</li>
+          </ol>
+        </div>
+      </div>
+    </div>
+
+    <!-- TASK 4.3 -->
+    <div class="task" onclick="toggleTask(this)">
+      <div class="task-header">
+        <div class="task-num" style="background:var(--blue)">3</div>
+        <div class="task-icon">📊</div>
+        <div class="task-main">
+          <div class="task-title">Подготовить питч-дек (10–12 слайдов)</div>
+          <div class="task-desc">Главный документ для инвесторов и грантодателей</div>
+          <div class="task-tags">
+            <span class="task-tag p-important">🟡 Важно для грантов</span>
+            <span class="task-tag c-free">Бесплатно</span>
+            <span class="task-tag c-dev">2–3 дня</span>
+          </div>
+        </div>
+        <div class="task-right">
+          <span class="task-time">⏱ 2–3 дня</span>
+          <span class="task-chevron">▼</span>
+        </div>
+      </div>
+      <div class="task-body">
+        <div class="task-body-inner">
+          <p style="font-size:14px;color:var(--ink-light);margin-bottom:12px">Структура питч-дека для гранта (скажите мне — сделаю за вас):</p>
+          <table class="info-table">
+            <tr><th>#</th><th>Слайд</th><th>Что написать</th></tr>
+            <tr><td>1</td><td>Обложка</td><td>Логотип, название, одна строчка о чём проект</td></tr>
+            <tr><td>2</td><td>Проблема</td><td>«Ежегодно миллионы историй теряются навсегда»</td></tr>
+            <tr><td>3</td><td>Решение</td><td>Скриншоты продукта + одна фраза сути</td></tr>
+            <tr><td>4</td><td>Как работает</td><td>3–4 шага с иллюстрациями</td></tr>
+            <tr><td>5</td><td>Аудитория</td><td>Кто пользователи, сколько их в России</td></tr>
+            <tr><td>6</td><td>Рынок</td><td>Размер рынка, конкуренты, ваше отличие</td></tr>
+            <tr><td>7</td><td>Результаты</td><td>Текущие пользователи, отзывы, статистика</td></tr>
+            <tr><td>8</td><td>Монетизация</td><td>Freemium + печатная книга + B2B</td></tr>
+            <tr><td>9</td><td>Команда</td><td>Кто вы, ваш опыт и мотивация</td></tr>
+            <tr><td>10</td><td>Запрос</td><td>Сколько нужно денег и на что потратите</td></tr>
+          </table>
+          <div class="note">
+            Сделайте в Canva (бесплатно, шаблон «Pitch Deck») или Google Slides. Попросите меня — напишу текст для каждого слайда.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TASK 4.4 -->
+    <div class="task" onclick="toggleTask(this)">
+      <div class="task-header">
+        <div class="task-num" style="background:var(--blue)">4</div>
+        <div class="task-icon">📄</div>
+        <div class="task-main">
+          <div class="task-title">Написать one-pager и медиакит</div>
+          <div class="task-desc">Одностраничное описание для журналистов и партнёров</div>
+          <div class="task-tags">
+            <span class="task-tag p-nice">🟢 Желательно</span>
+            <span class="task-tag c-free">Бесплатно</span>
+            <span class="task-tag c-dev">1 день</span>
+          </div>
+        </div>
+        <div class="task-right">
+          <span class="task-time">⏱ 1 день</span>
+          <span class="task-chevron">▼</span>
+        </div>
+      </div>
+      <div class="task-body">
+        <div class="task-body-inner">
+          <ol class="steps">
+            <li>One-pager: одна страница A4 с сутью проекта, аудиторией, цифрами, контактами. Формат PDF</li>
+            <li>Медиакит: логотип в разных форматах (PNG, SVG), скриншоты приложения, краткая биография основателя, пресс-релиз</li>
+            <li>Добавьте страницу «Для СМИ» на сайт со ссылкой на скачивание медиакита</li>
+          </ol>
+          <div class="note">Скажите мне — напишу текст one-pager за вас, останется только добавить логотип и скриншоты.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <hr class="section-divider">
+
+  <!-- PHASE 5 -->
+  <div class="phase" id="phase5">
+    <div class="phase-header">
+      <div class="phase-badge" style="background:var(--purple)">5</div>
+      <div class="phase-header-text">
+        <div class="phase-title">🟣 Фаза 5 — Гранты и финансирование</div>
+        <div class="phase-subtitle">Куда подаваться и как составить заявку</div>
+      </div>
+      <div class="phase-timeline">
+        <span class="phase-timeline-icon">⏱️</span>
+        <span class="phase-timeline-text">Неделя 4–6</span>
+      </div>
+    </div>
+
+    <div class="task" onclick="toggleTask(this)">
+      <div class="task-header">
+        <div class="task-num" style="background:var(--purple)">1</div>
+        <div class="task-icon">🏛️</div>
+        <div class="task-main">
+          <div class="task-title">Подать заявку в Фонд Бортника (FASIE)</div>
+          <div class="task-desc">До 4 млн ₽ для технологических стартапов. Один из лучших вариантов</div>
+          <div class="task-tags">
+            <span class="task-tag p-important">🟡 Приоритет 1</span>
+            <span class="task-tag c-paid">До 4 млн ₽</span>
+          </div>
+        </div>
+        <div class="task-right"><span class="task-chevron">▼</span></div>
+      </div>
+      <div class="task-body">
+        <div class="task-body-inner">
+          <ol class="steps">
+            <li>Зайдите на <a href="https://fasie.ru" target="_blank">fasie.ru</a> → раздел «Программы» → «Умник» (для физлиц до 30 лет, до 500 тыс ₽) или «Старт» (для ИП/ООО, до 4 млн ₽)</li>
+            <li>Зарегистрируйтесь в системе, заполните профиль организации</li>
+            <li>Подготовьте: бизнес-план (10–15 страниц), финансовую модель, описание команды, подтверждение прав на разработку</li>
+            <li>Подайте заявку онлайн. Рассмотрение — 1–3 месяца</li>
+          </ol>
+          <div class="note">Программа «Умник» — специально для молодых инноваторов. Конкурс проходит 2 раза в год. Следите за датами на сайте.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="task" onclick="toggleTask(this)">
+      <div class="task-header">
+        <div class="task-num" style="background:var(--purple)">2</div>
+        <div class="task-icon">🎭</div>
+        <div class="task-main">
+          <div class="task-title">Президентский фонд культурных инициатив (ПФКИ)</div>
+          <div class="task-desc">Проект идеально подходит под «сохранение культурного наследия»</div>
+          <div class="task-tags">
+            <span class="task-tag p-important">🟡 Приоритет 1</span>
+            <span class="task-tag c-paid">100 тыс — 3 млн ₽</span>
+          </div>
+        </div>
+        <div class="task-right"><span class="task-chevron">▼</span></div>
+      </div>
+      <div class="task-body">
+        <div class="task-body-inner">
+          <ol class="steps">
+            <li>Зайдите на <a href="https://grants.culture.ru" target="_blank">grants.culture.ru</a> — официальный сайт ПФКИ</li>
+            <li>Выберите номинацию: «Цифровое искусство и медиа», «Сохранение исторической памяти» или «Социальные проекты»</li>
+            <li>Ваш главный аргумент: «Сохраняем устную историю России — каждый человек несёт уникальную историческую память»</li>
+            <li>Заявки принимаются 2–3 раза в год. Подготовка занимает 2–4 недели</li>
+          </ol>
+          <div class="note success">
+            <strong>Это ваш лучший шанс.</strong> ПФКИ активно поддерживает проекты по сохранению памяти. Ваш проект отлично вписывается в их приоритеты.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="task" onclick="toggleTask(this)">
+      <div class="task-header">
+        <div class="task-num" style="background:var(--purple)">3</div>
+        <div class="task-icon">🌟</div>
+        <div class="task-main">
+          <div class="task-title">Другие источники финансирования</div>
+          <div class="task-desc">Дополнительные варианты на разных этапах</div>
+          <div class="task-tags">
+            <span class="task-tag p-nice">🟢 Дополнительно</span>
+          </div>
+        </div>
+        <div class="task-right"><span class="task-chevron">▼</span></div>
+      </div>
+      <div class="task-body">
+        <div class="task-body-inner">
+          <table class="info-table">
+            <tr><th>Организация</th><th>Сумма</th><th>Сайт</th><th>Когда</th></tr>
+            <tr><td><strong>Росмолодёжь</strong></td><td>до 1.5 млн ₽</td><td>fadm.gov.ru</td><td>Для людей до 35 лет</td></tr>
+            <tr><td><strong>СберСоцИнвест</strong></td><td>до 3 млн ₽</td><td>sbersocial.ru</td><td>Социальные проекты</td></tr>
+            <tr><td><strong>Сколково</strong></td><td>до 1.5 млн $</td><td>sk.ru</td><td>После первых пользователей</td></tr>
+            <tr><td><strong>Краудфандинг Boomstarter</strong></td><td>любая</td><td>boomstarter.ru</td><td>Прямо сейчас</td></tr>
+            <tr><td><strong>Благотворительные фонды</strong></td><td>50–500 тыс ₽</td><td>—</td><td>«Старость в радость» и др.</td></tr>
+          </table>
+          <div class="note">
+            <strong>Совет:</strong> Краудфандинг на Boomstarter можно запустить прямо сейчас — он покажет реальный интерес аудитории и станет доказательством для других грантов.
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <hr class="section-divider">
+
+  <!-- SUMMARY -->
+  <div class="summary-box" id="summary">
+    <h2>📋 Итоговый план по неделям</h2>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px">
+      <div>
+        <div class="summary-week">
+          <div class="summary-week-title">День 1 — Сегодня</div>
+          <ul class="summary-items">
+            <li>Переименовать файл в index.html</li>
+            <li>Опубликовать на Netlify Drop</li>
+            <li>Добавить мета-теги и favicon</li>
+            <li>Подключить Яндекс.Метрику</li>
+          </ul>
+        </div>
+        <div class="summary-week">
+          <div class="summary-week-title">День 2–4</div>
+          <ul class="summary-items">
+            <li>Купить домен nasledie.ru</li>
+            <li>Написать политику конфиденциальности</li>
+            <li>Добавить чекбокс согласия</li>
+            <li>Зарегистрировать ИП или самозанятость</li>
+          </ul>
+        </div>
+        <div class="summary-week">
+          <div class="summary-week-title">Неделя 2</div>
+          <ul class="summary-items">
+            <li>Подключить Supabase (база данных)</li>
+            <li>Включить реальную запись аудио</li>
+            <li>Проверить мобильную версию</li>
+          </ul>
+        </div>
+      </div>
+      <div>
+        <div class="summary-week">
+          <div class="summary-week-title">Неделя 3</div>
+          <ul class="summary-items">
+            <li>Подключить транскрипцию (Whisper)</li>
+            <li>Подключить Claude API для вопросов</li>
+            <li>Начать продвижение в соцсетях</li>
+          </ul>
+        </div>
+        <div class="summary-week">
+          <div class="summary-week-title">Неделя 4</div>
+          <ul class="summary-items">
+            <li>Снять демо-видео</li>
+            <li>Собрать 30+ первых пользователей</li>
+            <li>Написать питч-дек</li>
+          </ul>
+        </div>
+        <div class="summary-week">
+          <div class="summary-week-title">Неделя 5–6</div>
+          <ul class="summary-items">
+            <li>Подать заявку в ПФКИ</li>
+            <li>Подать заявку в Фонд Бортника</li>
+            <li>Запустить краудфандинг</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    <div style="margin-top:32px;padding-top:24px;border-top:1px solid rgba(200,169,110,0.3)">
+      <div style="font-size:13px;color:rgba(255,255,255,0.5);margin-bottom:8px">Следующий шаг прямо сейчас</div>
+      <div style="font-size:18px;color:white">Опубликуйте сайт на Netlify → получите ссылку → пришлите мне, и я помогу с питч-деком 🌿</div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+function toggleTask(el) {
+  el.classList.toggle('open');
+}
+// open first task of each phase by default
+document.querySelectorAll('.phase').forEach(p => {
+  const first = p.querySelector('.task');
+  if (first) first.classList.add('open');
+});
+</script>
+</body>
+</html>

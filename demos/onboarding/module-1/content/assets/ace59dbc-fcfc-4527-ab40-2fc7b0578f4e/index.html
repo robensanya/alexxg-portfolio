@@ -1,0 +1,1274 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Карта города Skyeng</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Onest:wght@400;500;600;700;800;900&display=swap');
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    background: #f7f7f7;
+    font-family: 'StratosSkyeng', 'Onest', Arial, sans-serif;
+    color: #101010;
+  }
+
+  .city-wrap {
+    max-width: 780px;
+    margin: 0 auto;
+    padding: 1rem;
+    position: relative;
+  }
+
+  /* ---------- Карта ---------- */
+
+  .city-map {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 2499 / 1668;
+    border-radius: 28px;
+    overflow: hidden;
+    background: #ffffff;
+    box-shadow: 0 2px 14px rgba(0,0,0,0.05);
+  }
+
+  .city-layer {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    pointer-events: none;
+    user-select: none;
+    transition: filter 0.8s ease, opacity 0.8s ease;
+  }
+
+  .city-layer.ghost {
+    filter: grayscale(1);
+    opacity: 0.18;
+  }
+
+  .city-layer.reveal {
+    animation: cityReveal 1s ease both;
+  }
+
+  @keyframes cityReveal {
+    from { filter: grayscale(1); opacity: 0.18; }
+    to   { filter: grayscale(0); opacity: 1; }
+  }
+
+  /* ---------- Полароиды (полноразмерные слои) ---------- */
+
+  .polaroid-layer {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    pointer-events: none;
+    user-select: none;
+    z-index: 5;
+    /* transform-origin выставляется из JS в центр полароида */
+    animation: polaroidPop 0.55s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+  }
+
+  @keyframes polaroidPop {
+    0%   { opacity: 0; transform: scale(0.55); }
+    100% { opacity: 1; transform: scale(1); }
+  }
+
+  .polaroid-layer.leaving {
+    animation: polaroidLeave 0.3s ease both;
+  }
+
+  @keyframes polaroidLeave {
+    to { opacity: 0; transform: scale(0.55); }
+  }
+
+  .polaroid-layer.no-anim { animation: none; }
+
+  /* пользовательский полароид итогового модуля */
+  .map-polaroid.user-pol {
+    position: absolute;
+    width: 16%;
+    transform: translate(-50%, -50%) rotate(var(--rot, 0deg));
+    filter: drop-shadow(0 4px 10px rgba(0,0,0,0.18));
+    z-index: 6;
+    border-radius: 6px;
+    overflow: hidden;
+    animation: userPolDrop 0.55s cubic-bezier(0.34,1.56,0.64,1) both;
+  }
+  .map-polaroid.user-pol.no-anim { animation: none; }
+  .map-polaroid.user-pol img { width: 100%; display: block; }
+
+  @keyframes userPolDrop {
+    0%   { opacity: 0; transform: translate(-50%, -120%) rotate(var(--rot)) scale(0.6); }
+    100% { opacity: 1; transform: translate(-50%, -50%) rotate(var(--rot)) scale(1); }
+  }
+
+  /* ---------- Искорки ---------- */
+
+  .sparkle {
+    position: absolute;
+    color: #baff00;
+    font-size: 22px;
+    line-height: 1;
+    pointer-events: none;
+    z-index: 25;
+    transform: translate(-50%, -50%);
+    animation: sparklePop var(--dur, 1.6s) ease-out both;
+    animation-delay: var(--delay, 0s);
+    text-shadow: 0 0 10px rgba(186,255,0,0.7);
+  }
+
+  @keyframes sparklePop {
+    0%   { opacity: 0; transform: translate(-50%, -50%) scale(0) rotate(0deg); }
+    25%  { opacity: 1; transform: translate(-50%, -60%) scale(1.25) rotate(20deg); }
+    60%  { opacity: 1; transform: translate(-50%, -90%) scale(0.95) rotate(-10deg); }
+    100% { opacity: 0; transform: translate(-50%, -130%) scale(0.4) rotate(15deg); }
+  }
+
+  /* ---------- Плашка пройденного модуля ---------- */
+
+  .done-plaque {
+    position: absolute;
+    transform: translate(-50%, -50%);
+    background: #00C1FF;
+    border: none;
+    border-radius: 999px;
+    padding: 8px 18px 9px;
+    font-size: 13.5px;
+    font-weight: 900;
+    letter-spacing: -0.01em;
+    color: #ffffff;
+    white-space: nowrap;
+    z-index: 24;
+    box-shadow: 0 4px 14px rgba(0,193,255,0.4);
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    animation: plaquePop 0.5s cubic-bezier(0.34,1.56,0.64,1) both;
+  }
+  .done-plaque.no-anim { animation: none; }
+  .done-plaque .star { color: #ffffff; font-size: 14px; }
+
+  @keyframes plaquePop {
+    0%   { opacity: 0; transform: translate(-50%, -20%) scale(0.5); }
+    100% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+  }
+
+  /* ---------- Панель с чекбоксами ---------- */
+
+  .check-panel {
+    position: absolute;
+    width: min(340px, 42%);
+    background: #ffffff;
+    border-radius: 24px;
+    box-shadow: 0 8px 28px rgba(0,0,0,0.12);
+    z-index: 30;
+    overflow: hidden;
+    transition: opacity 0.25s ease, transform 0.25s ease;
+  }
+
+  .check-panel.pos-top-right    { top: 4%; right: 3%; }
+  .check-panel.pos-bottom-right { bottom: 4%; right: 3%; }
+  .check-panel.pos-left         { top: 50%; left: 3%; transform: translateY(-50%); }
+  .check-panel.pos-bottom-center{ bottom: 5%; left: 50%; transform: translateX(-50%); width: min(380px, 60%); }
+
+  .check-panel.collapsed { opacity: 0; pointer-events: none; transform: scale(0.9); }
+  .check-panel.pos-left.collapsed { transform: translateY(-50%) scale(0.9); }
+  .check-panel.pos-bottom-center.collapsed { transform: translateX(-50%) scale(0.9); }
+
+  .check-panel-head {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 16px 18px 12px;
+  }
+
+  .check-panel-title {
+    flex: 1;
+    font-size: 15px;
+    font-weight: 900;
+    letter-spacing: -0.02em;
+    line-height: 1.25;
+  }
+
+  .check-panel-title span {
+    padding: 1px 7px;
+    border-radius: 6px;
+    background: var(--stage-color, #d0ff99);
+    box-decoration-break: clone;
+    -webkit-box-decoration-break: clone;
+  }
+
+  .check-progress {
+    flex-shrink: 0;
+    min-width: 42px;
+    height: 30px;
+    padding: 0 10px;
+    border-radius: 999px;
+    border: 1.5px solid #101010;
+    background: var(--stage-color, #d0ff99);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 13px;
+    font-weight: 900;
+  }
+
+  .panel-fold {
+    flex-shrink: 0;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    background: #101010;
+    border: none;
+    color: #fff;
+    font-size: 15px;
+    font-weight: 900;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
+  }
+
+  .check-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding: 0 14px 12px;
+    max-height: 40vh;
+    overflow-y: auto;
+  }
+
+  .check-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    background: #f7f7f7;
+    border-radius: 14px;
+    padding: 11px 12px;
+    cursor: pointer;
+    user-select: none;
+    transition: background 0.15s ease;
+    font-size: 13px;
+    line-height: 1.45;
+    font-weight: 500;
+  }
+
+  .check-item:hover { background: #efefef; }
+
+  .check-box {
+    flex-shrink: 0;
+    width: 22px;
+    height: 22px;
+    margin-top: 1px;
+    border-radius: 7px;
+    border: 1.5px solid #101010;
+    background: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.15s ease;
+  }
+
+  .check-box svg {
+    width: 13px; height: 13px;
+    stroke: #101010; stroke-width: 3;
+    fill: none; stroke-linecap: round; stroke-linejoin: round;
+    opacity: 0;
+    transform: scale(0.4);
+    transition: opacity 0.15s ease, transform 0.2s cubic-bezier(0.34,1.56,0.64,1);
+  }
+
+  .check-item.checked .check-box { background: var(--stage-color, #d0ff99); }
+  .check-item.checked .check-box svg { opacity: 1; transform: scale(1); }
+  .check-item.checked { font-weight: 700; }
+
+  .panel-footer {
+    padding: 4px 14px 16px;
+    display: flex;
+    justify-content: center;
+  }
+
+  .btn-complete {
+    width: 100%;
+    padding: 12px 20px 13px;
+    border-radius: 999px;
+    background: #d0ff99;
+    border: 1.5px solid #101010;
+    font-family: inherit;
+    font-size: 14.5px;
+    font-weight: 900;
+    letter-spacing: -0.01em;
+    color: #101010;
+    cursor: pointer;
+    transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.2s ease;
+  }
+
+  .btn-complete:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 6px 16px rgba(0,0,0,0.15); }
+  .btn-complete:disabled { background: #f0f0f0; border-color: rgba(16,16,16,0.25); color: #9a9a9a; cursor: not-allowed; }
+  .btn-complete.done,
+  .btn-complete.done:disabled { background: #00C1FF; border-color: #00C1FF; color: #ffffff; cursor: default; }
+
+  /* чип для развёртывания панели */
+  .panel-chip {
+    position: absolute;
+    z-index: 29;
+    display: none;
+    align-items: center;
+    gap: 8px;
+    padding: 9px 16px 10px;
+    border-radius: 999px;
+    background: #101010;
+    color: #fff;
+    font-family: inherit;
+    font-size: 13.5px;
+    font-weight: 800;
+    border: none;
+    cursor: pointer;
+    box-shadow: 0 6px 18px rgba(0,0,0,0.2);
+  }
+  .panel-chip.visible { display: inline-flex; }
+  .panel-chip .star { color: #cbe800; }
+  .panel-chip.pos-top-right    { top: 4%; right: 3%; }
+  .panel-chip.pos-bottom-right { bottom: 4%; right: 3%; }
+  .panel-chip.pos-left         { top: 50%; left: 3%; transform: translateY(-50%); }
+  .panel-chip.pos-bottom-center{ bottom: 5%; left: 50%; transform: translateX(-50%); }
+
+  /* ---------- Итоговый модуль ---------- */
+
+  .final-card {
+    text-align: center;
+    padding: 20px 20px 22px;
+  }
+
+  .final-card h3 {
+    margin: 0 0 6px;
+    font-size: 17px;
+    font-weight: 900;
+    letter-spacing: -0.02em;
+  }
+
+  .final-card p {
+    margin: 0 0 14px;
+    font-size: 13px;
+    color: #5f6470;
+    line-height: 1.45;
+  }
+
+  .btn-main {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 13px 24px 14px;
+    border-radius: 999px;
+    background: #d0ff99;
+    border: 1.5px solid #101010;
+    font-family: inherit;
+    font-size: 15px;
+    font-weight: 900;
+    letter-spacing: -0.01em;
+    color: #101010;
+    cursor: pointer;
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+  }
+
+  .btn-main:hover { transform: translateY(-2px); box-shadow: 0 6px 16px rgba(0,0,0,0.15); }
+  .btn-main:disabled { opacity: 0.5; cursor: wait; transform: none; }
+
+  .btn-ghost {
+    padding: 11px 20px 12px;
+    border-radius: 999px;
+    background: #fff;
+    border: 1.5px solid #101010;
+    font-family: inherit;
+    font-size: 14px;
+    font-weight: 800;
+    cursor: pointer;
+  }
+
+  /* ---------- Модалка генерации ---------- */
+
+  .gen-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(16,16,16,0.55);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 100;
+    padding: 16px;
+  }
+  .gen-overlay.open { display: flex; }
+
+  .gen-modal {
+    background: #fff;
+    border-radius: 28px;
+    width: min(560px, 100%);
+    max-height: 92vh;
+    overflow-y: auto;
+    padding: 26px 26px 24px;
+    position: relative;
+  }
+
+  .gen-modal h3 {
+    margin: 0 0 4px;
+    font-size: 20px;
+    font-weight: 900;
+    letter-spacing: -0.02em;
+  }
+
+  .gen-modal .sub {
+    font-size: 13.5px;
+    color: #5f6470;
+    margin: 0 0 18px;
+    line-height: 1.5;
+  }
+
+  .gen-close {
+    position: absolute;
+    top: 18px; right: 18px;
+    width: 34px; height: 34px;
+    border-radius: 50%;
+    background: #101010;
+    color: #fff;
+    border: none;
+    font-size: 16px;
+    cursor: pointer;
+  }
+
+  .upload-zone {
+    border: 2px dashed rgba(16,16,16,0.25);
+    border-radius: 18px;
+    padding: 22px;
+    text-align: center;
+    cursor: pointer;
+    transition: border-color 0.15s ease, background 0.15s ease;
+    margin-bottom: 14px;
+    font-size: 14px;
+    font-weight: 700;
+  }
+  .upload-zone:hover { border-color: #101010; background: #fafafa; }
+  .upload-zone.has-photo { border-style: solid; border-color: #101010; background: #d0ff9933; }
+  .upload-zone .hint { display: block; font-size: 12px; color: #5f6470; font-weight: 500; margin-top: 4px; }
+
+  .gen-preview {
+    display: none;
+    width: 100%;
+    border-radius: 14px;
+    margin: 0 0 14px;
+    box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+  }
+  .gen-preview.visible { display: block; }
+
+  .gen-actions { display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; }
+
+  .gen-status {
+    text-align: center;
+    font-size: 13px;
+    font-weight: 700;
+    color: #5f6470;
+    min-height: 18px;
+    margin: 0 0 10px;
+  }
+
+  /* ---------- Фулскрин ---------- */
+
+  .fs-btn {
+    position: absolute;
+    top: 3%;
+    left: 2.5%;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: #101010;
+    border: none;
+    cursor: pointer;
+    z-index: 28;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+    transition: transform 0.15s ease;
+  }
+  .fs-btn:hover { transform: scale(1.1); }
+  .fs-btn svg {
+    width: 16px; height: 16px;
+    stroke: #fff; stroke-width: 2.2; fill: none;
+    stroke-linecap: round; stroke-linejoin: round;
+  }
+  .fs-btn .ic-exit { display: none; }
+  .city-wrap.is-fs .fs-btn .ic-enter { display: none; }
+  .city-wrap.is-fs .fs-btn .ic-exit { display: block; }
+
+  /* настоящий фулскрин */
+  .city-wrap:fullscreen {
+    max-width: none;
+    width: 100vw;
+    height: 100vh;
+    margin: 0;
+    padding: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #f7f7f7;
+  }
+  .city-wrap:fullscreen .city-map {
+    width: min(100%, calc((100vh - 32px) * 2499 / 1668));
+  }
+
+  /* псевдо-фулскрин (если Fullscreen API недоступен внутри iframe) */
+  .city-wrap.fs-fake {
+    position: fixed;
+    inset: 0;
+    z-index: 999;
+    max-width: none;
+    width: 100vw;
+    height: 100vh;
+    margin: 0;
+    padding: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #f7f7f7;
+    overflow: auto;
+  }
+  .city-wrap.fs-fake .city-map {
+    width: min(100%, calc((100vh - 32px) * 2499 / 1668));
+  }
+
+  /* ---------- Декор ---------- */
+
+  .city-star {
+    position: absolute;
+    color: #cbe800;
+    line-height: 1;
+    pointer-events: none;
+    z-index: 2;
+  }
+
+  /* ---------- Мобилка ---------- */
+
+  @media (max-width: 640px) {
+    .check-panel, .check-panel.pos-top-right, .check-panel.pos-bottom-right,
+    .check-panel.pos-left, .check-panel.pos-bottom-center {
+      position: static;
+      width: 100%;
+      transform: none;
+      margin-top: 12px;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+    }
+    .check-panel.collapsed { display: none; }
+    .panel-chip { position: static; transform: none; margin-top: 12px; width: 100%; justify-content: center; }
+    .check-list { max-height: none; }
+    .panel-fold { display: none; }
+    .done-plaque { font-size: 10px; padding: 5px 10px 6px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="city-wrap">
+  <div class="city-map" id="cityMap">
+    <img class="city-layer" src="assets/road.png"  alt="">
+    <img class="city-layer" src="assets/trees.png" alt="">
+    <img class="city-layer" src="assets/intro.png" alt="Вокзал — вводный модуль" data-district="intro">
+    <img class="city-layer" src="assets/m1.png"    alt="Район — кто мы и как у нас принято" data-district="m1">
+    <img class="city-layer" src="assets/m2.png"    alt="Район — как организована работа" data-district="m2">
+    <img class="city-layer" src="assets/m3.png"    alt="Район — безопасность" data-district="m3">
+    <img class="city-layer" src="assets/final.png" alt="Итоговый район" data-district="final">
+    <div class="city-star" style="top:3%; left:2%; font-size:26px; transform:rotate(-12deg);">✦</div>
+    <div class="city-star" style="bottom:5%; right:2%; font-size:22px; transform:rotate(15deg);">✦</div>
+
+    <div class="check-panel" id="checkPanel"></div>
+    <button class="fs-btn" id="fsBtn" title="Во весь экран">
+      <svg class="ic-enter" viewBox="0 0 24 24"><path d="M4 9 V4 H9 M15 4 H20 V9 M20 15 V20 H15 M9 20 H4 V15"/></svg>
+      <svg class="ic-exit" viewBox="0 0 24 24"><path d="M9 4 V9 H4 M20 9 H15 V4 M15 20 V15 H20 M4 15 H9 V20"/></svg>
+    </button>
+    <button class="panel-chip" id="panelChip">
+      <span class="star">✦</span><span id="panelChipLabel">Чек-лист</span>
+    </button>
+  </div>
+</div>
+
+<!-- Модалка итогового модуля -->
+<div class="gen-overlay" id="genOverlay">
+  <div class="gen-modal">
+    <button class="gen-close" id="genClose">✕</button>
+    <h3>Войти в историю Skyeng</h3>
+    <p class="sub">Загрузи своё фото — нейросеть уберёт с него фон и поместит тебя на сгенерированный фон города Skyeng внутри классического полароида. Фото никуда не отправляется и остаётся у тебя в браузере.</p>
+
+    <div class="upload-zone" id="uploadZone">
+      <span id="uploadLabel">📷 Нажми, чтобы загрузить фото</span>
+      <span class="hint">jpg или png — можно и без фото, тогда будет просто открытка</span>
+      <input type="file" id="photoInput" accept="image/*" hidden>
+    </div>
+
+    <p class="gen-status" id="genStatus"></p>
+    <canvas id="genCanvas" width="960" height="720" hidden></canvas>
+    <img class="gen-preview" id="genPreview" alt="Твой полароид">
+
+    <div class="gen-actions">
+      <button class="btn-main" id="genBtn">✦ Сгенерировать полароид</button>
+      <button class="btn-ghost" id="genSave" style="display:none;">Закрепить на карте</button>
+      <button class="btn-ghost" id="genDownload" style="display:none;">Скачать</button>
+    </div>
+  </div>
+</div>
+
+
+<script>
+(function () {
+  'use strict';
+
+  /* ================= КОНФИГ ================= */
+
+  var STAGES = ['intro', 'm1', 'm2', 'm3', 'final'];
+
+  /* bbox района в % карты — для искорок и плашки */
+  var STAGE_META = {
+    intro: { title: 'Вводный модуль',                color: '#d8f7ff', panelPos: 'pos-top-right',
+             bbox: [3.2, 66.7, 34.8, 96.3],  plaque: [19, 63] },
+    m1:    { title: 'Кто мы и как у нас принято',    color: '#d0ff99', panelPos: 'pos-bottom-right',
+             bbox: [8.0, 14.7, 46.2, 49.1],  plaque: [27, 11] },
+    m2:    { title: 'Как у нас организована работа', color: '#e8ddff', panelPos: 'pos-top-right',
+             bbox: [34.9, 39.8, 63.8, 75.1], plaque: [49, 36] },
+    m3:    { title: 'Инфобез и безопасность',        color: '#ffc9f2', panelPos: 'pos-left',
+             bbox: [72.2, 26.9, 96.8, 56.4], plaque: [84.5, 23] },
+    final: { title: 'Финал путешествия',             color: '#d0ff99', panelPos: 'pos-bottom-center',
+             bbox: [52.2, 5.7, 75.3, 31.8],  plaque: [64, 3.5] }
+  };
+
+  /* Требовать все галочки перед "Завершить модуль" (false — кнопка активна всегда) */
+  var REQUIRE_ALL_CHECKED = true;
+
+  /* Полароиды — полноразмерные слои, позиция зашита в самих PNG.
+     ox/oy — центр полароида в % (для точки анимации), НЕ влияет на положение. */
+  var ITEMS = [
+    { id: 'intro_1', stage: 'intro', img: 'p_intro_1', ox: 11.3, oy: 74.1,
+      label: 'Я понимаю, из каких модулей состоит программа онбординга и что узнаю на каждом этапе.' },
+    { id: 'intro_2', stage: 'intro', img: 'p_intro_2', ox: 23.1, oy: 72.3,
+      label: 'Я знаю, как будет проходить мое путешествие по городу Skyeng и как заполняется карта.' },
+    { id: 'intro_3', stage: 'intro', img: 'p_intro_3', ox: 19.4, oy: 85.2,
+      label: 'Я готов начать знакомство со Skyeng и сделать первый шаг по маршруту.' },
+
+    { id: 'm1_1', stage: 'm1', img: 'p_m1_1', ox: 17.3, oy: 29.3,
+      label: 'Я познакомился с миссией, ценностями и культурным кодом Skyeng и понимаю, как они проявляются в рабочих ситуациях.' },
+    { id: 'm1_2', stage: 'm1', img: 'p_m1_2', ox: 27.9, oy: 23.1,
+      label: 'Я знаю, куда движется Skyeng, и понимаю, как задачи моей команды связаны со стратегией и фокусами компании.' },
+    { id: 'm1_3', stage: 'm1', img: 'p_m1_3', ox: 20.6, oy: 41.8,
+      label: 'Я разобрался, как устроена структура Skyeng, и знаю, где искать нужную команду, зону ответственности или контакт.' },
+    { id: 'm1_4', stage: 'm1', img: 'p_m1_4', ox: 38.4, oy: 26.6,
+      label: 'Я познакомился с брендами и продуктами Skyeng и понимаю, где искать актуальную информацию о них.' },
+    { id: 'm1_5', stage: 'm1', img: 'p_m1_5', ox: 32.0, oy: 38.6,
+      label: 'Я знаю, где следить за новостями и событиями Skyeng, находить сообщества по интересам и благодарить коллег.' },
+
+    { id: 'm2_1', stage: 'm2', img: 'p_m2_1', ox: 41.3, oy: 55.3,
+      label: 'Я понимаю рабочий ритм Skyeng и знаю, как делать свое расписание, задачи и договоренности прозрачными для команды.' },
+    { id: 'm2_2', stage: 'm2', img: 'p_m2_2', ox: 56.7, oy: 64.2,
+      label: 'Я настроил базовые рабочие инструменты и знаю, где искать информацию, запрашивать доступы и решать технические проблемы.' },
+    { id: 'm2_3', stage: 'm2', img: 'p_m2_3', ox: 52.6, oy: 50.1,
+      label: 'Я знаю правила внутренней коммуникации Skyeng и умею выбирать подходящий формат общения для разных рабочих ситуаций.' },
+    { id: 'm2_4', stage: 'm2', img: 'p_m2_4', ox: 45.1, oy: 66.4,
+      label: 'Я знаю, где подписывать кадровые документы, оформлять отсутствия, заказывать справки и решать вопросы по выплатам и другим HR-процессам.' },
+
+    { id: 'm3_1', stage: 'm3', img: 'p_m3_1', ox: 79.5, oy: 35.6,
+      label: 'Я знаю, как организовать безопасное рабочее место, соблюдать режим дня и снижать нагрузку на здоровье.' },
+    { id: 'm3_2', stage: 'm3', img: 'p_m3_2', ox: 89.1, oy: 41.5,
+      label: 'Я знаю, как действовать при неисправности техники, пожаре, эвакуации и необходимости оказать первую помощь.' },
+    { id: 'm3_3', stage: 'm3', img: 'p_m3_3', ox: 80.0, oy: 48.1,
+      label: 'Я знаю правила информационной безопасности и понимаю, как защищать данные, доступы, устройства и рабочие системы.' }
+  ];
+
+  var USER_POLAROID_POS = { x: 63.7, y: 17.5, rot: -4 };
+
+  var GEN_PROMPT = 'cute flat vector illustration background, pastel city street with playful buildings, ' +
+    'lime green pink lavender and sky blue colors, neo-brutalism style, confetti, sunny, wide open street ' +
+    'in the center, clean minimal, no text, no people';
+
+  var LS_KEY = 'skyeng_city_map_v1';
+
+  /* ================= СОСТОЯНИЕ ================= */
+
+  function getParam(name) {
+    var m = new RegExp('[?&]' + name + '=([^&]+)').exec(location.search);
+    return m ? decodeURIComponent(m[1]) : null;
+  }
+
+  var DEFAULT_STAGE = 'm1'; /* зашивается при сборке архива под модуль */
+
+  var stage = getParam('stage');
+  if (STAGES.indexOf(stage) === -1) stage = DEFAULT_STAGE;
+  if (STAGES.indexOf(stage) === -1) stage = 'intro';
+  var stageIdx = STAGES.indexOf(stage);
+
+  function loadState() {
+    try { return JSON.parse(localStorage.getItem(LS_KEY)) || {}; }
+    catch (e) { return {}; }
+  }
+  function saveState(s) {
+    try { localStorage.setItem(LS_KEY, JSON.stringify(s)); } catch (e) {}
+  }
+
+  var state = loadState();
+  state.checks = state.checks || {};
+  state.completed = state.completed || {};
+
+  /* ================= РАЙОНЫ ================= */
+
+  var mapEl = document.getElementById('cityMap');
+
+  document.querySelectorAll('.city-layer[data-district]').forEach(function (el) {
+    var dIdx = STAGES.indexOf(el.getAttribute('data-district'));
+    if (dIdx > stageIdx) {
+      el.classList.add('ghost');
+    } else if (dIdx === stageIdx) {
+      el.classList.add('reveal');
+    }
+  });
+
+  /* ================= ПОЛАРОИДЫ ================= */
+
+  function itemById(id) {
+    for (var i = 0; i < ITEMS.length; i++) if (ITEMS[i].id === id) return ITEMS[i];
+    return null;
+  }
+
+  function addPolaroid(item, animate) {
+    if (document.getElementById('pol_' + item.id)) return;
+    var el = document.createElement('img');
+    el.className = 'polaroid-layer' + (animate ? '' : ' no-anim');
+    el.id = 'pol_' + item.id;
+    el.src = 'assets/' + item.img + '.png';
+    el.alt = item.label;
+    el.style.transformOrigin = item.ox + '% ' + item.oy + '%';
+    mapEl.appendChild(el);
+  }
+
+  function removePolaroid(id) {
+    var el = document.getElementById('pol_' + id);
+    if (!el) return;
+    el.classList.add('leaving');
+    setTimeout(function () { el.remove(); }, 300);
+  }
+
+  ITEMS.forEach(function (item) {
+    if (state.checks[item.id] && STAGES.indexOf(item.stage) <= stageIdx) {
+      addPolaroid(item, false);
+    }
+  });
+
+  if (state.userPolaroid && stage === 'final') {
+    addUserPolaroid(state.userPolaroid, false);
+  }
+
+  function addUserPolaroid(dataURL, animate) {
+    var el = document.createElement('div');
+    el.className = 'map-polaroid user-pol' + (animate ? '' : ' no-anim');
+    el.style.left = USER_POLAROID_POS.x + '%';
+    el.style.top = USER_POLAROID_POS.y + '%';
+    el.style.setProperty('--rot', USER_POLAROID_POS.rot + 'deg');
+    var img = document.createElement('img');
+    img.src = dataURL;
+    img.alt = 'Я в истории Skyeng';
+    el.appendChild(img);
+    mapEl.appendChild(el);
+  }
+
+  /* ================= ИСКОРКИ И ПЛАШКА ================= */
+
+  function burstSparkles(stg) {
+    var b = STAGE_META[stg].bbox; /* [x1,y1,x2,y2] в % */
+    var count = 16;
+    for (var i = 0; i < count; i++) {
+      var s = document.createElement('div');
+      s.className = 'sparkle';
+      s.textContent = '✦';
+      /* точки по периметру bbox со случайным разбросом */
+      var t = i / count;
+      var x, y;
+      if (t < 0.25)      { x = b[0] + (b[2]-b[0]) * (t/0.25);        y = b[1]; }
+      else if (t < 0.5)  { x = b[2];                                  y = b[1] + (b[3]-b[1]) * ((t-0.25)/0.25); }
+      else if (t < 0.75) { x = b[2] - (b[2]-b[0]) * ((t-0.5)/0.25);  y = b[3]; }
+      else               { x = b[0];                                  y = b[3] - (b[3]-b[1]) * ((t-0.75)/0.25); }
+      x += (Math.random() - 0.5) * 4;
+      y += (Math.random() - 0.5) * 4;
+      s.style.left = x + '%';
+      s.style.top = y + '%';
+      s.style.fontSize = (14 + Math.random() * 16) + 'px';
+      s.style.setProperty('--dur', (1.2 + Math.random() * 1.2) + 's');
+      s.style.setProperty('--delay', (Math.random() * 0.6) + 's');
+      if (Math.random() < 0.4) s.style.color = '#d0ff99';
+      mapEl.appendChild(s);
+      (function (el) { setTimeout(function () { el.remove(); }, 3200); })(s);
+    }
+  }
+
+  function showPlaque(stg, animate) {
+    if (document.getElementById('plaque_' + stg)) return;
+    var meta = STAGE_META[stg];
+    var el = document.createElement('div');
+    el.className = 'done-plaque' + (animate ? '' : ' no-anim');
+    el.id = 'plaque_' + stg;
+    el.style.left = meta.plaque[0] + '%';
+    el.style.top = meta.plaque[1] + '%';
+    el.innerHTML = '<span class="star">✦</span>' + meta.title;
+    mapEl.appendChild(el);
+  }
+
+  /* плашки уже пройденных модулей (включая прошлые) */
+  STAGES.forEach(function (stg) {
+    if (state.completed[stg] && STAGES.indexOf(stg) <= stageIdx) showPlaque(stg, false);
+  });
+
+  /* ================= ПАНЕЛЬ ================= */
+
+  var panel = document.getElementById('checkPanel');
+  var chip = document.getElementById('panelChip');
+  var meta = STAGE_META[stage];
+
+  panel.classList.add(meta.panelPos);
+  chip.classList.add(meta.panelPos);
+  panel.style.setProperty('--stage-color', meta.color);
+
+  var stageItems = ITEMS.filter(function (it) { return it.stage === stage; });
+
+  function stageDone() {
+    return stageItems.filter(function (it) { return state.checks[it.id]; }).length;
+  }
+
+  function refreshCompleteBtn() {
+    var btn = document.getElementById('completeBtn');
+    if (!btn) return;
+    if (state.completed[stage]) {
+      btn.classList.add('done');
+      btn.disabled = true;
+      btn.textContent = '✓ Модуль завершён';
+    } else {
+      btn.disabled = REQUIRE_ALL_CHECKED && stageDone() < stageItems.length;
+      btn.textContent = '✦ Завершить модуль';
+    }
+  }
+
+  function renderPanel() {
+    if (stage === 'final') { renderFinalPanel(); return; }
+
+    var html =
+      '<div class="check-panel-head">' +
+        '<div class="check-panel-title"><span>' + meta.title + '</span></div>' +
+        '<div class="check-progress">' + stageDone() + '/' + stageItems.length + '</div>' +
+        '<button class="panel-fold" id="panelFold" title="Свернуть">–</button>' +
+      '</div>' +
+      '<div class="check-list">';
+
+    stageItems.forEach(function (it) {
+      var checked = state.checks[it.id] ? ' checked' : '';
+      html +=
+        '<div class="check-item' + checked + '" data-id="' + it.id + '">' +
+          '<span class="check-box"><svg viewBox="0 0 24 24"><path d="M4 12 L10 18 L20 6"/></svg></span>' +
+          '<span>' + it.label + '</span>' +
+        '</div>';
+    });
+
+    html += '</div>' +
+      '<div class="panel-footer"><button class="btn-complete" id="completeBtn">✦ Завершить модуль</button></div>';
+    panel.innerHTML = html;
+
+    panel.querySelectorAll('.check-item').forEach(function (el) {
+      el.addEventListener('click', function () {
+        if (state.completed[stage]) return; /* после завершения не редактируем */
+        var id = el.getAttribute('data-id');
+        var item = itemById(id);
+        var nowChecked = !state.checks[id];
+        state.checks[id] = nowChecked;
+        if (!nowChecked) delete state.checks[id];
+        saveState(state);
+        el.classList.toggle('checked', nowChecked);
+        if (nowChecked) addPolaroid(item, true);
+        else removePolaroid(id);
+        panel.querySelector('.check-progress').textContent = stageDone() + '/' + stageItems.length;
+        refreshCompleteBtn();
+      });
+    });
+
+    document.getElementById('completeBtn').addEventListener('click', function () {
+      if (state.completed[stage]) return;
+      state.completed[stage] = true;
+      saveState(state);
+      /* свернуть панель */
+      panel.classList.add('collapsed');
+      chip.classList.add('visible');
+      /* искорки вокруг района + плашка */
+      burstSparkles(stage);
+      setTimeout(function () { showPlaque(stage, true); }, 500);
+      refreshCompleteBtn();
+    });
+
+    refreshCompleteBtn();
+    bindFold();
+  }
+
+  function renderFinalPanel() {
+    panel.innerHTML =
+      '<div class="check-panel-head" style="padding-bottom:0;">' +
+        '<div class="check-panel-title"><span>' + meta.title + '</span></div>' +
+        '<button class="panel-fold" id="panelFold" title="Свернуть">–</button>' +
+      '</div>' +
+      '<div class="final-card">' +
+        '<h3>Ты прошёл весь город! ✦</h3>' +
+        '<p>Осталось последнее — оставить свой след на карте Skyeng.</p>' +
+        '<button class="btn-main" id="enterHistoryBtn">✦ Войти в историю Skyeng</button>' +
+      '</div>';
+
+    document.getElementById('enterHistoryBtn').addEventListener('click', function () {
+      document.getElementById('genOverlay').classList.add('open');
+    });
+
+    bindFold();
+  }
+
+  function bindFold() {
+    document.getElementById('panelFold').addEventListener('click', function () {
+      panel.classList.add('collapsed');
+      chip.classList.add('visible');
+    });
+  }
+
+  chip.addEventListener('click', function () {
+    panel.classList.remove('collapsed');
+    chip.classList.remove('visible');
+  });
+
+  document.getElementById('panelChipLabel').textContent =
+    stage === 'final' ? 'Войти в историю' : 'Чек-лист модуля';
+
+  renderPanel();
+
+  /* ================= ФУЛСКРИН ================= */
+
+  var wrapEl = document.querySelector('.city-wrap');
+  var fsBtn = document.getElementById('fsBtn');
+
+  function fsActive() {
+    return document.fullscreenElement === wrapEl || wrapEl.classList.contains('fs-fake');
+  }
+
+  function updateFsUI() {
+    wrapEl.classList.toggle('is-fs', fsActive());
+    fsBtn.title = fsActive() ? 'Свернуть' : 'Во весь экран';
+  }
+
+  fsBtn.addEventListener('click', function () {
+    if (document.fullscreenElement === wrapEl) {
+      document.exitFullscreen();
+      return;
+    }
+    if (wrapEl.classList.contains('fs-fake')) {
+      wrapEl.classList.remove('fs-fake');
+      updateFsUI();
+      return;
+    }
+    var req = wrapEl.requestFullscreen || wrapEl.webkitRequestFullscreen;
+    if (req) {
+      var p = req.call(wrapEl);
+      if (p && p.catch) {
+        p.then(updateFsUI).catch(function () {
+          wrapEl.classList.add('fs-fake');
+          updateFsUI();
+        });
+      } else {
+        setTimeout(updateFsUI, 100);
+      }
+    } else {
+      wrapEl.classList.add('fs-fake');
+      updateFsUI();
+    }
+  });
+
+  document.addEventListener('fullscreenchange', updateFsUI);
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape' && wrapEl.classList.contains('fs-fake')) {
+      wrapEl.classList.remove('fs-fake');
+      updateFsUI();
+    }
+  });
+
+  /* ================= ГЕНЕРАЦИЯ (итоговый модуль) ================= */
+
+  var overlay = document.getElementById('genOverlay');
+  var photoInput = document.getElementById('photoInput');
+  var uploadZone = document.getElementById('uploadZone');
+  var genStatus = document.getElementById('genStatus');
+  var genPreview = document.getElementById('genPreview');
+  var genBtn = document.getElementById('genBtn');
+  var genSave = document.getElementById('genSave');
+  var genDownload = document.getElementById('genDownload');
+  var canvas = document.getElementById('genCanvas');
+  var userPhoto = null;
+  var userCutout = null; /* canvas с вырезанным человеком (фон удалён) */
+  var resultURL = null;
+  var segmenter = null;
+
+  /* Вырезание фона: MediaPipe Selfie Segmentation, файлы лежат в assets/mediapipe */
+  function segmentPhoto(img) {
+    return new Promise(function (resolve) {
+      if (typeof SelfieSegmentation === 'undefined') { resolve(null); return; }
+      var finished = false;
+      var guard = setTimeout(function () {
+        if (!finished) { finished = true; resolve(null); }
+      }, 15000);
+      try {
+        if (!segmenter) {
+          segmenter = new SelfieSegmentation({
+            locateFile: function (f) { return 'assets/mediapipe/' + f; }
+          });
+          segmenter.setOptions({ modelSelection: 1 });
+        }
+        segmenter.onResults(function (res) {
+          if (finished) return;
+          finished = true;
+          clearTimeout(guard);
+          try {
+            var w = img.naturalWidth || img.width;
+            var h = img.naturalHeight || img.height;
+            var cut = document.createElement('canvas');
+            cut.width = w; cut.height = h;
+            var cx = cut.getContext('2d');
+            /* маска -> оставляем только человека */
+            cx.drawImage(res.segmentationMask, 0, 0, w, h);
+            cx.globalCompositeOperation = 'source-in';
+            cx.drawImage(img, 0, 0, w, h);
+            cx.globalCompositeOperation = 'source-over';
+            /* bbox человека: если маска пустая — фолбэк */
+            var data = cx.getImageData(0, 0, w, h).data;
+            var minX = w, minY = h, maxX = 0, maxY = 0, opaque = 0;
+            for (var y = 0; y < h; y += 2) {
+              for (var x = 0; x < w; x += 2) {
+                if (data[(y * w + x) * 4 + 3] > 40) {
+                  opaque++;
+                  if (x < minX) minX = x;
+                  if (x > maxX) maxX = x;
+                  if (y < minY) minY = y;
+                  if (y > maxY) maxY = y;
+                }
+              }
+            }
+            /* человек должен занимать хотя бы ~3% кадра */
+            if (opaque * 4 < w * h * 0.03 || maxX <= minX || maxY <= minY) {
+              resolve(null); return;
+            }
+            var bw = maxX - minX, bh = maxY - minY;
+            var crop = document.createElement('canvas');
+            crop.width = bw; crop.height = bh;
+            crop.getContext('2d').drawImage(cut, minX, minY, bw, bh, 0, 0, bw, bh);
+            resolve(crop);
+          } catch (e) { resolve(null); }
+        });
+        segmenter.send({ image: img });
+      } catch (e) {
+        if (!finished) { finished = true; clearTimeout(guard); resolve(null); }
+      }
+    });
+  }
+
+  document.getElementById('genClose').addEventListener('click', function () {
+    overlay.classList.remove('open');
+  });
+  overlay.addEventListener('click', function (e) {
+    if (e.target === overlay) overlay.classList.remove('open');
+  });
+
+  uploadZone.addEventListener('click', function () { photoInput.click(); });
+
+  photoInput.addEventListener('change', function () {
+    var file = photoInput.files && photoInput.files[0];
+    if (!file) return;
+    var reader = new FileReader();
+    reader.onload = function (e) {
+      var img = new Image();
+      img.onload = function () {
+        userPhoto = img;
+        userCutout = null;
+        uploadZone.classList.add('has-photo');
+        document.getElementById('uploadLabel').textContent = '✦ Фото загружено: ' + file.name;
+      };
+      img.src = e.target.result;
+    };
+    reader.readAsDataURL(file);
+  });
+
+  function loadBgFromPollinations() {
+    return new Promise(function (resolve) {
+      var seed = Math.floor(Math.random() * 999999);
+      var url = 'https://image.pollinations.ai/prompt/' + encodeURIComponent(GEN_PROMPT) +
+        '?width=960&height=560&nologo=true&seed=' + seed;
+      var img = new Image();
+      img.crossOrigin = 'anonymous';
+      var done = false;
+      var timer = setTimeout(function () {
+        if (!done) { done = true; resolve(null); }
+      }, 25000);
+      img.onload = function () {
+        if (!done) { done = true; clearTimeout(timer); resolve(img); }
+      };
+      img.onerror = function () {
+        if (!done) { done = true; clearTimeout(timer); resolve(null); }
+      };
+      img.src = url;
+    });
+  }
+
+  function roundRect(ctx, x, y, w, h, r) {
+    ctx.beginPath();
+    ctx.moveTo(x + r, y);
+    ctx.arcTo(x + w, y, x + w, y + h, r);
+    ctx.arcTo(x + w, y + h, x, y + h, r);
+    ctx.arcTo(x, y + h, x, y, r);
+    ctx.arcTo(x, y, x + w, y, r);
+    ctx.closePath();
+  }
+
+  function drawCoverImage(ctx, img, x, y, w, h) {
+    var s = Math.max(w / img.width, h / img.height);
+    var iw = img.width * s, ih = img.height * s;
+    ctx.drawImage(img, x + (w - iw) / 2, y + (h - ih) / 2, iw, ih);
+  }
+
+  function composePolaroid(bgImg) {
+    var ctx = canvas.getContext('2d');
+    var W = canvas.width, H = canvas.height;
+
+    ctx.clearRect(0, 0, W, H);
+    roundRect(ctx, 0, 0, W, H, 24);
+    ctx.fillStyle = '#ffffff';
+    ctx.fill();
+
+    var pad = 36, capH = 130;
+    var ix = pad, iy = pad, iw = W - pad * 2, ih = H - pad * 2 - capH;
+
+    ctx.save();
+    roundRect(ctx, ix, iy, iw, ih, 14);
+    ctx.clip();
+
+    if (bgImg) {
+      drawCoverImage(ctx, bgImg, ix, iy, iw, ih);
+    } else {
+      var g = ctx.createLinearGradient(ix, iy, ix + iw, iy + ih);
+      g.addColorStop(0, '#d0ff99');
+      g.addColorStop(0.5, '#d8f7ff');
+      g.addColorStop(1, '#ffc9f2');
+      ctx.fillStyle = g;
+      ctx.fillRect(ix, iy, iw, ih);
+      ctx.fillStyle = '#cbe800';
+      ctx.font = '900 44px Onest, Arial, sans-serif';
+      ctx.fillText('✦', ix + 40, iy + 70);
+      ctx.fillText('✦', ix + iw - 80, iy + ih - 40);
+    }
+
+    if (userCutout) {
+      /* вырезанный человек: по нижнему краю окна, по центру, как настоящий кадр */
+      var maxH = ih * 0.94, maxW = iw * 0.72;
+      var sc = Math.min(maxH / userCutout.height, maxW / userCutout.width);
+      var cw = userCutout.width * sc, chh = userCutout.height * sc;
+      var cxp = ix + iw / 2 - cw / 2;
+      var cyp = iy + ih - chh; /* стоит на нижнем крае */
+      ctx.save();
+      ctx.shadowColor = 'rgba(0,0,0,0.35)';
+      ctx.shadowBlur = 22;
+      ctx.shadowOffsetY = 8;
+      ctx.drawImage(userCutout, cxp, cyp, cw, chh);
+      ctx.restore();
+    } else if (userPhoto) {
+      /* фолбэк: фото в белой мини-рамке (если вырезать фон не удалось) */
+      var pw = ih * 0.72, ph = ih * 0.72;
+      var px = ix + iw / 2, py = iy + ih / 2 + 8;
+      ctx.save();
+      ctx.translate(px, py);
+      ctx.rotate(-0.04);
+      ctx.shadowColor = 'rgba(0,0,0,0.3)';
+      ctx.shadowBlur = 24;
+      roundRect(ctx, -pw / 2 - 10, -ph / 2 - 10, pw + 20, ph + 20, 16);
+      ctx.fillStyle = '#fff';
+      ctx.fill();
+      ctx.shadowBlur = 0;
+      roundRect(ctx, -pw / 2, -ph / 2, pw, ph, 10);
+      ctx.clip();
+      drawCoverImage(ctx, userPhoto, -pw / 2, -ph / 2, pw, ph);
+      ctx.restore();
+    }
+    ctx.restore();
+
+    ctx.fillStyle = '#101010';
+    ctx.font = '900 42px Onest, Arial, sans-serif';
+    ctx.textAlign = 'center';
+    ctx.fillText('Я в истории Skyeng ✦', W / 2, H - capH / 2 - 8);
+    ctx.font = '500 24px Onest, Arial, sans-serif';
+    ctx.fillStyle = '#5f6470';
+    var d = new Date();
+    ctx.fillText(d.toLocaleDateString('ru-RU'), W / 2, H - capH / 2 + 30);
+    ctx.textAlign = 'left';
+  }
+
+  genBtn.addEventListener('click', function () {
+    genBtn.disabled = true;
+    genStatus.textContent = userPhoto ?
+      'Нейросеть рисует фон и вырезает тебя с фото… обычно 5–20 секунд' :
+      'Нейросеть рисует фон… обычно 5–15 секунд';
+    var jobs = [loadBgFromPollinations()];
+    if (userPhoto && !userCutout) {
+      jobs.push(segmentPhoto(userPhoto).then(function (cut) { userCutout = cut; }));
+    }
+    Promise.all(jobs).then(function (results) {
+      var bg = results[0];
+      composePolaroid(bg);
+      try {
+        resultURL = canvas.toDataURL('image/jpeg', 0.82);
+      } catch (e) {
+        composePolaroid(null);
+        resultURL = canvas.toDataURL('image/jpeg', 0.82);
+      }
+      genPreview.src = resultURL;
+      genPreview.classList.add('visible');
+      var msg = bg ? 'Готово! Можно перегенерировать — фон каждый раз новый.' :
+        'Сервис генерации не ответил — собрали открытку в фирменном стиле.';
+      if (userPhoto && !userCutout) msg += ' Вырезать фон с фото не получилось — оставили фото в рамке.';
+      genStatus.textContent = msg;
+      genBtn.disabled = false;
+      genBtn.textContent = '↻ Перегенерировать';
+      genSave.style.display = '';
+      genDownload.style.display = '';
+    });
+  });
+
+  genSave.addEventListener('click', function () {
+    if (!resultURL) return;
+    var small = document.createElement('canvas');
+    small.width = 480; small.height = 360;
+    small.getContext('2d').drawImage(canvas, 0, 0, 480, 360);
+    var smallURL = small.toDataURL('image/jpeg', 0.75);
+    state.userPolaroid = smallURL;
+    saveState(state);
+    var old = mapEl.querySelector('.user-pol');
+    if (old) old.remove();
+    addUserPolaroid(resultURL, true);
+    overlay.classList.remove('open');
+  });
+
+  genDownload.addEventListener('click', function () {
+    if (!resultURL) return;
+    var a = document.createElement('a');
+    a.href = resultURL;
+    a.download = 'ya-v-istorii-skyeng.jpg';
+    a.click();
+  });
+
+})();
+</script>
+</body>
+</html>

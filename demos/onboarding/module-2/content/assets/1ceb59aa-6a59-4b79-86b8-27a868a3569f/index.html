@@ -1,0 +1,152 @@
+﻿<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Рабочее место · интерактивная схема</title>
+<style>
+:root { --bg:#f7f7f7; --paper:#fff; --text:#101010; --muted:#5f6470; --lime:#baff00; --lime-soft:#d0ff99; --pink:#ffc9f2; --lavender:#e8ddff; --sky:#d8f7ff; --orange:#ffcc8a; --font:'StratosSkyeng','Stratos Skyeng','Segoe UI',Arial,sans-serif; }
+html,body{margin:0;padding:0;background:transparent;min-height:100%;font-family:var(--font);color:var(--text)}
+body.ws-popup-open{overflow:hidden}
+.ws-app{position:relative;width:100%;max-width:820px;margin:0 auto;overflow:visible}
+.workspace-block{width:100%;padding:28px 20px;background:var(--bg);position:relative;overflow:visible}
+.workspace-block *{box-sizing:border-box}
+.decor-star{position:absolute;color:var(--lime);line-height:1;pointer-events:none;z-index:1}
+.star-1{top:18px;left:6px;font-size:38px;transform:rotate(12deg)} .star-2{top:132px;right:-4px;font-size:28px;transform:rotate(-10deg)} .star-3{bottom:44px;left:-4px;font-size:30px;transform:rotate(-18deg)}
+.test-card{position:relative;z-index:2;background:var(--paper);border-radius:34px;padding:14px;overflow:hidden}
+.question-card{padding:20px 24px;border-radius:26px;background:var(--lime-soft);position:relative;overflow:hidden;margin-bottom:14px}
+.question-card::after{content:'';position:absolute;width:120px;height:120px;border-radius:999px;right:-56px;top:-64px;background:rgba(255,255,255,.46);pointer-events:none}
+.question-card h1{margin:0;font-size:24px;line-height:1.08;letter-spacing:-.03em;font-weight:700;position:relative;z-index:1}
+.question-card p{margin:8px 0 0;font-size:17px;line-height:1.34;color:var(--muted);position:relative;z-index:1}
+.scene-wrap{position:relative;width:100%;border-radius:26px;overflow:hidden;background:var(--bg);line-height:0}
+.scene-wrap img{display:block;width:100%;height:auto}
+.hotspot{position:absolute;width:28px;height:28px;margin:-14px 0 0 -14px;border:0;padding:0;border-radius:50%;background:var(--lime);cursor:pointer;z-index:3;box-shadow:0 0 0 0 rgba(186,255,0,.65),0 0 18px rgba(186,255,0,.55);animation:ws-pulse 2.2s ease-out infinite;transition:transform .18s ease,box-shadow .18s ease}
+.hotspot::before{content:'';position:absolute;inset:7px;border-radius:50%;background:#fff}
+.hotspot:hover,.hotspot:focus-visible{transform:scale(1.12);outline:2px solid #fff;outline-offset:2px}
+.hotspot.is-active{animation:none;transform:scale(1.14);box-shadow:0 0 0 4px rgba(255,255,255,.9),0 0 24px rgba(186,255,0,.85)}
+@keyframes ws-pulse{0%{box-shadow:0 0 0 0 rgba(186,255,0,.7),0 0 18px rgba(186,255,0,.55)}70%{box-shadow:0 0 0 16px rgba(186,255,0,0),0 0 24px rgba(186,255,0,.35)}100%{box-shadow:0 0 0 0 rgba(186,255,0,0),0 0 18px rgba(186,255,0,.55)}}
+.popup-overlay{position:fixed;inset:0;background:transparent;display:flex;align-items:center;justify-content:center;padding:20px 16px;z-index:2147483646;opacity:0;visibility:hidden;pointer-events:none;transition:opacity .2s ease,visibility .2s ease;font-family:var(--font);color:var(--text)}
+.popup-overlay.is-open{opacity:1;visibility:visible;pointer-events:auto}
+.popup{width:100%;max-width:620px;max-height:min(86vh,760px);overflow:auto;background:var(--paper);border-radius:28px;padding:12px;box-shadow:0 18px 48px rgba(16,16,16,.22);transform:translateY(12px) scale(.98);transition:transform .22s ease;font-family:var(--font);color:var(--text)}
+.popup-overlay.is-open .popup{transform:translateY(0) scale(1)}
+.popup-header{border-radius:22px;padding:18px 20px;position:relative;overflow:hidden;margin-bottom:10px}
+.popup-header::after{content:'';position:absolute;width:100px;height:100px;border-radius:999px;right:-40px;top:-50px;background:rgba(255,255,255,.42);pointer-events:none}
+.popup-header h2{margin:0 42px 0 0;font-size:22px;line-height:1.1;letter-spacing:-.03em;font-weight:700;position:relative;z-index:1}
+.popup-close{position:absolute;top:14px;right:14px;width:36px;height:36px;border:0;border-radius:50%;background:rgba(16,16,16,.08);color:var(--text);font-size:22px;line-height:1;cursor:pointer;z-index:2;font-family:var(--font)}
+.popup-close:hover{background:rgba(16,16,16,.14);transform:scale(1.05)}
+.info-section{margin-top:10px;border-radius:22px;background:var(--bg);overflow:hidden}
+.info-section-title{padding:12px 16px;font-size:15px;line-height:1.2;font-weight:700;letter-spacing:-.01em}
+.info-lead{margin:0;padding:16px 16px 10px;font-size:16px;line-height:1.36;letter-spacing:-.01em}
+.info-list{margin:0;padding:0 16px 16px 32px;font-size:16px;line-height:1.36;letter-spacing:-.01em;list-style:disc}
+.info-list li+li{margin-top:6px}
+.info-note{margin:0;padding:0 16px 16px;font-size:16px;line-height:1.36;letter-spacing:-.01em}
+.info-section p:not(.info-lead):not(.info-note){margin:0;padding:0 16px 16px;font-size:16px;line-height:1.36;letter-spacing:-.01em}
+.theme-lighting .popup-header{background:var(--lime-soft)} .theme-lighting .info-section-title.office{background:var(--sky)} .theme-lighting .info-section-title.remote{background:var(--lavender)} .theme-lighting .info-section-title.self{background:var(--orange)}
+.theme-screen .popup-header{background:var(--sky)} .theme-screen .info-section-title.office{background:var(--lime-soft)} .theme-screen .info-section-title.remote{background:var(--lavender)} .theme-screen .info-section-title.self{background:var(--orange)}
+.theme-posture .popup-header{background:var(--pink)} .theme-posture .info-section-title.office{background:var(--lime-soft)} .theme-posture .info-section-title.remote{background:var(--sky)} .theme-posture .info-section-title.self{background:var(--orange)}
+.theme-climate .popup-header{background:var(--lavender)} .theme-climate .info-section-title.office{background:var(--lime-soft)} .theme-climate .info-section-title.remote{background:var(--sky)} .theme-climate .info-section-title.self{background:var(--orange)}
+@media (max-width:640px){.workspace-block{padding:24px 12px}.test-card{border-radius:28px;padding:10px}.question-card{border-radius:24px;padding:18px 20px}.question-card h1{font-size:22px}.hotspot{width:24px;height:24px;margin:-12px 0 0 -12px}.hotspot::before{inset:6px}.popup{border-radius:24px;padding:10px}.popup-header h2{font-size:20px}}
+</style>
+</head>
+<body>
+<div class="ws-app"><section class="workspace-block">
+<div class="decor-star star-1" aria-hidden="true">&#10022;</div><div class="decor-star star-2" aria-hidden="true">&#10022;</div><div class="decor-star star-3" aria-hidden="true">&#10022;</div>
+<div class="test-card"><div class="question-card"><h1>Проверь своё рабочее место</h1><p>Нажми на светящиеся маркеры, чтобы узнать, на что обратить внимание.</p></div>
+<div class="scene-wrap" id="scene"><img src="workspace.png" alt="Молодой человек за эргономичным рабочим столом" width="820" height="auto">
+<button class="hotspot" type="button" data-topic="lighting" style="top:20%;left:18%" aria-label="Освещение"></button>
+<button class="hotspot" type="button" data-topic="screen" style="top:35%;left:28%" aria-label="Положение экрана"></button>
+<button class="hotspot" type="button" data-topic="posture" style="top:45%;left:58%" aria-label="Посадка"></button>
+<button class="hotspot" type="button" data-topic="climate" style="top:45%;left:88%" aria-label="Микроклимат"></button>
+</div></div></section></div>
+<div class="popup-overlay" id="popupOverlay" aria-hidden="true"><div class="popup" id="popup" role="dialog" aria-modal="true" aria-labelledby="popupTitle" tabindex="-1"></div></div>
+<script>(function () {
+  var topics = {
+    lighting: {
+      theme: 'theme-lighting',
+      title: 'Освещение',
+      sections: [
+        { type: 'check', html: '<p class="info-lead">Освещение должно помогать работать, а не заставлять глаза постоянно напрягаться.</p><ul class="info-list"><li>хватает ли света на рабочем месте;</li><li>не приходится ли щуриться;</li><li>нет ли бликов на экране;</li><li>не светит ли лампа, окно или солнце прямо в монитор;</li><li>не сидишь ли ты в тёмной комнате, где единственный яркий источник света — экран.</li></ul><p class="info-note">Если света мало или он расположен неудачно, глаза быстрее устают, сложнее держать внимание, а к концу дня может появиться напряжение или головная боль.</p>' },
+        { type: 'office', title: 'Если работаешь в офисе', html: '<p>Сначала попробуй убрать простые причины: измени положение экрана, пересядь так, чтобы свет не бил в монитор, прикрой жалюзи или шторы, если они есть. Если света всё равно не хватает, можно заказать настольную лампу через бот @office-helpdesk в Time.</p>' },
+        { type: 'remote', title: 'Если работаешь удалённо', html: '<p>Поставь рабочее место так, чтобы экран не бликовал. Лучше, если свет падает сбоку, а не прямо в глаза и не прямо на экран. Если работаешь вечером или в комнате мало света, используй настольную лампу. Не работай долго в темноте только при свете монитора: так глаза быстрее устают.</p>' },
+        { type: 'self', title: 'Проверь себя', html: '<p>Рабочее место освещено нормально, если ты видишь экран и клавиатуру без напряжения, не щуришься и не ловишь блики на мониторе.</p>' }
+      ]
+    },
+    climate: {
+      theme: 'theme-climate',
+      title: 'Микроклимат',
+      sections: [
+        { type: 'check', html: '<p class="info-lead">Микроклимат влияет на самочувствие не меньше, чем стул или экран. Если в помещении душно, слишком жарко, холодно или есть постоянный сквозняк, работать сложнее.</p><ul class="info-list"><li>не душно ли в помещении;</li><li>не слишком ли жарко или холодно;</li><li>нет ли сильного сквозняка;</li><li>можешь ли ты проветрить помещение;</li><li>не стоит ли рабочее место рядом с батареей, кондиционером или открытым окном так, что это мешает работать.</li></ul>' },
+        { type: 'office', title: 'Если работаешь в офисе', html: '<p>В офисе установлены всесезонные кондиционеры, помещения можно проветривать. Если стало душно или некомфортно, сначала попробуй решить вопрос на месте: проветрить помещение, отрегулировать кондиционер, изменить место, если это возможно. Если условия мешают работать и не получается исправить их самостоятельно, обратись в профильный канал поддержки офиса или к руководителю.</p>' },
+        { type: 'remote', title: 'Если работаешь удалённо', html: '<p>Проветривай помещение в течение дня. Не ставь рабочее место туда, где постоянно жарко, холодно или дует. Если дома сложно поддерживать комфортные условия, подумай, можно ли изменить место работы: перейти в другую комнату, переставить стол, использовать коворкинг или другое подходящее пространство.</p>' },
+        { type: 'self', title: 'Проверь себя', html: '<p>С условиями по температуре и воздуху всё в порядке, если тебе не приходится постоянно отвлекаться на духоту, холод, жару или сквозняк.</p>' }
+      ]
+    },
+    screen: {
+      theme: 'theme-screen',
+      title: 'Положение экрана',
+      sections: [
+        { type: 'check', html: '<p class="info-lead">Экран должен быть расположен так, чтобы тебе не приходилось весь день наклонять голову, тянуть шею вперёд или смотреть под неудобным углом.</p><ul class="info-list"><li>экран стоит прямо перед тобой;</li><li>тебе не нужно постоянно наклонять голову вниз;</li><li>не приходится задирать голову вверх;</li><li>расстояние до экрана комфортное для глаз;</li><li>на экране нет бликов;</li><li>текст читается без напряжения.</li></ul><p class="info-note">Если экран стоит слишком низко, шея быстро уходит вперёд и вниз. Если экран сбоку, корпус и голова постоянно разворачиваются. Если экран слишком близко или далеко, глаза напрягаются сильнее.</p>' },
+        { type: 'office', title: 'Если работаешь в офисе', html: '<p>Настрой монитор или ноутбук так, чтобы смотреть на экран было удобно. Если для этого нужен дополнительный инвентарь, обратись в профильный канал поддержки.</p>' },
+        { type: 'remote', title: 'Если работаешь удалённо', html: '<p>Поставь ноутбук или монитор так, чтобы не наклоняться к нему весь день. Иногда достаточно поднять экран выше, пересесть за другой стол или подключить отдельную клавиатуру и мышь, если они есть.</p>' },
+        { type: 'self', title: 'Проверь себя', html: '<p>Экран расположен нормально, если ты смотришь на него без постоянного наклона головы, не щуришься и не поворачиваешь корпус в сторону экрана.</p>' }
+      ]
+    },
+    posture: {
+      theme: 'theme-posture',
+      title: 'Посадка',
+      sections: [
+        { type: 'check', html: '<p class="info-lead">Правильная посадка снижает нагрузку на спину, шею, плечи, кисти и глаза. Это особенно важно, если ты работаешь за компьютером несколько часов подряд.</p><p class="info-lead">Хорошо, если:</p><ul class="info-list"><li>ты сидишь на седалищных буграх, а не &laquo;сползаешь&raquo; вперёд;</li><li>спина опирается на спинку стула;</li><li>плечи не подняты и не зажаты;</li><li>ноги согнуты примерно под прямым углом или чуть больше;</li><li>ступни стоят на полу;</li><li>руки лежат на столе или подлокотниках без напряжения;</li><li>тебе не приходится тянуться к клавиатуре или мыши.</li></ul><p class="info-note">Если ты сидишь на краю стула, сутулишься, поджимаешь ноги, работаешь с дивана или держишь ноутбук на коленях, нагрузка на тело растёт быстрее. Посмотри видео о правильной посадке.</p>' },
+        { type: 'office', title: 'Если работаешь в офисе', html: '<p>Используй рабочий стол и стул. Отрегулируй посадку под себя: сядь глубже, обопрись на спинку, поставь ступни на пол, расположи клавиатуру и мышь так, чтобы не тянуться к ним. Если стул или стол неудобны, сломаны или мешают безопасной работе, обратись в профильный канал поддержки.</p>' },
+        { type: 'remote', title: 'Если работаешь удалённо', html: '<p>Выбери устойчивую поверхность для ноутбука или монитора и стул с опорой для спины. Не работай долго с дивана, кровати или с ноутбуком на коленях: в такой позе сложно держать спину и шею в нормальном положении. Если дома нет идеального рабочего места, начни с минимальных улучшений: поставь ноутбук на устойчивую поверхность, сядь на стул со спинкой, освободи место для рук, поставь ступни на пол.</p>' },
+        { type: 'self', title: 'Проверь себя', html: '<p>Посадка подходит для работы, если ты можешь сидеть с опорой на спину, не тянешься к клавиатуре и не чувствуешь, что через час тело &laquo;съезжает&raquo; в неудобную позу.</p>' }
+      ]
+    }
+  };
+
+  var overlay = document.getElementById('popupOverlay');
+  var popup = document.getElementById('popup');
+  var hotspots = document.querySelectorAll('.hotspot');
+  var activeHotspot = null;
+
+  function buildPopup(topicKey) {
+    var topic = topics[topicKey];
+    var html = '<div class="popup-header"><h2 id="popupTitle">' + topic.title + '</h2><button class="popup-close" type="button" aria-label="Закрыть">&times;</button></div>';
+    topic.sections.forEach(function (section) {
+      if (section.type === 'check') {
+        html += '<div class="info-section info-section-first">' + section.html + '</div>';
+      } else {
+        html += '<div class="info-section"><div class="info-section-title ' + section.type + '">' + section.title + '</div>' + section.html + '</div>';
+      }
+    });
+    popup.className = 'popup ' + topic.theme;
+    popup.innerHTML = html;
+    popup.querySelector('.popup-close').addEventListener('click', closePopup);
+  }
+
+  function openPopup(topicKey, hotspot) {
+    buildPopup(topicKey);
+    if (activeHotspot) activeHotspot.classList.remove('is-active');
+    activeHotspot = hotspot;
+    activeHotspot.classList.add('is-active');
+    if (overlay.parentNode !== document.body) document.body.appendChild(overlay);
+    overlay.classList.add('is-open');
+    overlay.setAttribute('aria-hidden', 'false');
+    popup.focus();
+    document.body.classList.add('ws-popup-open');
+  }
+
+  function closePopup() {
+    overlay.classList.remove('is-open');
+    overlay.setAttribute('aria-hidden', 'true');
+    if (activeHotspot) { activeHotspot.classList.remove('is-active'); activeHotspot = null; }
+    document.body.classList.remove('ws-popup-open');
+  }
+
+  hotspots.forEach(function (hotspot) {
+    hotspot.addEventListener('click', function () { openPopup(hotspot.getAttribute('data-topic'), hotspot); });
+  });
+  overlay.addEventListener('click', function (event) { if (event.target === overlay) closePopup(); });
+  document.addEventListener('keydown', function (event) { if (event.key === 'Escape' && overlay.classList.contains('is-open')) closePopup(); });
+})();</script>
+</body></html>
+

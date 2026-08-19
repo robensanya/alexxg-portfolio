@@ -1,0 +1,210 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Видео в рамке телефона</title>
+  <style>
+    :root {
+      --phone-w: min(62vw, 255px);
+      --star-color: #D9FF3F;
+      --star-glow: rgba(217, 255, 63, 0.28);
+    }
+
+    * { box-sizing: border-box; }
+
+    html, body {
+      margin: 0;
+      padding: 0;
+      width: 100%;
+      height: auto;
+      overflow: hidden;
+      background: transparent;
+    }
+
+    body {
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      background: transparent;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    .scene {
+      position: relative;
+      width: calc(var(--phone-w) + 90px);
+      padding: 10px 26px 10px;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      background: transparent;
+    }
+
+    .phone {
+      position: relative;
+      width: var(--phone-w);
+      aspect-ratio: 384 / 808;
+      flex: 0 0 auto;
+      margin: 0 auto;
+      background: transparent;
+      z-index: 2;
+    }
+
+    .screen-mask {
+      position: absolute;
+      inset: 0;
+      z-index: 1;
+      overflow: hidden;
+      background: transparent;
+      -webkit-mask-image: url('assets/screen-mask.png');
+      -webkit-mask-size: 100% 100%;
+      -webkit-mask-repeat: no-repeat;
+      mask-image: url('assets/screen-mask.png');
+      mask-size: 100% 100%;
+      mask-repeat: no-repeat;
+    }
+
+    .screen-mask video {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      min-width: 100%;
+      min-height: 100%;
+      width: auto;
+      height: auto;
+      display: block;
+      background: #000;
+      transform: translate(-50%, -50%) scale(1.03);
+      transform-origin: center center;
+    }
+
+    .play-overlay {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: radial-gradient(circle at center, rgba(0,0,0,0.12) 0%, rgba(0,0,0,0.04) 28%, rgba(0,0,0,0) 58%);
+      z-index: 3;
+      transition: opacity .2s ease, visibility .2s ease;
+    }
+
+    .play-overlay.hidden {
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+    }
+
+    .play-button {
+      width: 72px;
+      height: 72px;
+      border: 0;
+      border-radius: 999px;
+      background: rgba(0, 0, 0, 0.58);
+      backdrop-filter: blur(6px);
+      -webkit-backdrop-filter: blur(6px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      box-shadow: 0 8px 24px rgba(0,0,0,.25), inset 0 0 0 1px rgba(255,255,255,.16);
+      transition: transform .15s ease, background .15s ease;
+    }
+
+    .play-button:hover {
+      transform: scale(1.04);
+      background: rgba(0, 0, 0, 0.68);
+    }
+
+    .play-button:active {
+      transform: scale(0.98);
+    }
+
+    .play-button::before {
+      content: "";
+      display: block;
+      width: 0;
+      height: 0;
+      margin-left: 5px;
+      border-top: 14px solid transparent;
+      border-bottom: 14px solid transparent;
+      border-left: 22px solid #fff;
+      filter: drop-shadow(0 1px 2px rgba(0,0,0,.18));
+    }
+
+    .frame {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      pointer-events: none;
+      z-index: 4;
+    }
+
+    .star {
+      position: absolute;
+      background: var(--star-color);
+      clip-path: polygon(50% 0%, 61% 39%, 100% 50%, 61% 61%, 50% 100%, 39% 61%, 0% 50%, 39% 39%);
+      filter: drop-shadow(0 0 10px var(--star-glow));
+      opacity: 0.98;
+      z-index: 1;
+      pointer-events: none;
+    }
+
+    .star::after {
+      content: "";
+      position: absolute;
+      inset: 20%;
+      background: rgba(255,255,255,0.25);
+      clip-path: inherit;
+      opacity: 0.25;
+    }
+
+    .star.s1 { width: 22px; height: 22px; left: 18px; top: 96px; transform: rotate(-8deg); }
+    .star.s2 { width: 14px; height: 14px; right: 28px; top: 146px; transform: rotate(16deg); }
+    .star.s3 { width: 18px; height: 18px; left: 30px; bottom: 140px; transform: rotate(8deg); }
+    .star.s4 { width: 12px; height: 12px; right: 44px; bottom: 210px; transform: rotate(-12deg); }
+  </style>
+</head>
+<body>
+  <main class="scene" aria-label="Видео в рамке смартфона с декоративными лаймовыми звездочками">
+    <span class="star s1" aria-hidden="true"></span>
+    <span class="star s2" aria-hidden="true"></span>
+    <span class="star s3" aria-hidden="true"></span>
+    <span class="star s4" aria-hidden="true"></span>
+
+    <div class="phone" aria-label="Видео в рамке смартфона">
+      <div class="screen-mask">
+        <video id="phoneVideo" src="assets/video-cropped-sound.mp4" poster="assets/video-cropped-sound.jpg" controls playsinline preload="metadata"></video>
+        <div class="play-overlay" id="playOverlay">
+          <button class="play-button" id="playButton" aria-label="Воспроизвести видео"></button>
+        </div>
+      </div>
+      <img class="frame" src="assets/phone-frame-cutout.png" alt="" aria-hidden="true" />
+    </div>
+  </main>
+
+  <script>
+    const video = document.getElementById('phoneVideo');
+    const overlay = document.getElementById('playOverlay');
+    const button = document.getElementById('playButton');
+
+    const hideOverlay = () => overlay.classList.add('hidden');
+    const showOverlay = () => overlay.classList.remove('hidden');
+
+    button.addEventListener('click', async () => {
+      try {
+        await video.play();
+        hideOverlay();
+      } catch (e) {
+        console.error(e);
+      }
+    });
+
+    video.addEventListener('play', hideOverlay);
+    video.addEventListener('pause', showOverlay);
+    video.addEventListener('ended', showOverlay);
+  </script>
+</body>
+</html>

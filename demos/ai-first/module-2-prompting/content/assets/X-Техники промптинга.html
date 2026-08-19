@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Шпаргалка: техники промптинга</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
+  *{box-sizing:border-box;margin:0;padding:0}
+  #root{font-family:'StratosSkyeng',Inter,system-ui,sans-serif;background:#f9f9f9;padding:2rem 1.25rem 3rem}
+  .wrap{max-width:780px;margin:0 auto;display:flex;flex-direction:column;gap:1rem}
+
+  .header{text-align:center;padding:.5rem 0 .25rem}
+  .header-title{font-size:22px;font-weight:900;color:#1a1a1a;letter-spacing:-.02em}
+  .header-sub{font-size:14px;color:#888;margin-top:.35rem;font-weight:400}
+
+  /* tab grid — 4+3 */
+  .tabs{display:flex;flex-direction:column;gap:.5rem}
+  .tabs-row{display:grid;gap:.5rem}
+  .tabs-row.r4{grid-template-columns:repeat(4,1fr)}
+  .tabs-row.r3{grid-template-columns:repeat(3,1fr)}
+  @media(max-width:560px){
+    .tabs-row.r4{grid-template-columns:repeat(2,1fr)}
+    .tabs-row.r3{grid-template-columns:repeat(3,1fr)}
+  }
+
+  .tab{padding:.65rem .5rem;border-radius:14px;cursor:pointer;font-size:12px;font-weight:700;text-align:center;transition:all .18s;background:#fff;box-shadow:4px 4px 12px rgba(209,209,209,.65),-4px -4px 12px rgba(255,255,255,.95);color:#888;border:1.5px solid transparent;line-height:1.3;display:flex;flex-direction:column;align-items:center;gap:.2rem}
+  .tab:hover{color:#555;transform:translateY(-1px)}
+  .tab .t-emoji{font-size:16px}
+  .tab.active{color:#fff}
+
+  .tab.c0.active{background:#00C1FF;border-color:#00C1FF;box-shadow:4px 4px 12px rgba(0,193,255,.25),-4px -4px 12px rgba(255,255,255,.9);color:#fff}
+  .tab.c1.active{background:#9B7FFF;border-color:#9B7FFF;box-shadow:4px 4px 12px rgba(155,127,255,.25),-4px -4px 12px rgba(255,255,255,.9);color:#fff}
+  .tab.c2.active{background:#FF9F43;border-color:#FF9F43;box-shadow:4px 4px 12px rgba(255,159,67,.25),-4px -4px 12px rgba(255,255,255,.9);color:#fff}
+  .tab.c3.active{background:#27AE60;border-color:#27AE60;box-shadow:4px 4px 12px rgba(39,174,96,.25),-4px -4px 12px rgba(255,255,255,.9);color:#fff}
+  .tab.c4.active{background:#E74C3C;border-color:#E74C3C;box-shadow:4px 4px 12px rgba(231,76,60,.25),-4px -4px 12px rgba(255,255,255,.9);color:#fff}
+  .tab.c5.active{background:#1A8FD1;border-color:#1A8FD1;box-shadow:4px 4px 12px rgba(26,143,209,.25),-4px -4px 12px rgba(255,255,255,.9);color:#fff}
+  .tab.c6.active{background:#8E44AD;border-color:#8E44AD;box-shadow:4px 4px 12px rgba(142,68,173,.25),-4px -4px 12px rgba(255,255,255,.9);color:#fff}
+
+  /* panels */
+  .nm{background:#fff;border-radius:24px;box-shadow:8px 8px 20px rgba(209,209,209,.7),-8px -8px 20px rgba(255,255,255,.95)}
+  .content-card{padding:1.5rem 1.75rem;display:none;flex-direction:column;gap:1rem}
+  .content-card.active{display:flex}
+
+  .section-title{font-size:18px;font-weight:900;color:#383838;letter-spacing:-.015em;line-height:1.2}
+  .section-desc{font-size:15px;color:#4a4f55;line-height:1.65;font-weight:400;margin-top:.4rem}
+
+  .sec-label{font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.1em;margin-bottom:.5rem}
+  .sec-label.c0{color:#00C1FF} .sec-label.c1{color:#9B7FFF} .sec-label.c2{color:#FF9F43}
+  .sec-label.c3{color:#27AE60} .sec-label.c4{color:#E74C3C} .sec-label.c5{color:#1A8FD1} .sec-label.c6{color:#8E44AD}
+
+  .checklist{display:flex;flex-direction:column;gap:.45rem}
+  .check-item{display:flex;align-items:flex-start;gap:.65rem;font-size:15px;color:#383838;line-height:1.5;font-weight:400}
+  .check-dot{width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:900;flex-shrink:0;margin-top:.05rem}
+  .check-dot.c0{background:#f0faff;color:#00C1FF;box-shadow:3px 3px 7px rgba(0,193,255,.12),-3px -3px 7px rgba(255,255,255,.9)}
+  .check-dot.c1{background:#f3f0ff;color:#9B7FFF;box-shadow:3px 3px 7px rgba(155,127,255,.1),-3px -3px 7px rgba(255,255,255,.9)}
+  .check-dot.c2{background:#fff8f0;color:#FF9F43;box-shadow:3px 3px 7px rgba(255,159,67,.1),-3px -3px 7px rgba(255,255,255,.9)}
+  .check-dot.c3{background:#f0fff5;color:#27AE60;box-shadow:3px 3px 7px rgba(39,174,96,.1),-3px -3px 7px rgba(255,255,255,.9)}
+  .check-dot.c4{background:#fff5f4;color:#E74C3C;box-shadow:3px 3px 7px rgba(231,76,60,.1),-3px -3px 7px rgba(255,255,255,.9)}
+  .check-dot.c5{background:#f0f7ff;color:#1A8FD1;box-shadow:3px 3px 7px rgba(26,143,209,.1),-3px -3px 7px rgba(255,255,255,.9)}
+  .check-dot.c6{background:#f8f0ff;color:#8E44AD;box-shadow:3px 3px 7px rgba(142,68,173,.1),-3px -3px 7px rgba(255,255,255,.9)}
+
+  .ex-box{border-radius:16px;background:#f9f9f9;box-shadow:5px 5px 14px rgba(209,209,209,.6),-5px -5px 14px rgba(255,255,255,.95);padding:1rem 1.1rem;display:flex;flex-direction:column;gap:.6rem}
+  .ex-chunk{display:flex;flex-direction:column;gap:.2rem}
+  .ex-chunk-label{font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.09em;color:#4a4f55}
+  .ex-chunk-text{font-size:14px;color:#383838;line-height:1.6;font-weight:400}
+  .chunk-divider{height:1px;background:#ebebeb}
+
+  .note-pill{border-radius:14px;padding:.8rem 1rem;font-size:14px;line-height:1.55;font-weight:400;font-style:italic;display:flex;gap:.55rem;align-items:flex-start;color:#4a4f55}
+  .note-pill.c0{background:#f0faff;box-shadow:4px 4px 10px rgba(0,193,255,.08),-4px -4px 10px rgba(255,255,255,.9)}
+  .note-pill.c1{background:#f3f0ff;box-shadow:4px 4px 10px rgba(155,127,255,.07),-4px -4px 10px rgba(255,255,255,.9)}
+  .note-pill.c2{background:#fff8f0;box-shadow:4px 4px 10px rgba(255,159,67,.07),-4px -4px 10px rgba(255,255,255,.9)}
+  .note-pill.c3{background:#f0fff5;box-shadow:4px 4px 10px rgba(39,174,96,.07),-4px -4px 10px rgba(255,255,255,.9)}
+  .note-pill.c4{background:#fff5f4;box-shadow:4px 4px 10px rgba(231,76,60,.07),-4px -4px 10px rgba(255,255,255,.9)}
+  .note-pill.c5{background:#f0f7ff;box-shadow:4px 4px 10px rgba(26,143,209,.07),-4px -4px 10px rgba(255,255,255,.9)}
+  .note-pill.c6{background:#f8f0ff;box-shadow:4px 4px 10px rgba(142,68,173,.07),-4px -4px 10px rgba(255,255,255,.9)}
+  .note-icon{font-size:15px;flex-shrink:0;font-style:normal}
+
+  /* chain steps */
+  .chain-steps{display:flex;flex-direction:column;gap:0}
+  .step{display:flex;gap:12px;align-items:stretch}
+  .step-left{display:flex;flex-direction:column;align-items:center}
+  .step-num{width:26px;height:26px;border-radius:50%;background:#f9f9f9;box-shadow:3px 3px 8px rgba(0,193,255,.15),-3px -3px 8px rgba(255,255,255,.9);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:900;color:#00C1FF;flex-shrink:0}
+  .step-line{width:1.5px;flex:1;background:#e8e8e8;margin:4px 0}
+  .step-content{background:#f9f9f9;border-radius:12px;box-shadow:4px 4px 10px rgba(209,209,209,.5),-4px -4px 10px rgba(255,255,255,.9);padding:10px 13px;margin-bottom:8px;flex:1}
+  .step-title{font-size:13px;font-weight:800;color:#1a1a1a;margin-bottom:2px}
+  .step-desc{font-size:13px;color:#666;line-height:1.5}
+  .step:last-child .step-line{display:none}
+
+  /* temp slider */
+  .temp-scale{display:flex;flex-direction:column;gap:.6rem;margin-top:.25rem}
+  .temp-row{display:flex;gap:10px;align-items:flex-start}
+  .temp-val{font-size:12px;font-weight:800;color:#8E44AD;width:36px;flex-shrink:0;padding-top:.1rem}
+  .temp-bar-wrap{flex:1;display:flex;flex-direction:column;gap:.2rem}
+  .temp-bar-bg{height:6px;border-radius:99px;background:#f0f0f0;box-shadow:inset 2px 2px 5px rgba(209,209,209,.7),inset -2px -2px 5px rgba(255,255,255,.9);overflow:hidden}
+  .temp-bar-fill{height:100%;border-radius:99px}
+  .temp-desc{font-size:13px;color:#4a4f55;line-height:1.45}
+  .temp-tag{font-size:11px;font-weight:700;color:#8E44AD}
+</style>
+</head>
+<body>
+<div id="root">
+<div class="wrap">
+
+  <div class="header">
+    <div class="header-title">Техники промптинга</div>
+    <div class="header-sub">Шпаргалка · Модуль 2 · Prompt Engineering</div>
+  </div>
+
+  <div class="tabs">
+    <div class="tabs-row r4">
+      <div class="tab c0 active" onclick="switchTab(0)"><span class="t-emoji">⚡</span>Zero-Shot</div>
+      <div class="tab c1" onclick="switchTab(1)"><span class="t-emoji">🎯</span>Few-Shot</div>
+      <div class="tab c2" onclick="switchTab(2)"><span class="t-emoji">📋</span>Step-by-Step</div>
+      <div class="tab c3" onclick="switchTab(3)"><span class="t-emoji">💭</span>Chain-of-Thought</div>
+    </div>
+    <div class="tabs-row r3">
+      <div class="tab c4" onclick="switchTab(4)"><span class="t-emoji">🔗</span>Prompt Chaining</div>
+      <div class="tab c5" onclick="switchTab(5)"><span class="t-emoji">🌿</span>Tree of Thoughts</div>
+      <div class="tab c6" onclick="switchTab(6)"><span class="t-emoji">🌡️</span>Температура</div>
+    </div>
+  </div>
+
+  <!-- 0: Zero-Shot -->
+  <div class="nm content-card active" id="panel-0">
+    <div>
+      <div class="section-title">Zero-Shot Prompting</div>
+      <div class="section-desc">Базовый подход: даёшь модели задачу без примеров и объяснений — она выполняет её опираясь только на свои знания и твою инструкцию.</div>
+    </div>
+    <div>
+      <div class="sec-label c0">Когда использовать</div>
+      <div class="checklist">
+        <div class="check-item"><div class="check-dot c0">→</div><span>Задача простая и однозначная</span></div>
+        <div class="check-item"><div class="check-dot c0">→</div><span>Нет готовых примеров под рукой</span></div>
+        <div class="check-item"><div class="check-dot c0">→</div><span>Нужен быстрый черновик или первый вариант</span></div>
+      </div>
+    </div>
+    <div>
+      <div class="sec-label c0">Пример</div>
+      <div class="ex-box">
+        <div class="ex-chunk">
+          <div class="ex-chunk-label">Промпт</div>
+          <div class="ex-chunk-text">«Напиши короткое письмо коллеге с просьбой перенести встречу на завтра на час позже. Тон — дружелюбный, до 5 предложений.»</div>
+        </div>
+      </div>
+    </div>
+    <div class="note-pill c0"><span class="note-icon">💡</span><span>Чем конкретнее цель, формат и ограничения — тем лучше сработает даже без примеров.</span></div>
+  </div>
+
+  <!-- 1: Few-Shot -->
+  <div class="nm content-card" id="panel-1">
+    <div>
+      <div class="section-title">Few-Shot Prompting</div>
+      <div class="section-desc">Даёшь модели 1–3 примера идеального результата — и она подхватывает нужный стиль, формат или логику ответа.</div>
+    </div>
+    <div>
+      <div class="sec-label c1">Когда использовать</div>
+      <div class="checklist">
+        <div class="check-item"><div class="check-dot c1">→</div><span>Нужен конкретный стиль или тон, который сложно описать словами</span></div>
+        <div class="check-item"><div class="check-dot c1">→</div><span>Модель даёт «не то» при обычном запросе</span></div>
+        <div class="check-item"><div class="check-dot c1">→</div><span>Есть образцы из реальной работы, которые можно показать</span></div>
+      </div>
+    </div>
+    <div>
+      <div class="sec-label c1">Пример</div>
+      <div class="ex-box">
+        <div class="ex-chunk">
+          <div class="ex-chunk-label">Инструкция</div>
+          <div class="ex-chunk-text">«Пиши заголовки для постов в нашем Telegram-канале. Вот примеры хороших заголовков:»</div>
+        </div>
+        <div class="chunk-divider"></div>
+        <div class="ex-chunk">
+          <div class="ex-chunk-label">Примеры (few-shot)</div>
+          <div class="ex-chunk-text">— «Почему первые 10 минут встречи решают всё»<br>— «Три вопроса, которые стоит задать до старта проекта»<br>— «Как мы сократили онбординг с двух недель до трёх дней»</div>
+        </div>
+        <div class="chunk-divider"></div>
+        <div class="ex-chunk">
+          <div class="ex-chunk-label">Задача</div>
+          <div class="ex-chunk-text">«Напиши 5 заголовков про использование AI в HR.»</div>
+        </div>
+      </div>
+    </div>
+    <div class="note-pill c1"><span class="note-icon">💡</span><span>Достаточно 1–3 примеров. Чем они точнее отражают желаемый результат — тем лучше модель его воспроизведёт.</span></div>
+  </div>
+
+  <!-- 2: Step-by-Step -->
+  <div class="nm content-card" id="panel-2">
+    <div>
+      <div class="section-title">Step-by-Step</div>
+      <div class="section-desc">Ты сам задаёшь модели последовательность шагов. Не «сделай это», а «сначала сделай А, потом Б, потом В».</div>
+    </div>
+    <div>
+      <div class="sec-label c2">Когда использовать</div>
+      <div class="checklist">
+        <div class="check-item"><div class="check-dot c2">→</div><span>Важно, чтобы модель не пропустила ни одного этапа</span></div>
+        <div class="check-item"><div class="check-dot c2">→</div><span>Задача имеет чёткую логику выполнения, которую ты контролируешь</span></div>
+        <div class="check-item"><div class="check-dot c2">→</div><span>Хочешь управлять процессом, а не только результатом</span></div>
+      </div>
+    </div>
+    <div>
+      <div class="sec-label c2">Пример</div>
+      <div class="ex-box">
+        <div class="ex-chunk">
+          <div class="ex-chunk-label">Промпт</div>
+          <div class="ex-chunk-text">«Проанализируй отзыв клиента по шагам:<br>1. Определи основную проблему<br>2. Оцени эмоциональный тон (позитив / негатив / нейтрально)<br>3. Выдели конкретные пожелания клиента<br>4. Предложи формулировку ответа<br><br>Отзыв: [текст]»</div>
+        </div>
+      </div>
+    </div>
+    <div class="note-pill c2"><span class="note-icon">💡</span><span>Чем сложнее задача, тем полезнее задать шаги явно — модель меньше «фантазирует» и точнее следует нужной логике.</span></div>
+  </div>
+
+  <!-- 3: Chain-of-Thought -->
+  <div class="nm content-card" id="panel-3">
+    <div>
+      <div class="section-title">Chain-of-Thought</div>
+      <div class="section-desc">Модель сама рассуждает вслух перед тем, как дать финальный ответ. Ты не задаёшь шаги — она выстраивает их сама.</div>
+    </div>
+    <div>
+      <div class="sec-label c3">Чем отличается от Step-by-Step</div>
+      <div class="checklist">
+        <div class="check-item"><div class="check-dot c3">↔</div><span><strong>Step-by-Step</strong> — ты задаёшь шаги сам, модель следует им</span></div>
+        <div class="check-item"><div class="check-dot c3">↔</div><span><strong>Chain-of-Thought</strong> — модель сама строит логику рассуждения до ответа</span></div>
+      </div>
+    </div>
+    <div>
+      <div class="sec-label c3">Когда использовать</div>
+      <div class="checklist">
+        <div class="check-item"><div class="check-dot c3">→</div><span>Задачи, требующие логики, анализа или оценки</span></div>
+        <div class="check-item"><div class="check-dot c3">→</div><span>Когда важно понять ход рассуждений, а не только получить ответ</span></div>
+        <div class="check-item"><div class="check-dot c3">→</div><span>Хочешь проверить, не «угадывает» ли модель ответ</span></div>
+      </div>
+    </div>
+    <div>
+      <div class="sec-label c3">Пример</div>
+      <div class="ex-box">
+        <div class="ex-chunk">
+          <div class="ex-chunk-label">Без Chain-of-Thought</div>
+          <div class="ex-chunk-text">«Стоит ли нам запускать новый курс в сентябре?»</div>
+        </div>
+        <div class="chunk-divider"></div>
+        <div class="ex-chunk">
+          <div class="ex-chunk-label">С Chain-of-Thought</div>
+          <div class="ex-chunk-text">«Стоит ли нам запускать новый курс в сентябре? Подумай вслух: рассмотри аргументы за и против, учти сезонность и типичную загрузку команды, и только потом дай рекомендацию.»</div>
+        </div>
+      </div>
+    </div>
+    <div class="note-pill c3"><span class="note-icon">💡</span><span>Фраза «подумай вслух» или «покажи ход рассуждений» — простой способ включить Chain-of-Thought в любой промпт.</span></div>
+  </div>
+
+  <!-- 4: Prompt Chaining -->
+  <div class="nm content-card" id="panel-4">
+    <div>
+      <div class="section-title">Prompt Chaining — цепочка промптов</div>
+      <div class="section-desc">Сложная задача разбивается на несколько отдельных промптов. Результат одного становится входом для следующего.</div>
+    </div>
+    <div>
+      <div class="sec-label c4">Когда использовать</div>
+      <div class="checklist">
+        <div class="check-item"><div class="check-dot c4">→</div><span>Задача слишком большая для одного промпта</span></div>
+        <div class="check-item"><div class="check-dot c4">→</div><span>Нужно контролировать качество на каждом этапе</span></div>
+        <div class="check-item"><div class="check-dot c4">→</div><span>Каждый шаг требует разной инструкции или роли</span></div>
+      </div>
+    </div>
+    <div>
+      <div class="sec-label c4">Пример: саммари встречи → письмо</div>
+      <div class="chain-steps">
+        <div class="step">
+          <div class="step-left"><div class="step-num" style="color:#E74C3C;box-shadow:3px 3px 8px rgba(231,76,60,.15),-3px -3px 8px rgba(255,255,255,.9)">1</div><div class="step-line"></div></div>
+          <div class="step-content"><div class="step-title">Извлечь договорённости</div><div class="step-desc">«Из транскрипта выдели все договорённости и ответственных»</div></div>
+        </div>
+        <div class="step">
+          <div class="step-left"><div class="step-num" style="color:#E74C3C;box-shadow:3px 3px 8px rgba(231,76,60,.15),-3px -3px 8px rgba(255,255,255,.9)">2</div><div class="step-line"></div></div>
+          <div class="step-content"><div class="step-title">Структурировать</div><div class="step-desc">«На основе списка — сделай саммари по блокам: решения / задачи / вопросы»</div></div>
+        </div>
+        <div class="step">
+          <div class="step-left"><div class="step-num" style="color:#E74C3C;box-shadow:3px 3px 8px rgba(231,76,60,.15),-3px -3px 8px rgba(255,255,255,.9)">3</div></div>
+          <div class="step-content"><div class="step-title">Написать follow-up</div><div class="step-desc">«По саммари напиши письмо команде — коротко, с чёткими next steps»</div></div>
+        </div>
+      </div>
+    </div>
+    <div class="note-pill c4"><span class="note-icon">💡</span><span>Думай о цепочке как о конвейере: хороший результат на каждом шаге = качественный финал.</span></div>
+  </div>
+
+  <!-- 5: Tree of Thoughts -->
+  <div class="nm content-card" id="panel-5">
+    <div>
+      <div class="section-title">Tree of Thoughts — дерево мыслей</div>
+      <div class="section-desc">Модель рассматривает несколько возможных путей решения, сравнивает их и выбирает лучший. Не один ответ — а несколько гипотез.</div>
+    </div>
+    <div>
+      <div class="sec-label c5">Когда использовать</div>
+      <div class="checklist">
+        <div class="check-item"><div class="check-dot c5">→</div><span>Несколько возможных путей решения, нужно выбрать лучший</span></div>
+        <div class="check-item"><div class="check-dot c5">→</div><span>Задача на стратегию, концепцию или оценку альтернатив</span></div>
+        <div class="check-item"><div class="check-dot c5">→</div><span>Первый вариант ответа часто бывает поверхностным</span></div>
+      </div>
+    </div>
+    <div>
+      <div class="sec-label c5">Пример</div>
+      <div class="ex-box">
+        <div class="ex-chunk">
+          <div class="ex-chunk-label">Обычный запрос</div>
+          <div class="ex-chunk-text">«Предложи стратегию продвижения нового курса.»</div>
+        </div>
+        <div class="chunk-divider"></div>
+        <div class="ex-chunk">
+          <div class="ex-chunk-label">С Tree of Thoughts</div>
+          <div class="ex-chunk-text">«Предложи 3 разных стратегии продвижения нового курса: через экспертный контент, через партнёрства, через performance. Для каждой — логику, плюсы, риски. Затем сравни и выбери лучшую для запуска с ограниченным бюджетом.»</div>
+        </div>
+      </div>
+    </div>
+    <div class="note-pill c5"><span class="note-icon">💡</span><span>Чем больше возможных путей у задачи — тем ценнее этот подход. Если ответ очевидный — лучше обычная цепочка.</span></div>
+  </div>
+
+  <!-- 6: Temperature -->
+  <div class="nm content-card" id="panel-6">
+    <div>
+      <div class="section-title">Температура (Temperature)</div>
+      <div class="section-desc">Параметр, который управляет тем, насколько «предсказуемой» или «творческой» будет модель. Чем выше — тем больше вариативности в ответах.</div>
+    </div>
+    <div>
+      <div class="sec-label c6">Как работает шкала</div>
+      <div class="temp-scale">
+        <div class="temp-row">
+          <div class="temp-val">0.0–0.3</div>
+          <div class="temp-bar-wrap">
+            <div class="temp-bar-bg"><div class="temp-bar-fill" style="width:20%;background:linear-gradient(90deg,#8E44AD,#b07cc6)"></div></div>
+            <div class="temp-desc"><span class="temp-tag">Точность</span> — факты, расчёты, инструкции, код. Модель выбирает наиболее вероятный ответ.</div>
+          </div>
+        </div>
+        <div class="temp-row">
+          <div class="temp-val">0.4–0.7</div>
+          <div class="temp-bar-wrap">
+            <div class="temp-bar-bg"><div class="temp-bar-fill" style="width:55%;background:linear-gradient(90deg,#8E44AD,#b07cc6)"></div></div>
+            <div class="temp-desc"><span class="temp-tag">Баланс</span> — большинство рабочих задач: письма, саммари, анализ. Оптимальная зона для старта.</div>
+          </div>
+        </div>
+        <div class="temp-row">
+          <div class="temp-val">0.8–1.0</div>
+          <div class="temp-bar-wrap">
+            <div class="temp-bar-bg"><div class="temp-bar-fill" style="width:90%;background:linear-gradient(90deg,#8E44AD,#b07cc6)"></div></div>
+            <div class="temp-desc"><span class="temp-tag">Творчество</span> — брейнштормы, идеи, нестандартные решения. Ответы разнообразнее, но менее предсказуемы.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div>
+      <div class="sec-label c6">Где настраивается</div>
+      <div class="checklist">
+        <div class="check-item"><div class="check-dot c6">→</div><span>В интерфейсах с расширенными настройками (ChatGPT API, Claude API, некоторые UI)</span></div>
+        <div class="check-item"><div class="check-dot c6">→</div><span>В обычном чате — через формулировку: «дай нестандартные идеи» или «ответь строго по фактам»</span></div>
+      </div>
+    </div>
+    <div class="note-pill c6"><span class="note-icon">💡</span><span>Нет «правильной» температуры — есть подходящая под задачу. Для точных ответов снижай, для идей — повышай.</span></div>
+  </div>
+
+</div>
+</div>
+
+<script>
+function switchTab(i){
+  document.querySelectorAll('.tab').forEach((t,j)=>t.classList.toggle('active',j===i));
+  document.querySelectorAll('.content-card').forEach((p,j)=>p.classList.toggle('active',j===i));
+}
+</script>
+</body>
+</html>

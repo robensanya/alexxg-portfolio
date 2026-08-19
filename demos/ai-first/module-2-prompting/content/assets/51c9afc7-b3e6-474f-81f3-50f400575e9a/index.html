@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Плохой, средний и хороший промпт</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #f9f9f9;
+    --card: #ffffff;
+    --text: #111111;
+    --text-soft: #4a4f55;
+    --line: #e3e3e3;
+    --blue: #25b8ff;
+    --green: #22c55e;
+    --green-bg: #edf8f0;
+    --orange-bg: #fff6e8;
+    --red: #ff4d4f;
+    --red-bg: #fff4f4;
+    --shadow: 0 3px 14px rgba(0, 0, 0, 0.04);
+    --r-xl: 22px;
+  }
+
+  body {
+    background: var(--bg);
+    font-family: 'StratosSkyeng', 'Inter', Arial, sans-serif;
+    color: var(--text);
+    padding: 34px 20px 42px;
+  }
+
+  .demo {
+    max-width: 780px;
+    margin: 0 auto;
+  }
+
+  .card {
+    max-width: 780px;
+    margin: 0 auto;
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: var(--r-xl);
+    box-shadow: var(--shadow);
+    padding: 24px;
+  }
+
+  .stage-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    min-height: 36px;
+    padding: 8px 14px;
+    border-radius: 999px;
+    font-size: 14px;
+    font-weight: 800;
+    line-height: 1;
+    letter-spacing: 0.01em;
+    margin-bottom: 16px;
+    font-family: 'Inter', Arial, sans-serif;
+  }
+
+  .stage-badge.bad { color: var(--red); background: var(--red-bg); }
+  .stage-badge.mid { color: #d88400; background: var(--orange-bg); }
+  .stage-badge.good { color: #10a64a; background: var(--green-bg); }
+
+  .hero-start {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    min-height: 430px;
+    border: none;
+    border-radius: 18px;
+    background: linear-gradient(180deg, #ffffff 0%, #fbfdff 100%);
+    padding: 32px 24px;
+  }
+
+  .hero-icon {
+    width: 74px;
+    height: 74px;
+    border-radius: 50%;
+    background: #eaf8ff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 34px;
+    margin-bottom: 18px;
+  }
+
+  .hero-text {
+    font-size: 20px;
+    line-height: 1.6;
+    color: var(--text-soft);
+    max-width: 780px;
+    margin-bottom: 28px;
+  }
+
+  .hero-text strong {
+    color: #383838;
+    font-weight: 400;
+  }
+
+  .action-btn {
+    min-width: 240px;
+    min-height: 52px;
+    border: none;
+    border-radius: 16px;
+    background: var(--blue);
+    color: #ffffff;
+    font-size: 17px;
+    font-weight: 700;
+    font-family: 'StratosSkyeng', 'Inter', Arial, sans-serif;
+    cursor: pointer;
+    transition: 0.18s ease;
+    box-shadow: 0 8px 22px rgba(37, 184, 255, 0.22);
+    padding: 12px 22px;
+  }
+
+  .action-btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 12px 28px rgba(37, 184, 255, 0.28);
+    filter: brightness(0.98);
+  }
+
+  .screen { display: none; }
+  .screen.active { display: block; }
+
+  .image-wrap {
+    width: 100%;
+    border-radius: 18px;
+    overflow: hidden;
+    background: #f2f5f7;
+    border: 1px solid #e6ecef;
+    margin-bottom: 18px;
+  }
+
+  .image-wrap img {
+    display: block;
+    width: 100%;
+    height: auto;
+  }
+
+  .prompt-box {
+    border: 1px solid #dff2fb;
+    border-radius: 16px;
+    background: #ffffff;
+    padding: 18px 18px 16px;
+    margin-bottom: 20px;
+  }
+
+  .prompt-label {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 6px 10px;
+    border-radius: 8px;
+    background: #e9f8ff;
+    color: #1096d6;
+    font-size: 12px;
+    font-weight: 800;
+    line-height: 1;
+    text-transform: uppercase;
+    letter-spacing: 0.02em;
+    margin-bottom: 12px;
+    font-family: 'Inter', Arial, sans-serif;
+  }
+
+  .prompt-text {
+    font-size: 15px;
+    line-height: 1.55;
+    color: var(--text-soft);
+  }
+
+  .footer-actions {
+    display: flex;
+    justify-content: center;
+  }
+
+  .done-note {
+    text-align: center;
+    font-size: 16px;
+    line-height: 1.5;
+    color: var(--text-soft);
+    margin-top: 6px;
+  }
+
+  @media (max-width: 640px) {
+    body { padding: 24px 14px 36px; }
+    .hero-text, .prompt-text, .done-note { font-size: 16px; }
+    .hero-start { min-height: 340px; padding: 24px 16px; }
+    .card { padding: 16px; }
+    .action-btn { width: 100%; min-width: 0; }
+  }
+
+.hero-start .action-btn{
+  margin-top: 20px;
+}
+
+
+  
+
+
+    .secondary-btn{
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: 18px;
+    background: #ffffff;
+    color: var(--text-soft);
+    border: 1px solid var(--line);
+    box-shadow: none;
+    font-weight: 400;
+  }
+
+  .secondary-btn:hover{
+    background: #fafcfd;
+    color: var(--text);
+    border-color: #dbe7ee;
+    transform: translateY(-1px);
+    box-shadow: none;
+  }
+
+
+.prompt-block{
+  margin-top:16px;
+  margin-bottom:20px;
+  padding:16px;
+  border-radius:14px;
+  border:1px solid var(--line);
+  background:#f9fbfc;
+}
+  .prompt-label{
+    font-size:12px;
+    font-weight:700;
+    color:var(--blue);
+    margin-bottom:6px;
+  }
+  .prompt-text{
+    font-size:14px;
+    color:var(--text-soft);
+  }
+
+
+  .stage-wrap{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    margin-bottom:16px;
+    flex-wrap:wrap;
+  }
+
+  .stage-wrap .stage-badge{
+    margin-bottom:0;
+  }
+
+  .stage-note{
+    font-size:14px;
+    line-height:1.4;
+    color:var(--text-soft);
+    font-weight:400;
+  }
+</style>
+</head>
+<body>
+  <div class="demo">
+    <div class="card">
+      <div class="screen active" id="screen-start">
+        <div class="hero-start">
+          <div class="hero-icon">🦊</div>
+          <button class="action-btn" type="button" onclick="goToStep(1)">Нарисуй лису в лесу</button>
+        </div>
+      </div>
+
+      
+      <div class="screen" id="screen-1">
+        <div class="stage-wrap"><div class="stage-badge bad">😕 Плохой</div><div class="stage-note">(потому что это не то, что ты хотел)</div></div>
+        <div class="image-wrap">
+          <img src="fox_bad.jpg" alt="Плохой пример: лиса в лесу" />
+        </div>
+
+        <div class="prompt-block">
+          <div class="prompt-label">ПРОМПТ</div>
+          <div class="prompt-text">Нарисуй лису в лесу</div>
+        </div>
+
+        <div class="footer-actions">
+          <button class="action-btn" type="button" onclick="goToStep(2)">Улучшить</button>
+        </div>
+      </div>
+
+      <div class="screen" id="screen-2">
+        <div class="stage-badge mid">🙂 Средний</div>
+        <div class="image-wrap">
+          <img src="fox_medium.jpg" alt="Средний пример: лиса в лесу" />
+        </div>
+        <div class="prompt-box">
+          <div class="prompt-label">Промпт</div>
+          <div class="prompt-text">Создай изображение рыжей лисы, которая стоит на лесной поляне. Стиль — иллюстрация.</div>
+        </div>
+        <div class="footer-actions">
+          <button class="action-btn" type="button" onclick="goToStep(3)">Еще улучшить</button>
+        </div>
+      </div>
+
+      <div class="screen" id="screen-3">
+        <div class="stage-badge good">😍 Хороший</div>
+        <div class="image-wrap">
+          <img src="fox_good.jpg" alt="Хороший пример: лиса в лесу" />
+        </div>
+        <div class="prompt-box">
+          <div class="prompt-label">Промпт</div>
+          <div class="prompt-text">Создай детализированную иллюстрацию рыжей лисы среднего плана: лиса стоит на лесной поляне ранним утром, вокруг легкая дымка тумана, видны высокие травы и несколько елей на заднем плане. Мягкий рассеянный свет, теплые оттенки рассвета, акцент на текстуре меха. Стиль — книжная иллюстрация в духе классических сказок. Высокое разрешение, 8K, четкие линии, без размытости и артефактов.
+          
+</div>
+        </div>
+        <div class="done-note">Чем конкретнее промпт, тем ближе результат к тому, что ты действительно хотел получить.</div>
+      
+        <div class="footer-actions">
+          <button class="action-btn secondary-btn" type="button" onclick="goToStep(0)">Вернуться в начало</button>
+        </div>
+</div>
+    </div>
+  </div>
+
+<script>
+  function goToStep(step) {
+    var screens = document.querySelectorAll('.screen');
+    for (var i = 0; i < screens.length; i++) {
+      screens[i].classList.remove('active');
+    }
+
+    if (step === 0) {
+      document.getElementById('screen-start').classList.add('active');
+      return;
+    }
+
+    document.getElementById('screen-' + step).classList.add('active');
+  }
+</script>
+</body>
+</html>

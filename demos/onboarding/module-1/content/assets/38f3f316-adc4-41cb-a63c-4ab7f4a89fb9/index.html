@@ -1,0 +1,586 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Экосистема брендов Skyeng</title>
+  <style>
+    :root {
+      --bg: #f7f7f7;
+      --paper: #ffffff;
+      --text: #101010;
+      --muted: #4f5763;
+      --stroke: #111111;
+      --lime2: #d9ff8d;
+      --sky: #d9f2ff;
+      --pink: #ffc9f2;
+      --lavender: #ddd0ff;
+      --font: 'StratosSkyeng', 'Stratos Skyeng', sans-serif;
+    }
+
+    * { box-sizing: border-box; font-family: var(--font) !important; }
+    html, body { margin: 0; padding: 0; background: var(--bg); }
+    body {
+      font-family: var(--font);
+      color: var(--text);
+      padding: 24px 16px 32px;
+      display: flex;
+      justify-content: center;
+      font-size: 17px;
+    }
+
+    .infographic {
+      width: 100%;
+      max-width: 780px;
+      position: relative;
+    }
+
+    .stage-card {
+      background: var(--bg);
+      border-radius: 32px;
+      overflow: hidden;
+      position: relative;
+      padding: 22px 22px 24px;
+    }
+
+    /* decorative stars */
+    .star {
+      position: absolute;
+      color: #cbe800;
+      line-height: 1;
+      pointer-events: none;
+      z-index: 0;
+      user-select: none;
+    }
+    .star.s1 { top: 22px; left: 18px; font-size: 28px; transform: rotate(-12deg); }
+    .star.s2 { top: 36px; right: 24px; font-size: 22px; }
+    .star.s3 { top: 160px; right: 14px; font-size: 18px; transform: rotate(15deg); }
+    .star.s4 { bottom: 280px; left: 16px; font-size: 24px; transform: rotate(10deg); }
+    .star.s5 { bottom: 120px; right: 22px; font-size: 20px; transform: rotate(-8deg); }
+
+    /* HEADER */
+    .header-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      position: relative;
+      z-index: 2;
+      margin-bottom: 14px;
+    }
+
+    .stage-chip {
+      display: inline-flex;
+      align-items: center;
+      padding: 10px 16px;
+      border-radius: 14px;
+      background: var(--sky);
+      border: 2px solid var(--stroke);
+      font-size: 17px;
+      font-weight: 800;
+      transform: rotate(-2deg);
+      transition: background .25s ease;
+    }
+    .stage-chip.blue { background: var(--sky); }
+    .stage-chip.pink { background: var(--pink); }
+    .stage-chip.lime { background: var(--lime2); }
+    .stage-chip.lavender { background: var(--lavender); }
+
+    .stage-counter {
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--muted);
+      background: #fff;
+      padding: 8px 14px;
+      border-radius: 999px;
+      flex-shrink: 0;
+      letter-spacing: -0.01em;
+    }
+    .stage-counter b { color: var(--text); font-weight: 900; }
+
+    /* VISUAL */
+    .visual {
+      position: relative;
+      height: 440px;
+      display: flex;
+      align-items: end;
+      justify-content: center;
+      overflow: visible;
+      z-index: 2;
+      margin-bottom: 8px;
+    }
+
+    .blob {
+      position: absolute;
+      width: 400px;
+      height: 250px;
+      border-radius: 50%;
+      bottom: 30px;
+      left: 50%;
+      transform: translateX(-50%);
+      transition: background .35s ease;
+      z-index: 1;
+    }
+    .blob.blue { background: rgba(217, 242, 255, 0.95); }
+    .blob.pink { background: rgba(255, 201, 242, 0.88); }
+    .blob.lime { background: rgba(217, 255, 141, 0.88); }
+    .blob.lavender { background: rgba(221, 208, 255, 0.88); }
+
+    .person {
+      position: relative;
+      max-height: 420px;
+      max-width: 88%;
+      object-fit: contain;
+      z-index: 2;
+      transition: opacity 0.35s ease, transform 0.35s ease;
+    }
+
+    /* overlay note on top of the image — sticker style */
+    .image-note {
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: -6px;
+      z-index: 4;
+      margin: 0 auto;
+      max-width: 480px;
+      padding: 14px 18px;
+      border-radius: 18px;
+      font-size: 17px;
+      line-height: 1.45;
+      font-weight: 600;
+      border: 2px solid rgba(17,17,17,0.12);
+      box-shadow: 0 6px 16px rgba(0,0,0,0.06);
+      transition: background .35s ease;
+    }
+    .image-note.blue { background: var(--sky); }
+    .image-note.pink { background: var(--pink); }
+    .image-note.lime { background: var(--lime2); }
+    .image-note.lavender { background: var(--lavender); }
+
+    /* INFO SECTION */
+    .info-section {
+      position: relative;
+      z-index: 2;
+      margin-top: 22px;
+    }
+
+    .product-group {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .product-card {
+      background: var(--paper);
+      border-radius: 22px;
+      padding: 16px 18px;
+      border: 2px solid rgba(0,0,0,0.08);
+      display: flex;
+      gap: 16px;
+      align-items: flex-start;
+    }
+
+    .product-logo-wrap {
+      flex-shrink: 0;
+      width: 140px;
+      padding-top: 2px;
+    }
+
+    .product-logo-wrap img {
+      display: block;
+      width: 100%;
+      height: auto;
+      max-height: 38px;
+      object-fit: contain;
+      object-position: left center;
+    }
+
+    .product-copy {
+      flex: 1;
+      font-size: 17px;
+      line-height: 1.5;
+      color: #232833;
+    }
+    .product-copy strong { font-weight: 800; }
+
+    .product-link {
+      display: inline-flex;
+      margin-top: 8px;
+      color: var(--text);
+      font-weight: 700;
+      text-decoration: none;
+      border-bottom: 2px solid var(--lime2);
+      line-height: 1.1;
+      font-size: 17px;
+    }
+    .product-link:hover { border-bottom-color: var(--stroke); }
+
+    .route-note {
+      display: block;
+      padding: 14px 18px;
+      background: #fff;
+      border-radius: 18px;
+      font-size: 17px;
+      font-weight: 600;
+      line-height: 1.45;
+      margin-top: 14px;
+      position: relative;
+    }
+    .route-note::before {
+      content: '✦';
+      color: #cbe800;
+      font-weight: 900;
+      margin-right: 6px;
+    }
+
+    /* BOTTOM BAR */
+    .bottom-bar {
+      margin-top: 18px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      position: relative;
+      z-index: 2;
+    }
+
+    .timeline {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 6px;
+    }
+
+    .step {
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 11px 8px;
+      border-radius: 999px;
+      border: 1.5px solid rgba(0,0,0,0.12);
+      background: rgba(255,255,255,0.88);
+      color: var(--muted);
+      font-size: 14px;
+      font-weight: 700;
+      letter-spacing: -0.01em;
+      transition: all .25s ease;
+      cursor: pointer;
+      text-align: center;
+      line-height: 1.1;
+    }
+    .step:hover { transform: translateY(-1px); }
+
+    .step.active {
+      background: var(--lime2);
+      color: var(--text);
+      border-color: var(--stroke);
+      transform: translateY(-2px);
+    }
+
+    .step.done {
+      background: rgba(217, 255, 141, 0.4);
+      color: var(--text);
+    }
+    .step.done::after {
+      content: '✓';
+      margin-left: 5px;
+      font-size: 11px;
+      color: #2e8b57;
+      font-weight: 900;
+    }
+
+    .controls {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      justify-content: flex-end;
+    }
+
+    .nav-btn, .cta-btn {
+      border: 0;
+      font-family: var(--font);
+      cursor: pointer;
+      transition: transform .2s ease, background .2s ease, opacity .2s ease;
+    }
+
+    .nav-btn {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      background: white;
+      color: var(--text);
+      font-size: 18px;
+      font-weight: 900;
+      border: 1.5px solid rgba(0,0,0,0.08);
+      flex-shrink: 0;
+    }
+    .nav-btn:hover:not(:disabled) { transform: translateY(-2px); }
+    .nav-btn:disabled { opacity: 0.4; cursor: default; }
+
+    .cta-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      padding: 11px 14px 11px 20px;
+      background: #000;
+      color: #fff;
+      border-radius: 999px;
+      font-size: 14px;
+      font-weight: 700;
+      letter-spacing: -0.01em;
+    }
+    .cta-btn:hover { background: #222; transform: translateY(-2px); }
+
+    .cta-circle {
+      width: 26px;
+      height: 26px;
+      border-radius: 50%;
+      background: var(--lime2);
+      color: black;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      font-weight: 900;
+      flex-shrink: 0;
+    }
+
+    .fade { animation: fadeIn .35s ease; }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* MOBILE */
+    @media (max-width: 540px) {
+      body { padding: 14px 10px 24px; font-size: 17px; }
+      .stage-card { padding: 18px 16px 20px; border-radius: 26px; }
+      .header-row { flex-wrap: wrap; }
+      .stage-chip { font-size: 15px; padding: 8px 14px; }
+      .stage-counter { font-size: 14px; padding: 6px 12px; }
+      .visual { height: 360px; }
+      .blob { width: 320px; height: 200px; bottom: 26px; }
+      .person { max-height: 340px; max-width: 88%; }
+      .image-note { font-size: 15px; padding: 11px 14px; max-width: 360px; }
+
+      .product-card { padding: 13px 14px; gap: 12px; }
+      .product-logo-wrap { width: 110px; }
+      .product-logo-wrap img { max-height: 32px; }
+      .product-copy { font-size: 15px; }
+      .product-link { font-size: 14px; }
+      .route-note { font-size: 15px; padding: 12px 14px; }
+
+      .step { font-size: 12px; padding: 9px 4px; }
+      .cta-btn { font-size: 13px; padding: 10px 12px 10px 16px; }
+      .nav-btn { width: 40px; height: 40px; font-size: 16px; }
+
+      .star.s4, .star.s5 { display: none; }
+    }
+
+    @media (max-width: 380px) {
+      .product-card { flex-direction: column; gap: 10px; }
+      .product-logo-wrap { width: auto; }
+      .product-logo-wrap img { max-height: 34px; object-position: left center; }
+    }
+  </style>
+</head>
+<body>
+  <div class="infographic">
+    <div class="stage-card">
+      <div class="star s1">✦</div>
+      <div class="star s2">✦</div>
+      <div class="star s3">✦</div>
+      <div class="star s4">✦</div>
+      <div class="star s5">✦</div>
+
+      <!-- HEADER -->
+      <div class="header-row" id="contentWrap">
+        <div class="stage-chip blue" id="stageChip">1. До школы</div>
+        <div class="stage-counter">этап <b id="stageNum">01</b> / 4</div>
+      </div>
+
+      <!-- VISUAL -->
+      <div class="visual">
+        <div class="blob blue" id="blob"></div>
+        <img class="person" id="stageImage" src="assets/stage1_child.png" alt="Этап обучения" />
+        <div class="image-note blue" id="imageNote"></div>
+      </div>
+
+      <!-- INFO -->
+      <div class="info-section">
+        <div class="product-group" id="productGroup"></div>
+      </div>
+
+      <!-- BOTTOM -->
+      <div class="bottom-bar">
+        <div class="timeline" id="timeline"></div>
+        <div class="controls">
+          <button class="nav-btn" id="prevBtn" aria-label="Предыдущий этап">←</button>
+          <button class="cta-btn" id="nextBtn">
+            <span id="nextLabel">Следующий этап</span>
+            <span class="cta-circle">↗</span>
+          </button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <script>
+    const slides = [
+      {
+        stage: '1. До школы',
+        timeline: 'До школы',
+        image: 'assets/stage1_child.png',
+        note: 'Skysmart помогает начать маршрут мягко: увлечь учебой, развивать любопытство и уверенность.',
+        overlay: 'Первый контакт с экосистемой — ранний интерес к учебе, английскому и новым навыкам.',
+        overlayTone: 'blue',
+        products: [
+          {
+            logo: 'assets/skysmart.svg',
+            copy: 'Для детей и подростков 4–17 лет: английский, подготовка к школе, школьные предметы, ОГЭ/ЕГЭ, программирование и другие направления.',
+            link: { href: 'https://skysmart.ru/', label: 'Лендинг Skysmart' }
+          }
+        ]
+      },
+      {
+        stage: '2. Школа',
+        timeline: 'Школа',
+        image: 'assets/stage2_school.png',
+        note: 'На этом этапе Skysmart становится опорой для регулярной учебы и движения к результату.',
+        overlay: 'В школе маршрут расширяется: к английскому добавляются школьные предметы и подготовка к важным этапам.',
+        overlayTone: 'pink',
+        products: [
+          {
+            logo: 'assets/skysmart.svg',
+            copy: 'Для детей и подростков 4–17 лет: английский, подготовка к школе, школьные предметы, ОГЭ/ЕГЭ, программирование и другие направления.',
+            link: { href: 'https://skysmart.ru/', label: 'Лендинг Skysmart' }
+          }
+        ]
+      },
+      {
+        stage: '3. Колледж',
+        timeline: 'Колледж',
+        image: 'assets/stage3_college.png',
+        note: 'Экосистема не обрывается после школы: она помогает перейти к профессиональному образованию.',
+        overlay: 'После школы экосистема поддерживает переход к следующей ступени — профессиональному образованию.',
+        overlayTone: 'lavender',
+        products: [
+          {
+            logo: 'assets/mabiu.svg',
+            copy: 'СПО и ВО: дополнительное профессиональное и высшее образование онлайн с дипломом.',
+            link: null
+          }
+        ]
+      },
+      {
+        stage: '4. Взрослая жизнь',
+        timeline: 'Взрослая жизнь',
+        image: 'assets/stage4_adult.png',
+        note: 'На взрослом этапе экосистема закрывает сразу две задачи: развитие языковых навыков и карьерный рост.',
+        overlay: 'Во взрослой жизни обучение помогает и для текущих задач, и для смены или усиления карьерного трека.',
+        overlayTone: 'lime',
+        products: [
+          {
+            logo: 'assets/skyeng.svg',
+            copy: 'Школа иностранных языков для взрослых 18+: 11 языков, разные уровни и цели — для общения, путешествий и работы.',
+            link: { href: 'https://skyeng.ru/', label: 'Лендинг Skyeng' }
+          },
+          {
+            logo: 'assets/skypro.svg',
+            copy: 'Онлайн-университет цифровых профессий: можно освоить новую профессию или усилить digital- и AI-навыки.',
+            link: { href: 'https://sky.pro/', label: 'Лендинг Skypro' }
+          }
+        ]
+      }
+    ];
+
+    let current = 0;
+    const stageChip = document.getElementById('stageChip');
+    const stageNum = document.getElementById('stageNum');
+    const stageImage = document.getElementById('stageImage');
+    const productGroup = document.getElementById('productGroup');
+    const timeline = document.getElementById('timeline');
+    const contentWrap = document.getElementById('contentWrap');
+    const nextBtn = document.getElementById('nextBtn');
+    const prevBtn = document.getElementById('prevBtn');
+    const imageNote = document.getElementById('imageNote');
+    const blob = document.getElementById('blob');
+    const nextLabel = document.getElementById('nextLabel');
+    const visualEl = document.querySelector('.visual');
+
+    function renderTimeline() {
+      timeline.innerHTML = '';
+      slides.forEach((slide, index) => {
+        const step = document.createElement('button');
+        step.className = 'step' + (index === current ? ' active' : '') + (index < current ? ' done' : '');
+        step.textContent = slide.timeline;
+        step.addEventListener('click', () => {
+          current = index;
+          render();
+        });
+        timeline.appendChild(step);
+      });
+    }
+
+    function renderProducts(products) {
+      productGroup.innerHTML = '';
+      products.forEach(item => {
+        const card = document.createElement('div');
+        card.className = 'product-card';
+        const linkHTML = item.link
+          ? `<a class="product-link" href="${item.link.href}" target="_blank" rel="noopener">${item.link.label} →</a>`
+          : '';
+        card.innerHTML = `
+          ${item.logo ? `<div class="product-logo-wrap"><img src="${item.logo}" alt="Логотип продукта"></div>` : ''}
+          <div class="product-copy">
+            ${item.copy}
+            ${linkHTML}
+          </div>
+        `;
+        productGroup.appendChild(card);
+      });
+    }
+
+    function render() {
+      const slide = slides[current];
+
+      stageChip.textContent = slide.stage;
+      stageChip.className = 'stage-chip ' + slide.overlayTone;
+      stageNum.textContent = String(current + 1).padStart(2, '0');
+      stageImage.src = slide.image;
+      imageNote.textContent = slide.overlay;
+      imageNote.className = 'image-note ' + slide.overlayTone;
+      blob.className = 'blob ' + slide.overlayTone;
+
+      renderProducts(slide.products);
+      renderTimeline();
+
+      visualEl.classList.remove('fade');
+      void visualEl.offsetWidth;
+      visualEl.classList.add('fade');
+
+      productGroup.classList.remove('fade');
+      void productGroup.offsetWidth;
+      productGroup.classList.add('fade');
+
+      prevBtn.disabled = current === 0;
+      nextLabel.textContent = current === slides.length - 1 ? 'К началу' : 'Следующий этап';
+    }
+
+    nextBtn.addEventListener('click', () => {
+      current = current === slides.length - 1 ? 0 : current + 1;
+      render();
+    });
+
+    prevBtn.addEventListener('click', () => {
+      if (current > 0) {
+        current -= 1;
+        render();
+      }
+    });
+
+    render();
+  </script>
+</body>
+</html>

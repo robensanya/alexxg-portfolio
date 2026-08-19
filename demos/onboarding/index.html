@@ -1,0 +1,177 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Онбординг Skyeng — демо курса</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F7F7F7;
+    --card: #FFFFFF;
+    --ink: #000000;
+    --lime: #BAFF00;
+    --pink: #FFC9F2;
+    --lav: #E8DDFF;
+    --sky: #D8F7FF;
+    --yellow: #FFF3A8;
+  }
+  * { box-sizing: border-box; }
+  html, body {
+    margin: 0;
+    padding: 0;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: 'Manrope', Arial, sans-serif;
+  }
+  .wrap {
+    max-width: 980px;
+    margin: 0 auto;
+    padding: 48px 24px 80px;
+  }
+  header {
+    margin-bottom: 40px;
+  }
+  .eyebrow {
+    display: inline-block;
+    background: var(--lime);
+    border: 2px solid var(--ink);
+    border-radius: 999px;
+    padding: 6px 16px;
+    font-weight: 800;
+    font-size: 13px;
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+    box-shadow: 4px 4px 0 var(--ink);
+    margin-bottom: 20px;
+  }
+  h1 {
+    font-size: clamp(32px, 5vw, 48px);
+    font-weight: 800;
+    line-height: 1.08;
+    margin: 0 0 14px;
+    letter-spacing: -0.01em;
+  }
+  .lead {
+    font-size: 18px;
+    line-height: 1.5;
+    max-width: 640px;
+    color: #2b2b2b;
+    font-weight: 500;
+  }
+  .note {
+    margin-top: 18px;
+    background: var(--card);
+    border: 2px solid var(--ink);
+    border-radius: 20px;
+    padding: 16px 20px;
+    box-shadow: 6px 6px 0 var(--ink);
+    font-size: 14px;
+    line-height: 1.5;
+    max-width: 640px;
+    font-weight: 600;
+  }
+  .modules {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 24px;
+  }
+  .module-card {
+    display: flex;
+    gap: 20px;
+    align-items: flex-start;
+    background: var(--card);
+    border: 2px solid var(--ink);
+    border-radius: 24px;
+    padding: 24px;
+    box-shadow: 6px 6px 0 var(--ink);
+    text-decoration: none;
+    color: var(--ink);
+    transition: transform 0.12s ease, box-shadow 0.12s ease;
+  }
+  .module-card:hover {
+    transform: translate(-3px, -3px);
+    box-shadow: 9px 9px 0 var(--ink);
+  }
+  .module-num {
+    flex: 0 0 auto;
+    width: 56px;
+    height: 56px;
+    border-radius: 16px;
+    border: 2px solid var(--ink);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 800;
+    font-size: 22px;
+  }
+  .module-body h2 {
+    margin: 0 0 8px;
+    font-size: 21px;
+    font-weight: 800;
+  }
+  .module-body p {
+    margin: 0;
+    font-size: 15px;
+    line-height: 1.5;
+    color: #333;
+    font-weight: 500;
+  }
+  .module-arrow {
+    margin-left: auto;
+    flex: 0 0 auto;
+    align-self: center;
+    font-size: 22px;
+    font-weight: 800;
+  }
+  footer {
+    margin-top: 56px;
+    font-size: 13px;
+    color: #666;
+    font-weight: 600;
+    line-height: 1.6;
+    max-width: 640px;
+  }
+  @media (max-width: 560px) {
+    .module-card { flex-direction: column; }
+    .module-arrow { display: none; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <span class="eyebrow">Портфолио · e-learning</span>
+    <h1>Онбординг Skyeng</h1>
+    <p class="lead">Два модуля из курса для новых сотрудников: культурный код компании и инфобезопасность на рабочем месте — с интерактивными кейсами и мини-тренажёрами. Сделано в Articulate Rise, экспортировано как автономные HTML5-пакеты.</p>
+    <div class="note">Это демо-версия для портфолио — здесь показаны 2 модуля, в полном курсе их ещё несколько. Видео полностью убраны из курса. Внутренние ссылки и часть скриншотов обезличены, имена, e-mail и цифры в примерах — вымышленные.</div>
+  </header>
+
+  <div class="modules">
+    <a class="module-card" href="module-1/content/index.html">
+      <div class="module-num" style="background:var(--pink);">1</div>
+      <div class="module-body">
+        <h2>Кто мы и как у нас принято</h2>
+        <p>Ценности и культурный код компании, клиентский фокус, структура и стратегические приоритеты — через интерактивные кейсы и мини-тренажёры.</p>
+      </div>
+      <div class="module-arrow">→</div>
+    </a>
+
+    <a class="module-card" href="module-2/content/index.html">
+      <div class="module-num" style="background:var(--sky);">2</div>
+      <div class="module-body">
+        <h2>Инфобез и безопасность на рабочем месте</h2>
+        <p>Пароли и фишинг, безопасное хранение данных, эргономика рабочего места, пожарная и электробезопасность, первая помощь.</p>
+      </div>
+      <div class="module-arrow">→</div>
+    </a>
+  </div>
+
+  <footer>
+    Демо-проект для портфолио на основе реального курса. Контент адаптирован: убраны видео и персональные данные, внутренние ссылки заменены на «#».
+  </footer>
+</div>
+</body>
+</html>

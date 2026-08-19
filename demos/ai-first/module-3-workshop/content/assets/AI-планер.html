@@ -1,0 +1,1039 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AI-first: Карта делегирования</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+    :root {
+      --bg: #f9f9f9;
+      --white: #ffffff;
+      --accent: #00c1ff;
+      --accent-dim: rgba(0, 193, 255, 0.1);
+      --accent-border: rgba(0, 193, 255, 0.22);
+      --dark: #1a1a2e;
+      --gray: #7d8797;
+      --light: #dfe6ee;
+      --text-body: #4a5568;
+      --red: #ff6b6b;
+      --red-dim: rgba(255, 107, 107, 0.1);
+      --red-border: rgba(255, 107, 107, 0.18);
+      --green: #00c896;
+      --green-dim: rgba(0, 200, 150, 0.1);
+      --green-border: rgba(0, 200, 150, 0.18);
+      --shadow-soft: 0 8px 24px rgba(26, 26, 46, 0.06);
+      --border-soft: rgba(26, 26, 46, 0.08);
+      --font: 'StratosSkyeng', 'Inter', sans-serif;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: var(--font);
+      background: var(--bg);
+      color: var(--dark);
+      min-height: 100vh;
+      padding: 24px;
+    }
+
+    .wrap { max-width: 980px; margin: 0 auto; }
+
+    .header {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+
+    .header-accent {
+      width: 5px;
+      height: 56px;
+      background: var(--accent);
+      border-radius: 999px;
+      flex-shrink: 0;
+    }
+
+    .header h1 {
+      font-size: 24px;
+      line-height: 1.1;
+      font-weight: 700;
+      letter-spacing: -0.03em;
+      margin-bottom: 4px;
+    }
+
+    .header p {
+      font-size: 13px;
+      line-height: 1.45;
+      color: var(--gray);
+    }
+
+    .badge {
+      margin-left: auto;
+      background: var(--accent-dim);
+      border: 1px solid var(--accent-border);
+      color: #0088b3;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      padding: 6px 12px;
+      border-radius: 999px;
+      white-space: nowrap;
+    }
+
+    .tabs {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+
+    .tab {
+      border: none;
+      background: var(--white);
+      border-radius: 14px;
+      padding: 14px 12px;
+      font-family: var(--font);
+      font-size: 12px;
+      font-weight: 700;
+      line-height: 1.25;
+      cursor: pointer;
+      color: var(--gray);
+      box-shadow: var(--shadow-soft);
+      border: 1px solid var(--border-soft);
+      transition: all 0.2s ease;
+    }
+
+    .tab:hover { transform: translateY(-1px); }
+
+    .tab.active.tab-1 {
+      background: var(--accent);
+      color: #fff;
+      box-shadow: 0 6px 18px rgba(0, 193, 255, 0.35);
+    }
+
+    .tab.active.tab-2 {
+      background: var(--green);
+      color: #fff;
+      box-shadow: 0 6px 18px rgba(0, 200, 150, 0.32);
+    }
+
+    .tab.active.tab-3 {
+      background: var(--red);
+      color: #fff;
+      box-shadow: 0 6px 18px rgba(255, 107, 107, 0.32);
+    }
+
+    .panel { display: none; animation: fadeUp 0.22s ease; }
+    .panel.active { display: block; }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .card {
+      background: var(--white);
+      border-radius: 18px;
+      box-shadow: var(--shadow-soft);
+      border: 1px solid var(--border-soft);
+      padding: 18px;
+      margin-bottom: 20px;
+    }
+
+    .card-title {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      color: var(--gray);
+      margin-bottom: 14px;
+    }
+
+    .field + .field { margin-top: 14px; }
+
+    .label {
+      display: block;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      margin-bottom: 7px;
+      color: #0088b3;
+    }
+
+    .label.green { color: #009b75; }
+    .label.red { color: #d95353; }
+
+    .textarea, .select {
+      width: 100%;
+      background: var(--bg);
+      border: none;
+      border-radius: 12px;
+      padding: 12px 14px;
+      font-family: var(--font);
+      font-size: 14px;
+      color: var(--dark);
+      border: 1px solid var(--border-soft);
+      box-shadow: none;
+      outline: none;
+    }
+
+    .textarea {
+      resize: vertical;
+      min-height: 92px;
+      line-height: 1.45;
+    }
+
+    .textarea:focus, .select:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(0, 193, 255, 0.12);
+    }
+
+    .helper {
+      margin-top: 8px;
+      font-size: 12px;
+      line-height: 1.45;
+      color: var(--gray);
+    }
+
+    .chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .chip {
+      border: none;
+      outline: none;
+      cursor: pointer;
+      padding: 8px 14px;
+      border-radius: 999px;
+      background: var(--white);
+      color: var(--gray);
+      font-family: var(--font);
+      font-size: 12px;
+      font-weight: 600;
+      box-shadow: none;
+      border: 1px solid var(--border-soft);
+      transition: all 0.15s ease;
+    }
+
+    .chip:hover { transform: translateY(-1px); }
+    .chip.selected {
+      background: var(--accent);
+      color: #fff;
+      border-color: var(--accent);
+      box-shadow: 0 4px 14px rgba(0, 193, 255, 0.18);
+    }
+
+    .chip.green.selected {
+      background: var(--green);
+      color: #fff;
+      border-color: var(--green);
+      box-shadow: 0 4px 14px rgba(0, 200, 150, 0.16);
+    }
+
+    .segment {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .segment-btn {
+      flex: 1 1 220px;
+      min-width: 0;
+      border: 1px solid var(--border-soft);
+      cursor: pointer;
+      border-radius: 14px;
+      padding: 12px 14px;
+      text-align: left;
+      background: var(--white);
+      font-family: var(--font);
+      box-shadow: none;
+      transition: all 0.2s ease;
+      color: var(--dark);
+    }
+
+    .segment-btn small {
+      display: block;
+      margin-top: 4px;
+      font-size: 12px;
+      color: var(--gray);
+      font-weight: 500;
+      line-height: 1.35;
+    }
+
+    .segment-btn.active-ai {
+      background: var(--accent-dim);
+      border: 1px solid var(--accent-border);
+    }
+
+    .segment-btn.active-human {
+      background: var(--red-dim);
+      border: 1px solid var(--red-border);
+    }
+
+    .btn {
+      width: 100%;
+      border: none;
+      cursor: pointer;
+      border-radius: 14px;
+      padding: 14px 16px;
+      font-family: var(--font);
+      font-size: 14px;
+      font-weight: 700;
+      color: #fff;
+      transition: all 0.2s ease;
+      margin-top: 16px;
+    }
+
+    .btn:hover { transform: translateY(-1px); }
+    .btn-blue { background: var(--accent); box-shadow: 0 8px 18px rgba(0,193,255,0.18); }
+    .btn-green { background: var(--green); box-shadow: 0 8px 18px rgba(0,200,150,0.16); }
+    .btn-red { background: var(--red); box-shadow: 0 8px 18px rgba(255,107,107,0.16); }
+
+    .list-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin: 6px 0 12px;
+    }
+
+    .list-head-title {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      color: var(--gray);
+    }
+
+    .count {
+      background: var(--accent-dim);
+      border: 1px solid var(--accent-border);
+      color: #0088b3;
+      font-size: 11px;
+      font-weight: 700;
+      padding: 4px 10px;
+      border-radius: 999px;
+    }
+
+    .task-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .task-item {
+      background: var(--white);
+      border-radius: 14px;
+      padding: 14px;
+      box-shadow: var(--shadow-soft);
+      border: 1px solid var(--border-soft);
+      border-left: 4px solid transparent;
+    }
+
+    .task-item.ai { border-left-color: var(--green); }
+    .task-item.human { border-left-color: var(--red); }
+
+    .task-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 12px;
+    }
+
+    .task-name {
+      font-size: 14px;
+      font-weight: 600;
+      line-height: 1.4;
+      color: var(--dark);
+      flex: 1;
+    }
+
+    .tag {
+      font-size: 10px;
+      font-weight: 700;
+      padding: 5px 9px;
+      border-radius: 999px;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+
+    .tag.ai {
+      background: var(--green-dim);
+      color: #009b75;
+      border: 1px solid var(--green-border);
+    }
+
+    .tag.human {
+      background: var(--red-dim);
+      color: #d95353;
+      border: 1px solid var(--red-border);
+    }
+
+    .task-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 10px;
+    }
+
+    .meta-pill {
+      font-size: 11px;
+      line-height: 1.2;
+      color: var(--gray);
+      background: var(--bg);
+      padding: 6px 9px;
+      border-radius: 999px;
+      border: 1px solid var(--border-soft);
+      box-shadow: none;
+    }
+
+    .task-note {
+      margin-top: 10px;
+      background: var(--bg);
+      border-radius: 10px;
+      padding: 10px 11px;
+      font-size: 12px;
+      line-height: 1.45;
+      color: var(--text-body);
+      border: 1px solid var(--border-soft);
+      box-shadow: none;
+    }
+
+    .task-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 12px;
+    }
+
+    .action-btn {
+      border: none;
+      cursor: pointer;
+      border-radius: 10px;
+      padding: 8px 10px;
+      font-family: var(--font);
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--dark);
+      background: var(--white);
+      box-shadow: none;
+      border: 1px solid var(--border-soft);
+    }
+
+    .action-btn.transfer-ai { color: #009b75; }
+    .action-btn.transfer-human { color: #d95353; }
+    .action-btn.delete { color: var(--gray); }
+
+    .empty {
+      text-align: center;
+      padding: 28px 16px;
+      font-size: 13px;
+      color: var(--gray);
+    }
+
+    .summary {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 10px;
+      margin-top: 10px;
+    }
+
+    .summary-box {
+      background: var(--white);
+      border-radius: 14px;
+      padding: 14px 12px;
+      text-align: center;
+      box-shadow: var(--shadow-soft);
+      border: 1px solid var(--border-soft);
+    }
+
+    .summary-num {
+      font-size: 28px;
+      font-weight: 700;
+      line-height: 1;
+      margin-bottom: 5px;
+    }
+
+    .summary-label {
+      font-size: 11px;
+      color: var(--gray);
+      font-weight: 600;
+    }
+
+    .summary-box.all .summary-num { color: var(--accent); }
+    .summary-box.ai .summary-num { color: var(--green); }
+    .summary-box.human .summary-num { color: var(--red); }
+
+    .time-box {
+      margin-top: 10px;
+      background: var(--accent-dim);
+      border: 1px solid var(--accent-border);
+      border-radius: 14px;
+      padding: 14px 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .time-box span {
+      font-size: 12px;
+      font-weight: 600;
+      color: #0088b3;
+    }
+
+    .time-box strong {
+      font-size: 20px;
+      color: var(--accent);
+      line-height: 1;
+    }
+
+    .btn-copy {
+      width: 100%;
+      margin-top: 12px;
+      border: 1px dashed var(--accent-border);
+      background: var(--white);
+      color: #0088b3;
+      border-radius: 14px;
+      padding: 13px 16px;
+      font-family: var(--font);
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .btn-copy:hover {
+      background: var(--accent-dim);
+      transform: translateY(-1px);
+    }
+
+    .toast {
+      position: fixed;
+      left: 50%;
+      bottom: 20px;
+      transform: translateX(-50%) translateY(80px);
+      background: var(--dark);
+      color: #fff;
+      font-size: 12px;
+      font-weight: 600;
+      padding: 10px 16px;
+      border-radius: 999px;
+      transition: transform 0.24s ease;
+      z-index: 50;
+      white-space: nowrap;
+    }
+
+    .toast.show { transform: translateX(-50%) translateY(0); }
+
+    @media (max-width: 820px) {
+      body { padding: 16px; }
+      .tabs { grid-template-columns: 1fr; }
+      .summary { grid-template-columns: 1fr; }
+      .time-box { align-items: flex-start; flex-direction: column; }
+      .badge { display: none; }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="header">
+      <div class="header-accent"></div>
+      <div>
+        <h1>AI-first: карта делегирования</h1>
+        <p>Сначала сортируем задачи: делегируем AI или не делегируем. Потом уточняем инструмент, экономию времени и риски.</p>
+      </div>
+      <div class="badge">ПРАКТИКА</div>
+    </div>
+
+    <div class="tabs">
+      <button class="tab tab-1 active" onclick="switchTab(1)">1. Общий список задач</button>
+      <button class="tab tab-2" onclick="switchTab(2)">2. AI делегируем</button>
+      <button class="tab tab-3" onclick="switchTab(3)">3. AI не делегируем</button>
+    </div>
+
+    <div class="panel active" id="panel-1">
+      <div class="card">
+        <div class="card-title">ОБЩИЙ СПИСОК</div>
+
+        <div class="field">
+          <label class="label">ЗАДАЧА</label>
+          <textarea id="general-task" class="textarea" placeholder="Например: подготовка саммари встречи, ответы на типовые письма, согласование сложного решения с командой"></textarea>
+          <div class="helper">Сюда заносим любые пожиратели времени, рутину и повторяющиеся задачи — пока без выбора инструмента.</div>
+        </div>
+
+        <div class="field">
+          <label class="label">КОМУ ОТНЕСТИ ЗАДАЧУ</label>
+          <div class="segment">
+            <button class="segment-btn active-ai" id="choice-ai" onclick="setGeneralChoice('ai')">
+              🤖 AI
+              <small>Можно делегировать или хотя бы вынести значимую часть работы.</small>
+            </button>
+            <button class="segment-btn" id="choice-human" onclick="setGeneralChoice('human')">
+              👤 Человек
+              <small>Пока не делегируем AI: нужен контроль, высокая цена ошибки или контекст.</small>
+            </button>
+          </div>
+        </div>
+
+        <button class="btn btn-blue" onclick="addFromGeneral()">+ Добавить в список</button>
+      </div>
+
+      <div class="card">
+        <div class="list-head">
+          <div class="list-head-title">МОИ ЗАДАЧИ</div>
+          <div class="count" id="all-count">0</div>
+        </div>
+        <div class="task-list" id="all-list"></div>
+      </div>
+
+      <div class="summary">
+        <div class="summary-box all">
+          <div class="summary-num" id="sum-all">0</div>
+          <div class="summary-label">Всего задач</div>
+        </div>
+        <div class="summary-box ai">
+          <div class="summary-num" id="sum-ai">0</div>
+          <div class="summary-label">AI делегируем</div>
+        </div>
+        <div class="summary-box human">
+          <div class="summary-num" id="sum-human">0</div>
+          <div class="summary-label">AI не делегируем</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="panel" id="panel-2">
+      <div class="card">
+        <div class="card-title">AI ДЕЛЕГИРУЕМ</div>
+
+        <div class="field">
+          <label class="label green">ВЫБЕРИ ЗАДАЧУ</label>
+          <select id="delegate-select" class="select"></select>
+        </div>
+
+        <div class="field">
+          <label class="label green">ВИД ИНСТРУМЕНТА</label>
+          <div class="chips" id="tool-chips">
+            <button class="chip green" onclick="selectToolChip(this)">💬 Текстовые модели</button>
+            <button class="chip green" onclick="selectToolChip(this)">🎨 Визуальные модели</button>
+            <button class="chip green" onclick="selectToolChip(this)">🎬 Видео / Аудио</button>
+            <button class="chip green" onclick="selectToolChip(this)">🎙️ Транскрибация</button>
+            <button class="chip green" onclick="selectToolChip(this)">🔀 Мультимодальные</button>
+            <button class="chip green" onclick="selectToolChip(this)">💻 Код / Интерфейсы</button>
+            <button class="chip green" onclick="selectToolChip(this)">📊 Презентации</button>
+          </div>
+        </div>
+
+        <div class="field">
+          <label class="label green">СКОЛЬКО ВРЕМЕНИ ПЛАНИРУЕМ СЭКОНОМИТЬ</label>
+          <div class="chips" id="time-chips">
+            <button class="chip green" onclick="selectTimeChip(this)">15 мин</button>
+            <button class="chip green" onclick="selectTimeChip(this)">30 мин</button>
+            <button class="chip green" onclick="selectTimeChip(this)">1 час</button>
+            <button class="chip green" onclick="selectTimeChip(this)">2 часа</button>
+            <button class="chip green" onclick="selectTimeChip(this)">4+ часа</button>
+          </div>
+        </div>
+
+        <button class="btn btn-green" onclick="saveDelegatedDetails()">Сохранить параметры задачи</button>
+      </div>
+
+      <div class="card">
+        <div class="list-head">
+          <div class="list-head-title">СПИСОК AI-ЗАДАЧ</div>
+          <div class="count" id="delegate-count">0</div>
+        </div>
+        <div class="task-list" id="delegate-list"></div>
+        <div class="time-box">
+          <span>⏱ Потенциальная экономия времени</span>
+          <strong id="saved-time">0 мин</strong>
+        </div>
+        <button class="btn-copy" onclick="copyTasks()">Скопировать список задач</button>
+      </div>
+    </div>
+
+    <div class="panel" id="panel-3">
+      <div class="card">
+        <div class="card-title">AI НЕ ДЕЛЕГИРУЕМ</div>
+
+        <div class="field">
+          <label class="label red">ВЫБЕРИ ЗАДАЧУ</label>
+          <select id="risk-select" class="select"></select>
+        </div>
+
+        <div class="field">
+          <label class="label red">ПОЧЕМУ НЕ ДЕЛЕГИРУЕМ</label>
+          <textarea id="risk-why" class="textarea" placeholder="Например: слишком тонкая коммуникация, нужна личная ответственность, нет достаточного контекста"></textarea>
+        </div>
+
+        <div class="field">
+          <label class="label red">В ЧЕМ РИСК</label>
+          <textarea id="risk-what" class="textarea" placeholder="Например: ошибка повлияет на клиента, можно потерять смысл, есть чувствительные данные"></textarea>
+        </div>
+
+        <button class="btn btn-red" onclick="saveRiskDetails()">Сохранить причину и риск</button>
+      </div>
+
+      <div class="card">
+        <div class="list-head">
+          <div class="list-head-title">СПИСОК НЕ ДЕЛЕГИРУЕМ</div>
+          <div class="count" id="risk-count">0</div>
+        </div>
+        <div class="task-list" id="risk-list"></div>
+        <button class="btn-copy" onclick="copyHumanTasks()">Скопировать список не делегируем</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+  <script>
+    let generalChoice = 'ai';
+    let selectedTools = [];
+    let selectedTime = '';
+
+    const timeValues = {
+      '15 мин': 15,
+      '30 мин': 30,
+      '1 час': 60,
+      '2 часа': 120,
+      '4+ часа': 240
+    };
+
+    let tasks = [];
+
+    function switchTab(tab) {
+      document.querySelectorAll('.tab').forEach(el => el.classList.remove('active'));
+      document.querySelector('.tab-' + tab).classList.add('active');
+      document.querySelectorAll('.panel').forEach(el => el.classList.remove('active'));
+      document.getElementById('panel-' + tab).classList.add('active');
+      refreshSelects();
+      renderAll();
+    }
+
+    function setGeneralChoice(choice) {
+      generalChoice = choice;
+      document.getElementById('choice-ai').classList.toggle('active-ai', choice === 'ai');
+      document.getElementById('choice-human').classList.toggle('active-human', choice === 'human');
+    }
+
+    function addFromGeneral() {
+      const el = document.getElementById('general-task');
+      const name = el.value.trim();
+      if (!name) {
+        showToast('Добавь задачу');
+        el.focus();
+        return;
+      }
+
+      tasks.unshift({
+        id: Date.now(),
+        name,
+        zone: generalChoice,
+        toolCategory: [],
+        timeLabel: '',
+        why: '',
+        risk: ''
+      });
+
+      el.value = '';
+      renderAll();
+      refreshSelects();
+      showToast('Задача добавлена');
+    }
+
+    function selectToolChip(btn) {
+      const value = btn.textContent.trim();
+      const index = selectedTools.indexOf(value);
+
+      if (index >= 0) {
+        selectedTools.splice(index, 1);
+        btn.classList.remove('selected');
+      } else {
+        selectedTools.push(value);
+        btn.classList.add('selected');
+      }
+    }
+
+    function selectTimeChip(btn) {
+      document.querySelectorAll('#time-chips .chip').forEach(chip => chip.classList.remove('selected'));
+      btn.classList.add('selected');
+      selectedTime = btn.textContent.trim();
+    }
+
+    function saveDelegatedDetails() {
+      const select = document.getElementById('delegate-select');
+      const id = Number(select.value);
+      if (!id) {
+        showToast('Сначала выбери задачу');
+        return;
+      }
+      const task = tasks.find(t => t.id === id);
+      if (!task) return;
+
+      task.zone = 'ai';
+      task.toolCategory = [...selectedTools];
+      task.timeLabel = selectedTime;
+
+      renderAll();
+      refreshSelects();
+      showToast('Параметры сохранены');
+    }
+
+    function saveRiskDetails() {
+      const select = document.getElementById('risk-select');
+      const id = Number(select.value);
+      const why = document.getElementById('risk-why').value.trim();
+      const risk = document.getElementById('risk-what').value.trim();
+
+      if (!id) {
+        showToast('Сначала выбери задачу');
+        return;
+      }
+
+      const task = tasks.find(t => t.id === id);
+      if (!task) return;
+
+      task.zone = 'human';
+      task.why = why;
+      task.risk = risk;
+
+      renderAll();
+      refreshSelects();
+      showToast('Причина и риск сохранены');
+    }
+
+    function moveTask(id, zone) {
+      const task = tasks.find(t => t.id === id);
+      if (!task) return;
+      task.zone = zone;
+      renderAll();
+      refreshSelects();
+      showToast(zone === 'ai' ? 'Задача перенесена в AI делегируем' : 'Задача перенесена в AI не делегируем');
+    }
+
+    function deleteTask(id) {
+      tasks = tasks.filter(t => t.id !== id);
+      renderAll();
+      refreshSelects();
+      showToast('Задача удалена');
+    }
+
+    function refreshSelects() {
+      const aiTasks = tasks.filter(t => t.zone === 'ai');
+      const humanTasks = tasks.filter(t => t.zone === 'human');
+
+      const delegate = document.getElementById('delegate-select');
+      const risk = document.getElementById('risk-select');
+
+      delegate.innerHTML = '<option value="">Выбери задачу</option>' + aiTasks.map(t => `<option value="${t.id}">${escapeHtml(t.name)}</option>`).join('');
+      risk.innerHTML = '<option value="">Выбери задачу</option>' + humanTasks.map(t => `<option value="${t.id}">${escapeHtml(t.name)}</option>`).join('');
+    }
+
+    function renderAll() {
+      renderGeneralList();
+      renderAiList();
+      renderHumanList();
+      updateSummary();
+    }
+
+    function renderGeneralList() {
+      const wrap = document.getElementById('all-list');
+      document.getElementById('all-count').textContent = tasks.length;
+
+      if (!tasks.length) {
+        wrap.innerHTML = '<div class="empty">Пока пусто. Добавь первую задачу из своей рутины.</div>';
+        return;
+      }
+
+      wrap.innerHTML = tasks.map(t => `
+        <div class="task-item ${t.zone}">
+          <div class="task-top">
+            <div class="task-name">${escapeHtml(t.name)}</div>
+            <div class="tag ${t.zone}">${t.zone === 'ai' ? 'AI' : 'Человек'}</div>
+          </div>
+          <div class="task-actions">
+            ${t.zone !== 'ai' ? `<button class="action-btn transfer-ai" onclick="moveTask(${t.id}, 'ai')">Перенести в AI</button>` : ''}
+            ${t.zone !== 'human' ? `<button class="action-btn transfer-human" onclick="moveTask(${t.id}, 'human')">Перенести в не делегируем</button>` : ''}
+            <button class="action-btn delete" onclick="deleteTask(${t.id})">Удалить</button>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function renderAiList() {
+      const aiTasks = tasks.filter(t => t.zone === 'ai');
+      const wrap = document.getElementById('delegate-list');
+      document.getElementById('delegate-count').textContent = aiTasks.length;
+
+      if (!aiTasks.length) {
+        wrap.innerHTML = '<div class="empty">Здесь появятся задачи, которые можно делегировать AI.</div>';
+        document.getElementById('saved-time').textContent = '0 мин';
+        return;
+      }
+
+      wrap.innerHTML = aiTasks.map(t => `
+        <div class="task-item ai">
+          <div class="task-top">
+            <div class="task-name">${escapeHtml(t.name)}</div>
+            <div class="tag ai">AI</div>
+          </div>
+          <div class="task-meta">
+            ${Array.isArray(t.toolCategory) && t.toolCategory.length ? t.toolCategory.map(tool => `<div class="meta-pill">🧰 ${escapeHtml(tool)}</div>`).join('') : ''}
+            ${t.timeLabel ? `<div class="meta-pill">⏱ ${escapeHtml(t.timeLabel)}</div>` : ''}
+          </div>
+          <div class="task-actions">
+            <button class="action-btn transfer-human" onclick="moveTask(${t.id}, 'human')">Перенести в не делегируем</button>
+            <button class="action-btn delete" onclick="deleteTask(${t.id})">Удалить</button>
+          </div>
+        </div>
+      `).join('');
+
+      const totalMin = aiTasks.reduce((sum, t) => sum + (timeValues[t.timeLabel] || 0), 0);
+      document.getElementById('saved-time').textContent = formatMinutes(totalMin);
+    }
+
+    function renderHumanList() {
+      const humanTasks = tasks.filter(t => t.zone === 'human');
+      const wrap = document.getElementById('risk-list');
+      document.getElementById('risk-count').textContent = humanTasks.length;
+
+      if (!humanTasks.length) {
+        wrap.innerHTML = '<div class="empty">Здесь появятся задачи, которые пока не стоит делегировать AI.</div>';
+        return;
+      }
+
+      wrap.innerHTML = humanTasks.map(t => `
+        <div class="task-item human">
+          <div class="task-top">
+            <div class="task-name">${escapeHtml(t.name)}</div>
+            <div class="tag human">Человек</div>
+          </div>
+          ${t.why ? `<div class="task-note"><strong>Почему:</strong> ${escapeHtml(t.why)}</div>` : ''}
+          ${t.risk ? `<div class="task-note"><strong>Риск:</strong> ${escapeHtml(t.risk)}</div>` : ''}
+          <div class="task-actions">
+            <button class="action-btn transfer-ai" onclick="moveTask(${t.id}, 'ai')">Перенести в AI</button>
+            <button class="action-btn delete" onclick="deleteTask(${t.id})">Удалить</button>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function updateSummary() {
+      const ai = tasks.filter(t => t.zone === 'ai').length;
+      const human = tasks.filter(t => t.zone === 'human').length;
+      document.getElementById('sum-all').textContent = tasks.length;
+      document.getElementById('sum-ai').textContent = ai;
+      document.getElementById('sum-human').textContent = human;
+    }
+
+    function formatMinutes(total) {
+      const h = Math.floor(total / 60);
+      const m = total % 60;
+      if (h && m) return `${h} ч ${m} мин`;
+      if (h) return `${h} ч`;
+      return `${m} мин`;
+    }
+
+    function copyTasks() {
+      const aiTasks = tasks.filter(t => t.zone === 'ai');
+
+      if (!aiTasks.length) {
+        showToast('Список AI-задач пока пуст');
+        return;
+      }
+
+      const text = [
+        'AI делегируем',
+        '=============',
+        '',
+        ...aiTasks.map((t, index) => {
+          const lines = [];
+          lines.push(`${index + 1}. ${t.name}`);
+          if (Array.isArray(t.toolCategory) && t.toolCategory.length) {
+            lines.push(`   Инструменты: ${t.toolCategory.join(', ')}`);
+          }
+          if (t.timeLabel) {
+            lines.push(`   Экономия времени: ${t.timeLabel}`);
+          }
+          return lines.join('\n');
+        }),
+        '',
+        '-------------',
+        `Всего задач: ${aiTasks.length}`,
+        `Потенциальная экономия: ${formatMinutes(aiTasks.reduce((sum, t) => sum + (timeValues[t.timeLabel] || 0), 0))}`
+      ].join('\n');
+
+      navigator.clipboard.writeText(text)
+        .then(() => showToast('Список AI-задач скопирован'))
+        .catch(() => {
+          const area = document.createElement('textarea');
+          area.value = text;
+          document.body.appendChild(area);
+          area.select();
+          document.execCommand('copy');
+          document.body.removeChild(area);
+          showToast('Список AI-задач скопирован');
+        });
+    }
+
+    function copyHumanTasks() {
+      const humanTasks = tasks.filter(t => t.zone === 'human');
+
+      if (!humanTasks.length) {
+        showToast('Список не делегируем пока пуст');
+        return;
+      }
+
+      const text = [
+        'AI не делегируем',
+        '=================',
+        '',
+        ...humanTasks.map((t, index) => {
+          const lines = [];
+          lines.push(`${index + 1}. ${t.name}`);
+          if (t.why) lines.push(`   Почему не делегируем: ${t.why}`);
+          if (t.risk) lines.push(`   Риск: ${t.risk}`);
+          return lines.join('\n');
+        }),
+        '',
+        '-----------------',
+        `Всего задач: ${humanTasks.length}`
+      ].join('\n');
+
+      navigator.clipboard.writeText(text)
+        .then(() => showToast('Список не делегируем скопирован'))
+        .catch(() => {
+          const area = document.createElement('textarea');
+          area.value = text;
+          document.body.appendChild(area);
+          area.select();
+          document.execCommand('copy');
+          document.body.removeChild(area);
+          showToast('Список не делегируем скопирован');
+        });
+    }
+
+    function escapeHtml(str) {
+      return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;');
+    }
+
+    function showToast(text) {
+      const toast = document.getElementById('toast');
+      toast.textContent = text;
+      toast.classList.add('show');
+      clearTimeout(window.__toastTimer);
+      window.__toastTimer = setTimeout(() => toast.classList.remove('show'), 2200);
+    }
+
+    refreshSelects();
+    renderAll();
+  </script>
+</body>
+</html>

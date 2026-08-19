@@ -1,0 +1,719 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>УГАДАЙ ПО КАДРУ — бесконечный киноквиз</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;800;900&family=Manrope:wght@500;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink: #101010;
+    --paper: #f2efe6;
+    --acid: #d4ff00;
+    --pink: #ff3ea5;
+    --violet: #7c4dff;
+    --alarm: #ff4d00;
+    --ok: #00d474;
+    --shadow: 6px 6px 0 var(--ink);
+    --shadow-lg: 10px 10px 0 var(--ink);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html, body { height: 100%; }
+
+  body {
+    font-family: 'Manrope', sans-serif;
+    background: var(--paper);
+    color: var(--ink);
+    overflow-x: hidden;
+    background-image:
+      radial-gradient(var(--ink) 1px, transparent 1px);
+    background-size: 28px 28px;
+    background-position: -14px -14px;
+  }
+
+  .screen {
+    min-height: 100vh;
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+    position: relative;
+  }
+  .screen.active { display: flex; }
+
+  /* ---------- HERO ---------- */
+  #hero { gap: 28px; text-align: center; }
+
+  .hero-badge {
+    background: var(--pink);
+    border: 3px solid var(--ink);
+    box-shadow: var(--shadow);
+    padding: 8px 18px;
+    font-weight: 800;
+    font-size: 14px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    transform: rotate(-2deg);
+  }
+
+  h1 {
+    font-family: 'Unbounded', sans-serif;
+    font-weight: 900;
+    font-size: clamp(38px, 8vw, 88px);
+    line-height: 0.95;
+    text-transform: uppercase;
+    max-width: 900px;
+  }
+  h1 .frame-word {
+    display: inline-block;
+    background: var(--acid);
+    border: 4px solid var(--ink);
+    box-shadow: var(--shadow);
+    padding: 0 16px;
+    transform: rotate(1.5deg);
+  }
+
+  .hero-sub {
+    font-size: clamp(16px, 2.4vw, 20px);
+    font-weight: 700;
+    max-width: 560px;
+    line-height: 1.5;
+  }
+  .hero-sub b { background: var(--acid); padding: 0 6px; border: 2px solid var(--ink); white-space: nowrap; }
+
+  .btn {
+    font-family: 'Unbounded', sans-serif;
+    font-weight: 800;
+    font-size: 20px;
+    text-transform: uppercase;
+    background: var(--acid);
+    border: 4px solid var(--ink);
+    box-shadow: var(--shadow-lg);
+    padding: 20px 44px;
+    cursor: pointer;
+    transition: transform 0.08s, box-shadow 0.08s;
+  }
+  .btn:hover { transform: translate(-2px, -2px); box-shadow: 12px 12px 0 var(--ink); }
+  .btn:active { transform: translate(6px, 6px); box-shadow: 2px 2px 0 var(--ink); }
+  .btn:focus-visible { outline: 4px dashed var(--pink); outline-offset: 4px; }
+  .btn.secondary { background: #fff; font-size: 15px; padding: 14px 28px; box-shadow: var(--shadow); }
+
+  .modes { display: flex; gap: 20px; flex-wrap: wrap; justify-content: center; }
+  .mode-btn {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    align-items: center;
+    min-width: 260px;
+  }
+  .mode-btn.cinephile { background: var(--violet); color: #fff; }
+  .mode-desc {
+    font-family: 'Manrope', sans-serif;
+    font-weight: 700;
+    font-size: 12px;
+    text-transform: none;
+    letter-spacing: 0;
+  }
+
+  /* бегущая строка */
+  .marquee {
+    position: absolute;
+    left: -5vw;
+    width: 110vw;
+    background: var(--ink);
+    color: var(--acid);
+    border-top: 3px solid var(--ink);
+    border-bottom: 3px solid var(--ink);
+    overflow: hidden;
+    white-space: nowrap;
+    font-family: 'Unbounded', sans-serif;
+    font-weight: 500;
+    font-size: 14px;
+    padding: 10px 0;
+    user-select: none;
+  }
+  .marquee.top { top: 0; transform: rotate(-1.2deg); }
+  .marquee.bottom { bottom: 0; transform: rotate(1.2deg); }
+  .marquee-inner { display: inline-block; animation: slide 22s linear infinite; }
+  @keyframes slide { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+  @media (prefers-reduced-motion: reduce) { .marquee-inner { animation: none; } }
+
+  /* ---------- GAME ---------- */
+  #game { justify-content: flex-start; padding-top: 20px; gap: 18px; }
+
+  .hud {
+    width: 100%;
+    max-width: 760px;
+    display: flex;
+    align-items: stretch;
+    justify-content: space-between;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+  .hud-box {
+    background: #fff;
+    border: 3px solid var(--ink);
+    box-shadow: 4px 4px 0 var(--ink);
+    padding: 10px 16px;
+    font-weight: 800;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .hud-box .num { font-family: 'Unbounded', sans-serif; font-size: 22px; }
+  .hud-box.score { background: var(--acid); }
+  .hud-box.streak { background: var(--pink); }
+  .hud-label { font-size: 11px; text-transform: uppercase; letter-spacing: 0.1em; }
+
+  /* жизни-киноплёнка */
+  .filmstrip {
+    display: flex;
+    background: var(--ink);
+    padding: 8px 10px;
+    gap: 6px;
+    border: 3px solid var(--ink);
+    box-shadow: 4px 4px 0 var(--ink);
+    position: relative;
+  }
+  .filmstrip::before, .filmstrip::after {
+    content: "";
+    position: absolute;
+    left: 0; right: 0;
+    height: 4px;
+    background-image: linear-gradient(90deg, var(--paper) 0 6px, transparent 6px 12px);
+    background-size: 12px 4px;
+  }
+  .filmstrip::before { top: 1px; }
+  .filmstrip::after { bottom: 1px; }
+  .cell {
+    width: 30px; height: 22px;
+    background: var(--acid);
+    border: 2px solid var(--paper);
+    transition: background 0.3s;
+  }
+  .cell.burned {
+    background: repeating-linear-gradient(45deg, #3a3a3a 0 4px, #1c1c1c 4px 8px);
+    animation: burn 0.45s;
+  }
+  @keyframes burn {
+    0% { background: var(--alarm); transform: scale(1.4) rotate(8deg); }
+    100% { transform: scale(1) rotate(0); }
+  }
+
+  .frame-card {
+    width: 100%;
+    max-width: 760px;
+    background: #fff;
+    border: 4px solid var(--ink);
+    box-shadow: var(--shadow-lg);
+    padding: 14px;
+    position: relative;
+  }
+  .frame-card .still {
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    object-fit: cover;
+    display: block;
+    border: 3px solid var(--ink);
+    background: var(--ink);
+  }
+  .frame-tag {
+    position: absolute;
+    top: -14px; left: 22px;
+    background: var(--violet);
+    color: #fff;
+    border: 3px solid var(--ink);
+    padding: 4px 12px;
+    font-weight: 800;
+    font-size: 13px;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    transform: rotate(-2deg);
+  }
+
+  .loader {
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    border: 3px solid var(--ink);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    gap: 14px;
+    background: repeating-linear-gradient(-45deg, #fff 0 14px, var(--paper) 14px 28px);
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+  }
+  .reel {
+    width: 44px; height: 44px;
+    border: 4px solid var(--ink);
+    border-radius: 50%;
+    border-top-color: var(--pink);
+    animation: spin 0.8s linear infinite;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  .answers {
+    width: 100%;
+    max-width: 760px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+  }
+  @media (max-width: 560px) { .answers { grid-template-columns: 1fr; } }
+
+  .answer {
+    font-family: 'Manrope', sans-serif;
+    font-weight: 800;
+    font-size: 16px;
+    text-align: left;
+    background: #fff;
+    border: 3px solid var(--ink);
+    box-shadow: 5px 5px 0 var(--ink);
+    padding: 16px 18px;
+    cursor: pointer;
+    transition: transform 0.08s, box-shadow 0.08s, background 0.15s;
+    line-height: 1.3;
+  }
+  .answer:hover:not(:disabled) { transform: translate(-2px, -2px); box-shadow: 7px 7px 0 var(--ink); background: var(--acid); }
+  .answer:active:not(:disabled) { transform: translate(3px, 3px); box-shadow: 2px 2px 0 var(--ink); }
+  .answer:focus-visible { outline: 4px dashed var(--violet); outline-offset: 3px; }
+  .answer:disabled { cursor: default; }
+  .answer.correct { background: var(--ok); color: var(--ink); }
+  .answer.wrong { background: var(--alarm); color: #fff; animation: shake 0.35s; }
+  .answer.dimmed { opacity: 0.45; }
+  @keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-6px); }
+    75% { transform: translateX(6px); }
+  }
+
+  .toast {
+    font-family: 'Unbounded', sans-serif;
+    font-weight: 800;
+    font-size: 15px;
+    text-transform: uppercase;
+    padding: 8px 20px;
+    border: 3px solid var(--ink);
+    box-shadow: 4px 4px 0 var(--ink);
+    opacity: 0;
+    transform: translateY(6px);
+    transition: opacity 0.2s, transform 0.2s;
+    min-height: 44px;
+    display: flex;
+    align-items: center;
+  }
+  .toast.show { opacity: 1; transform: translateY(0); }
+  .toast.good { background: var(--ok); }
+  .toast.bad { background: var(--alarm); color: #fff; }
+
+  /* ---------- GAME OVER ---------- */
+  #over { gap: 24px; text-align: center; }
+  .over-title {
+    font-family: 'Unbounded', sans-serif;
+    font-weight: 900;
+    font-size: clamp(34px, 7vw, 72px);
+    text-transform: uppercase;
+    background: var(--alarm);
+    color: #fff;
+    border: 4px solid var(--ink);
+    box-shadow: var(--shadow-lg);
+    padding: 10px 28px;
+    transform: rotate(-1.5deg);
+  }
+  .over-stats { display: flex; gap: 16px; flex-wrap: wrap; justify-content: center; }
+  .stat {
+    background: #fff;
+    border: 3px solid var(--ink);
+    box-shadow: var(--shadow);
+    padding: 18px 28px;
+    min-width: 150px;
+  }
+  .stat .num { font-family: 'Unbounded', sans-serif; font-weight: 900; font-size: 42px; display: block; }
+  .stat .lbl { font-weight: 800; font-size: 12px; text-transform: uppercase; letter-spacing: 0.12em; }
+  .stat.best { background: var(--acid); }
+  .over-verdict { font-weight: 700; font-size: 18px; max-width: 480px; }
+
+  /* ---------- ERROR ---------- */
+  .error-box {
+    background: #fff;
+    border: 4px solid var(--ink);
+    box-shadow: var(--shadow-lg);
+    padding: 28px;
+    max-width: 520px;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    align-items: center;
+  }
+  .error-box h2 { font-family: 'Unbounded', sans-serif; text-transform: uppercase; font-size: 22px; }
+  .error-box p { font-weight: 600; line-height: 1.5; }
+</style>
+</head>
+<body>
+
+<!-- ============ HERO ============ -->
+<section class="screen active" id="hero">
+  <div class="marquee top" aria-hidden="true"><div class="marquee-inner" id="mq1"> УГАДАЙ ПО КАДРУ ★ 5 ЖИЗНЕЙ ★ БЕСКОНЕЧНЫЙ РЕЖИМ ★ КАДРЫ С КИНОПОИСКА ★ УГАДАЙ ПО КАДРУ ★ 5 ЖИЗНЕЙ ★ БЕСКОНЕЧНЫЙ РЕЖИМ ★ КАДРЫ С КИНОПОИСКА ★ УГАДАЙ ПО КАДРУ ★ 5 ЖИЗНЕЙ ★ БЕСКОНЕЧНЫЙ РЕЖИМ ★ КАДРЫ С КИНОПОИСКА ★ УГАДАЙ ПО КАДРУ ★ 5 ЖИЗНЕЙ ★ БЕСКОНЕЧНЫЙ РЕЖИМ ★ КАДРЫ С КИНОПОИСКА ★</div></div>
+
+  <div class="hero-badge">★ Бесконечный киноквиз ★</div>
+  <h1>Угадай <span class="frame-word">по кадру</span></h1>
+  <p class="hero-sub">
+    Показываем случайный кадр из фильма — ты выбираешь, откуда он, из четырёх вариантов.
+    У тебя <b>5 жизней</b>. Каждая ошибка засвечивает кадр плёнки. Сколько продержишься?
+  </p>
+  <div class="modes">
+    <button class="btn mode-btn" id="liteBtn">
+      Лайт
+      <span class="mode-desc">Топ-200 фильмов, узнаваемые кадры</span>
+    </button>
+    <button class="btn mode-btn cinephile" id="cinephileBtn">
+      Синефил
+      <span class="mode-desc">Вся база популярных + глубокие кадры</span>
+    </button>
+  </div>
+
+  <div class="marquee bottom" aria-hidden="true"><div class="marquee-inner" id="mq2"> УГАДАЙ ПО КАДРУ ★ 5 ЖИЗНЕЙ ★ БЕСКОНЕЧНЫЙ РЕЖИМ ★ КАДРЫ С КИНОПОИСКА ★ УГАДАЙ ПО КАДРУ ★ 5 ЖИЗНЕЙ ★ БЕСКОНЕЧНЫЙ РЕЖИМ ★ КАДРЫ С КИНОПОИСКА ★ УГАДАЙ ПО КАДРУ ★ 5 ЖИЗНЕЙ ★ БЕСКОНЕЧНЫЙ РЕЖИМ ★ КАДРЫ С КИНОПОИСКА ★ УГАДАЙ ПО КАДРУ ★ 5 ЖИЗНЕЙ ★ БЕСКОНЕЧНЫЙ РЕЖИМ ★ КАДРЫ С КИНОПОИСКА ★</div></div>
+</section>
+
+<!-- ============ GAME ============ -->
+<section class="screen" id="game">
+  <div class="hud">
+    <div class="hud-box score"><span class="hud-label">Счёт</span><span class="num" id="score">0</span></div>
+    <div class="filmstrip" id="lives" aria-label="Жизни"></div>
+    <div class="hud-box streak"><span class="hud-label">Серия</span><span class="num" id="streak">0</span></div>
+  </div>
+
+  <div class="frame-card">
+    <div class="frame-tag" id="roundTag">Кадр №1</div>
+    <div class="loader" id="loader"><div class="reel"></div><span>Проявляем плёнку…</span></div>
+    <img class="still" id="still" alt="Кадр из фильма" style="display:none">
+  </div>
+
+  <div class="answers" id="answers"></div>
+  <div class="toast" id="toast"></div>
+</section>
+
+<!-- ============ GAME OVER ============ -->
+<section class="screen" id="over">
+  <div class="over-title">Сеанс окончен</div>
+  <div class="over-stats">
+    <div class="stat"><span class="num" id="finalScore">0</span><span class="lbl">Угадано</span></div>
+    <div class="stat"><span class="num" id="finalStreak">0</span><span class="lbl">Лучшая серия</span></div>
+    <div class="stat best"><span class="num" id="bestScore">0</span><span class="lbl">Рекорд</span></div>
+  </div>
+  <p class="over-verdict" id="verdict"></p>
+  <button class="btn" id="restartBtn">Ещё раз</button>
+  <button class="btn secondary" id="homeBtn">На главную</button>
+</section>
+
+<!-- ============ ERROR ============ -->
+<section class="screen" id="errorScreen">
+  <div class="error-box">
+    <h2>Плёнка порвалась</h2>
+    <p id="errorMsg">Не получилось достучаться до API Кинопоиска. Проверь интернет или лимит запросов (500 в день) и попробуй снова.</p>
+    <button class="btn" id="retryBtn">Попробовать снова</button>
+  </div>
+</section>
+
+<script>
+/* ================= CONFIG ================= */
+const API_KEY = "7aeb9cc8-5647-4f84-b6ac-1dca381d10b0";
+const API = "https://kinopoiskapiunofficial.tech/api/v2.2";
+const MAX_LIVES = 5;
+const POOL_PAGES = 3;          // сколько страниц популярных фильмов тянем в пул (по 20 шт)
+const NEXT_DELAY = 1300;       // пауза после ответа, мс
+
+/* ================= STATE ================= */
+let mode = "light";            // "light" | "cinephile"
+const pools = { light: [], cinephile: [] };
+let pool = [];                 // активный пул: [{id, name}]
+let popTotalPages = null;      // всего страниц в TOP_POPULAR_ALL
+let usedIds = new Set();
+let stillsCache = new Map();   // filmId -> {urls, totalPages, type, pages: Map}
+let lives, score, streak, bestStreak, round;
+let answering = false;
+
+const $ = id => document.getElementById(id);
+const screens = ["hero", "game", "over", "errorScreen"];
+function show(id) {
+  screens.forEach(s => $(s).classList.toggle("active", s === id));
+}
+
+/* ================= API ================= */
+async function apiGet(path) {
+  const res = await fetch(API + path, {
+    headers: { "X-API-KEY": API_KEY, "Content-Type": "application/json" }
+  });
+  if (!res.ok) throw new Error("API " + res.status);
+  return res.json();
+}
+
+async function fetchCollectionPage(p) {
+  try {
+    return await apiGet(`/films/collections?type=TOP_POPULAR_ALL&page=${p}`);
+  } catch (e) {
+    // фолбэк на старый эндпоинт, если collections недоступен
+    return await apiGet(`/films/top?type=TOP_250_BEST_FILMS&page=${p}`);
+  }
+}
+
+function collectFilms(data, films) {
+  const items = data.items || data.films || [];
+  for (const f of items) {
+    const id = f.kinopoiskId || f.filmId;
+    const name = f.nameRu || f.nameEn || f.nameOriginal;
+    if (id && name) films.push({ id, name });
+  }
+}
+
+async function loadPool() {
+  if (pools[mode].length) { pool = pools[mode]; return; }
+  const films = [];
+  let pageRange;
+
+  if (mode === "light") {
+    // лайт: первые 10 страниц = топ-200 по популярности
+    pageRange = [1,2,3,4,5,6,7,8,9,10];
+  } else {
+    // синефил: вся коллекция — сначала узнаём, сколько в ней страниц
+    if (!popTotalPages) {
+      const first = await fetchCollectionPage(1);
+      popTotalPages = first.totalPages || first.pagesCount || 10;
+      collectFilms(first, films);
+    }
+    pageRange = Array.from({ length: popTotalPages }, (_, i) => i + 1);
+  }
+
+  const pages = shuffle(pageRange).slice(0, POOL_PAGES);
+  for (const p of pages) {
+    collectFilms(await fetchCollectionPage(p), films);
+  }
+
+  // дедупликация
+  const seen = new Set();
+  pools[mode] = films.filter(f => !seen.has(f.id) && seen.add(f.id));
+  pool = pools[mode];
+  if (pool.length < 8) throw new Error("Пул фильмов слишком мал");
+}
+
+function extractUrls(data) {
+  return (data.items || []).map(i => i.imageUrl || i.previewUrl).filter(Boolean);
+}
+
+async function getStills(filmId) {
+  // первая страница + метаданные — кэшируем всегда
+  let entry = stillsCache.get(filmId);
+  if (!entry) {
+    entry = { urls: [], totalPages: 1, type: null, pages: new Map() };
+    for (const t of ["STILL", "SHOOTING"]) {
+      try {
+        const data = await apiGet(`/films/${filmId}/images?type=${t}&page=1`);
+        const urls = extractUrls(data);
+        if (urls.length) {
+          entry.urls = urls;
+          entry.totalPages = data.totalPages || 1;
+          entry.type = t;
+          entry.pages.set(1, urls);
+          break;
+        }
+      } catch (e) { /* пробуем следующий тип */ }
+    }
+    stillsCache.set(filmId, entry);
+  }
+  if (!entry.urls.length) return [];
+
+  // синефил: ныряем на случайную страницу кадров
+  if (mode === "cinephile" && entry.totalPages > 1) {
+    const p = 1 + Math.floor(Math.random() * entry.totalPages);
+    if (p > 1) {
+      if (entry.pages.has(p)) return entry.pages.get(p);
+      try {
+        const data = await apiGet(`/films/${filmId}/images?type=${entry.type}&page=${p}`);
+        const urls = extractUrls(data);
+        if (urls.length) { entry.pages.set(p, urls); return urls; }
+      } catch (e) { /* падаем на первую страницу */ }
+    }
+  }
+  return entry.urls;
+}
+
+/* ================= GAME LOOP ================= */
+function shuffle(arr) {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+function resetGame() {
+  lives = MAX_LIVES; score = 0; streak = 0; bestStreak = 0; round = 0;
+  usedIds.clear();
+  renderHud();
+}
+
+function renderHud() {
+  $("score").textContent = score;
+  $("streak").textContent = streak;
+  const strip = $("lives");
+  strip.innerHTML = "";
+  for (let i = 0; i < MAX_LIVES; i++) {
+    const c = document.createElement("div");
+    c.className = "cell" + (i < MAX_LIVES - lives ? " burned" : "");
+    strip.appendChild(c);
+  }
+}
+
+async function nextRound() {
+  answering = false;
+  round++;
+  $("roundTag").textContent = "Кадр №" + round + (mode === "cinephile" ? " · Синефил" : " · Лайт");
+  $("still").style.display = "none";
+  $("loader").style.display = "flex";
+  $("answers").innerHTML = "";
+  hideToast();
+
+  // если пул почти исчерпан — открываем второй круг
+  if (usedIds.size >= pool.length - 4) usedIds.clear();
+
+  // ищем фильм, у которого есть кадры (до 6 попыток)
+  let film = null, stills = [];
+  const candidates = shuffle(pool.filter(f => !usedIds.has(f.id)));
+  for (const c of candidates.slice(0, 6)) {
+    const urls = await getStills(c.id);
+    if (urls.length) { film = c; stills = urls; break; }
+    usedIds.add(c.id); // у фильма нет кадров — больше не трогаем
+  }
+  if (!film) return fail("У фильмов из пула не нашлось кадров. Скорее всего, кончился дневной лимит API.");
+
+  usedIds.add(film.id);
+  const stillUrl = stills[Math.floor(Math.random() * stills.length)];
+
+  // варианты: правильный + 3 дистрактора из пула
+  const distractors = shuffle(pool.filter(f => f.id !== film.id)).slice(0, 3);
+  const options = shuffle([film, ...distractors]);
+
+  // ждём загрузку картинки, чтобы не показывать пустоту
+  await new Promise((resolve) => {
+    const img = $("still");
+    img.onload = resolve;
+    img.onerror = resolve;
+    img.src = stillUrl;
+  });
+  $("loader").style.display = "none";
+  $("still").style.display = "block";
+
+  const box = $("answers");
+  options.forEach(opt => {
+    const b = document.createElement("button");
+    b.className = "answer";
+    b.textContent = opt.name;
+    b.onclick = () => pick(b, opt, film, box);
+    box.appendChild(b);
+  });
+}
+
+function pick(btn, opt, film, box) {
+  if (answering) return;
+  answering = true;
+  const buttons = [...box.querySelectorAll(".answer")];
+  buttons.forEach(b => b.disabled = true);
+
+  const correct = opt.id === film.id;
+  if (correct) {
+    btn.classList.add("correct");
+    buttons.filter(b => b !== btn).forEach(b => b.classList.add("dimmed"));
+    score++; streak++;
+    bestStreak = Math.max(bestStreak, streak);
+    showToast("В точку! ★", true);
+  } else {
+    btn.classList.add("wrong");
+    buttons.forEach(b => {
+      if (b.textContent === film.name) b.classList.add("correct");
+      else if (b !== btn) b.classList.add("dimmed");
+    });
+    lives--; streak = 0;
+    showToast("Мимо! Это «" + film.name + "»", false);
+  }
+  renderHud();
+
+  setTimeout(() => {
+    if (lives <= 0) gameOver();
+    else nextRound();
+  }, NEXT_DELAY);
+}
+
+function showToast(text, good) {
+  const t = $("toast");
+  t.textContent = text;
+  t.className = "toast show " + (good ? "good" : "bad");
+}
+function hideToast() { $("toast").className = "toast"; $("toast").textContent = ""; }
+
+/* ================= GAME OVER ================= */
+function loadBest() {
+  try { return parseInt(localStorage.getItem("kinoquiz_best_" + mode) || "0", 10); }
+  catch (e) { return 0; }
+}
+function saveBest(v) {
+  try { localStorage.setItem("kinoquiz_best_" + mode, String(v)); } catch (e) {}
+}
+
+function gameOver() {
+  const best = Math.max(loadBest(), score);
+  saveBest(best);
+  $("finalScore").textContent = score;
+  $("finalStreak").textContent = bestStreak;
+  $("bestScore").textContent = best;
+  $("verdict").textContent =
+    score === 0 ? "Плёнку жалко. Но первый блин — он такой." :
+    score < 5  ? "Неплохо для разогрева. Киномеханик в тебе просыпается." :
+    score < 12 ? "Солидно! Ты явно не только трейлеры смотришь." :
+    score < 20 ? "Уровень: закрытый показ. Респект." :
+                 "Ты вообще человек? Синефил 80 уровня.";
+  show("over");
+}
+
+/* ================= FLOW ================= */
+async function startGame(m) {
+  if (m) mode = m;
+  resetGame();
+  show("game");
+  $("loader").style.display = "flex";
+  $("still").style.display = "none";
+  try {
+    await loadPool();
+    await nextRound();
+  } catch (e) {
+    fail();
+  }
+}
+
+function fail(msg) {
+  if (msg) $("errorMsg").textContent = msg;
+  show("errorScreen");
+}
+
+$("liteBtn").onclick = () => startGame("light");
+$("cinephileBtn").onclick = () => startGame("cinephile");
+$("restartBtn").onclick = () => startGame();   // тот же режим
+$("retryBtn").onclick = () => startGame();
+$("homeBtn").onclick = () => show("hero");
+
+/* бегущие строки */
+const mqText = " УГАДАЙ ПО КАДРУ ★ 5 ЖИЗНЕЙ ★ БЕСКОНЕЧНЫЙ РЕЖИМ ★ КАДРЫ С КИНОПОИСКА ★".repeat(4);
+$("mq1").textContent = mqText;
+$("mq2").textContent = mqText;
+</script>
+
+</body>
+</html>

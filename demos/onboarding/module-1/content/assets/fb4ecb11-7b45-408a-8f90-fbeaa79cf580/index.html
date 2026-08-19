@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Летящие плашки</title>
+  <style>
+    :root {
+      --scene-width: 780px;
+      --scene-height: 500px;
+      --text: #101010;
+      --lime: #d7ff69;
+      --pink: #ffb6df;
+      --lavender: #dacaff;
+      --sky: #cdefff;
+      --yellow: #ffe78a;
+      --shadow: 0 16px 28px rgba(16,16,16,0.14), inset 0 1px 0 rgba(255,255,255,0.55), inset 0 -8px 16px rgba(16,16,16,0.05);
+    }
+
+    * { box-sizing: border-box; }
+    html, body {
+      margin: 0;
+      padding: 0;
+      background: transparent;
+      font-family: 'StratosSkyeng', 'Stratos Skyeng', 'StrtosSkyeng', 'Onest', Arial, sans-serif;
+    }
+
+    .scene {
+      position: relative;
+      width: min(100%, var(--scene-width));
+      height: var(--scene-height);
+      margin: 0 auto;
+      overflow: hidden;
+      background: transparent;
+      isolation: isolate;
+    }
+
+    .hero {
+      position: absolute;
+      left: 50%;
+      top: 0;
+      width: 70%;
+      height: auto;
+      transform: translateX(-50%);
+      z-index: 1;
+      pointer-events: none;
+      user-select: none;
+    }
+
+    .card {
+      --delay: 0s;
+      --start-x: 0px;
+      --start-r: -8deg;
+      --end-r: -4deg;
+      --bg: var(--lime);
+      position: absolute;
+      z-index: 4;
+      width: 228px;
+      min-height: 84px;
+      padding: 15px 18px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      border-radius: 24px;
+      color: var(--text);
+      background: linear-gradient(150deg, rgba(255,255,255,0.34), rgba(255,255,255,0) 40%), var(--bg);
+      box-shadow: var(--shadow);
+      transform: translate3d(var(--start-x), -120vh, 0) rotate(var(--start-r)) scale(0.94);
+      opacity: 0;
+      animation: dropIn 1850ms cubic-bezier(.16,.84,.24,1) forwards;
+      animation-delay: var(--delay);
+      will-change: transform, opacity;
+    }
+
+    .card p {
+      margin: 0;
+      font-size: 18px;
+      line-height: 1.12;
+      letter-spacing: -0.03em;
+      font-weight: 500;
+      text-wrap: balance;
+    }
+
+    .card-1 { left: 18px;  top: 26px;  --bg: var(--lime);     --delay: .18s; --start-x: -100px; --start-r: -16deg; --end-r: -8deg; }
+    .card-2 { right: 18px; top: 28px;  --bg: var(--pink);     --delay: .52s; --start-x: 100px;  --start-r: 14deg;  --end-r: 7deg; }
+    .card-3 { left: 18px;  top: 170px; --bg: var(--lavender); --delay: .86s; --start-x: -80px;  --start-r: 12deg;  --end-r: -5deg; }
+    .card-4 { right: 16px; top: 214px; --bg: var(--sky);      --delay: 1.18s; --start-x: 80px;   --start-r: -13deg; --end-r: 5deg; }
+    .card-5 { left: 56px;  top: 358px; --bg: var(--yellow);   --delay: 1.5s;  --start-x: -40px;  --start-r: 10deg;  --end-r: -6deg; }
+
+    @keyframes dropIn {
+      0% {
+        transform: translate3d(var(--start-x), -120vh, 0) rotate(var(--start-r)) scale(0.94);
+        opacity: 0;
+        filter: blur(2px);
+      }
+      55% { opacity: 1; filter: blur(0); }
+      78% { transform: translate3d(0, 12px, 0) rotate(calc(var(--end-r) * .82)) scale(1.01); }
+      90% { transform: translate3d(0, -4px, 0) rotate(calc(var(--end-r) * 1.02)) scale(0.998); }
+      100% {
+        transform: translate3d(0, 0, 0) rotate(var(--end-r)) scale(1);
+        opacity: 1;
+        filter: blur(0);
+      }
+    }
+
+    .scene.replay .card { animation-name: none; }
+
+    @media (max-width: 820px) {
+      :root { --scene-height: 500px; }
+      .scene { width: 100%; }
+      .hero { width: 70%; top: 0; }
+      .card {
+        width: min(29vw, 228px);
+        min-height: 70px;
+        padding: 12px 14px;
+        border-radius: 20px;
+      }
+      .card p { font-size: clamp(13px, 2.2vw, 18px); }
+      .card-1 { left: 2%; top: 5%; }
+      .card-2 { right: 2%; top: 5.2%; }
+      .card-3 { left: 2%; top: 34%; }
+      .card-4 { right: 2%; top: 43%; }
+      .card-5 { left: 4%; top: 71.5%; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .card { animation: none; opacity: 1; transform: rotate(var(--end-r)); }
+    }
+  </style>
+</head>
+<body>
+  <section class="scene" id="scene" aria-label="Анимированный блок с летящими плашками">
+    <img class="hero" src="assets/office-chaos-cutout.png" alt="Молодой человек на офисном кресле среди летящих горящих документов" />
+
+    <article class="card card-1"><p>в старом документе указан один контакт</p></article>
+    <article class="card card-2"><p>коллеги вспоминают другое подразделение</p></article>
+    <article class="card card-3"><p>в чате советуют написать “кому-то из команды”</p></article>
+    <article class="card card-4"><p>ты не понимаешь, кто сейчас отвечает за процесс</p></article>
+    <article class="card card-5"><p>вопрос начинает ходить по кругу</p></article>
+  </section>
+
+  <script>
+    (function () {
+      const scene = document.getElementById('scene');
+      function replay() {
+        scene.classList.add('replay');
+        requestAnimationFrame(() => {
+          requestAnimationFrame(() => scene.classList.remove('replay'));
+        });
+      }
+      document.addEventListener('skyengReplayCards', replay);
+    })();
+  </script>
+</body>
+</html>

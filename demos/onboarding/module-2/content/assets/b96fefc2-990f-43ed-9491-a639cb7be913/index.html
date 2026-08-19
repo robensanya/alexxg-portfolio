@@ -1,0 +1,846 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Тренажёр: расследование инцидента</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: transparent;
+    font-family: 'StratosSkyeng', 'Stratos Skyeng', 'Onest', 'Segoe UI', sans-serif;
+    padding: 24px 16px 40px;
+  }
+
+  #app { width: 100%; max-width: 780px; margin: 0 auto; }
+
+  .screen { display: none; }
+  .screen.active { display: block; }
+
+  /* ══ СТАРТОВЫЙ ЭКРАН — по образцу ══ */
+  #screen-intro {
+    background: #fff;
+    border-radius: 24px;
+    padding: 36px 28px 48px;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.10);
+    text-align: center;
+  }
+  .start-icon { font-size: 44px; margin-bottom: 14px; }
+  .start-title {
+    font-size: clamp(22px, 3vw, 28px);
+    font-weight: 900;
+    letter-spacing: -0.04em;
+    color: #101010;
+    margin-bottom: 8px;
+  }
+  .start-desc {
+    font-size: 14px;
+    color: #5f6470;
+    line-height: 1.6;
+    margin-bottom: 24px;
+    max-width: 480px;
+    margin-left: auto; margin-right: auto;
+    font-weight: 500;
+  }
+  .start-steps {
+    display: flex;
+    gap: 8px;
+    justify-content: center;
+    align-items: flex-start;
+    margin-bottom: 36px;
+    flex-wrap: wrap;
+  }
+  .step-pill {
+    border-radius: 14px;
+    padding: 10px 12px;
+    width: 152px;
+    text-align: left;
+    border: 1.5px solid #101010;
+    box-shadow: 3px 3px 0 #101010;
+    flex-shrink: 0;
+  }
+  .step-pill.p1 { background: #d0ff99; transform: rotate(-1.8deg); }
+  .step-pill.p2 { background: #d8f7ff; transform: rotate(1.4deg); }
+  .step-pill.p3 { background: #ffc9f2; transform: rotate(-1.2deg); }
+  .step-pill.p4 { background: #fff3a8; transform: rotate(1.6deg); }
+  .step-num {
+    width: 20px; height: 20px;
+    border-radius: 50%;
+    background: #101010; color: #fff;
+    font-size: 10px; font-weight: 900;
+    display: flex; align-items: center; justify-content: center;
+    margin-bottom: 7px;
+  }
+  .step-text {
+    font-size: 13px;
+    font-weight: 700; color: #101010;
+    line-height: 1.4;
+  }
+  .step-arrow {
+    font-size: 16px; color: #101010; opacity: 0.3;
+    align-self: center; flex-shrink: 0; font-weight: 900;
+  }
+  .btn-start {
+    display: inline-flex; align-items: center; gap: 8px;
+    background: #101010; color: #fff;
+    border: 0; border-radius: 999px;
+    padding: 16px 36px; font: inherit;
+    font-size: 17px; font-weight: 800;
+    cursor: pointer; letter-spacing: -0.01em;
+    transition: transform 0.15s, box-shadow 0.15s;
+  }
+  .btn-start:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(0,0,0,0.18); }
+
+  /* ══ ЭКРАН 2: СЦЕНА ══ */
+  #screen-scene {
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.15);
+  }
+
+  /* Весь канвас — position:relative, aspect-ratio как у фото */
+  #scene-wrap {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 1448 / 1086;
+    overflow: hidden;
+    user-select: none;
+  }
+
+  /* Фоновое изображение */
+  #scene-bg {
+    position: absolute; top: 0; left: 0;
+    width: 100%; height: 100%;
+    display: block; pointer-events: none;
+  }
+
+  /* Ассеты-улики поверх фона */
+  .asset-layer {
+    position: absolute; top: 0; left: 0;
+    width: 100%; height: 100%;
+    pointer-events: none;
+    display: block;
+  }
+
+  /* Хотспоты — невидимые зоны клика */
+  .hotspot {
+    position: absolute;
+    cursor: pointer;
+    z-index: 20;
+    pointer-events: none;
+  }
+  .hotspot.pulsing { pointer-events: auto; }
+  .hotspot.done { pointer-events: none; }
+
+  /* Пульсирующий контур на активном хотспоте */
+  .hotspot-ring {
+    position: absolute; inset: 0;
+    border-radius: 8px;
+    border: 2.5px solid #D0FF99;
+    opacity: 0;
+    pointer-events: none;
+  }
+  .hotspot.pulsing .hotspot-ring {
+    animation: ringPulse 1.8s ease-in-out infinite;
+  }
+  @keyframes ringPulse {
+    0%,100% { opacity: 0; transform: scale(0.95); }
+    50%      { opacity: 0.9; transform: scale(1.03); }
+  }
+
+  /* Найденные ассеты оставляем без затемнения */
+
+  /* ── Плашка онбординга (внутри сцены) ── */
+  #ob-card {
+    position: absolute;
+    top: 4%; left: 50%; transform: translateX(-50%);
+    width: 70%;
+    background: #D0FF99;
+    color: #101010;
+    border-radius: 16px;
+    padding: 12px 18px 14px;
+    text-align: center;
+    border: 1.5px solid #101010;
+    box-shadow: 3px 3px 0 #101010;
+    z-index: 30;
+    animation: obPulse 2s ease-in-out infinite;
+  }
+  @keyframes obPulse {
+    0%,100% { box-shadow: 3px 3px 0 #101010; }
+    50%      { box-shadow: 5px 5px 0 #101010; }
+  }
+  #ob-card.hidden { display: none; }
+  .ob-title {
+    font-size: clamp(12px, 1.6vw, 14px);
+    font-weight: 800; margin-bottom: 2px;
+  }
+  .ob-sub {
+    font-size: clamp(11px, 1.3vw, 13px);
+    font-weight: 500; opacity: 0.75;
+  }
+  .ob-arrow {
+    display: block; margin-top: 4px; font-size: 1em;
+    animation: bounce 1s ease-in-out infinite;
+  }
+  @keyframes bounce {
+    0%,100% { transform: translateY(0); }
+    50%      { transform: translateY(4px); }
+  }
+
+  /* ── Плашка улики (внутри сцены, снизу) ── */
+  #clue-panel {
+    position: absolute;
+    bottom: 3%; left: 50%; transform: translateX(-50%);
+    width: 90%;
+    background: #DED0FC;
+    border-radius: 22px;
+    border: 1.5px solid #101010;
+    box-shadow: 3px 3px 0 #101010;
+    padding: 14px 16px 14px;
+    z-index: 40;
+    display: none;
+  }
+  #clue-panel.visible { display: block; }
+  .clue-top {
+    display: flex; align-items: center; gap: 10px; margin-bottom: 8px;
+  }
+  .clue-icon {
+    width: 30px; height: 30px; border-radius: 999px;
+    background: rgba(16,16,16,0.08); display: flex; align-items: center;
+    justify-content: center; font-size: 15px; flex-shrink: 0;
+  }
+  .clue-name { font-size: clamp(13px,1.5vw,15px); font-weight: 800; }
+  .clue-text { font-size: clamp(12px,1.4vw,14px); line-height: 1.55; color: #101010; }
+  .clue-btn-row { margin-top: 12px; display: flex; justify-content: flex-end; }
+  .btn-next {
+    background: #101010; color: #fff;
+    border: none; border-radius: 999px;
+    padding: 8px 18px; font-family: inherit;
+    font-size: 13px; font-weight: 700; cursor: pointer;
+  }
+  .btn-next:hover { opacity: 0.85; }
+
+  /* Счётчик улик */
+  #clue-counter {
+    position: absolute;
+    top: 4%; right: 3%;
+    background: rgba(0,0,0,0.55);
+    color: #fff; font-size: clamp(11px,1.3vw,13px); font-weight: 700;
+    padding: 4px 12px; border-radius: 999px;
+    z-index: 30; backdrop-filter: blur(4px);
+  }
+
+  /* Плашка «все улики собраны» */
+  #scene-continue {
+    position: absolute;
+    bottom: 3%; left: 50%; transform: translateX(-50%);
+    width: 90%;
+    background: #D0FF99;
+    border-radius: 16px;
+    border: 1.5px solid #101010;
+    box-shadow: 3px 3px 0 #101010;
+    padding: 14px 18px;
+    z-index: 40;
+    display: none;
+    text-align: center;
+  }
+  #scene-continue.show { display: block; }
+  #scene-continue p {
+    font-size: clamp(13px,1.5vw,15px);
+    font-weight: 700;
+    line-height: 1.45;
+    margin-bottom: 18px;
+  }
+  .btn-dark {
+    display: inline-block;
+    background: #101010; color: #fff;
+    border: none; border-radius: 999px;
+    padding: 10px 22px; font-family: inherit;
+    font-size: 14px; font-weight: 700; cursor: pointer;
+  }
+  .btn-dark:hover { opacity: 0.85; }
+
+  /* ══ ЭКРАН 3: СВИДЕТЕЛЬ ══ */
+  #screen-witness {
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.15);
+  }
+  #witness-wrap {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 1448 / 1086;
+    overflow: hidden;
+  }
+  #witness-bg {
+    position: absolute; inset: 0;
+    width: 100%; height: 100%;
+    object-fit: cover;
+    pointer-events: none;
+  }
+  .witness-layer {
+    position: absolute; inset: 0;
+    width: 100%; height: 100%;
+    pointer-events: none;
+    display: block;
+  }
+  #witness-dim {
+    position: absolute; inset: 0;
+    background: rgba(0,0,0,0.58);
+    z-index: 8;
+    pointer-events: none;
+  }
+  #witness-figure {
+    position: absolute; bottom: 0; left: 0;
+    height: 100%;
+    display: none;
+    pointer-events: none;
+    z-index: 10;
+  }
+  #witness-figure img {
+    height: 100%; width: auto; display: block;
+  }
+
+  /* Интро-плашка свидетеля */
+  #witness-intro {
+    position: absolute;
+    top: 50%; left: 50%; transform: translate(-50%, -50%);
+    width: 58%;
+    background: #DED0FC;
+    border: 1.5px solid #101010;
+    border-radius: 24px;
+    box-shadow: 3px 3px 0 #101010;
+    padding: 22px 24px 20px;
+    color: #101010; text-align: center;
+    z-index: 20;
+    display: flex; flex-direction: column; align-items: center; gap: 18px;
+  }
+  #witness-intro p { font-size: clamp(13px,1.5vw,15px); line-height: 1.55; opacity: 1; max-width: 560px; font-weight: 700; }
+  .btn-lime {
+    display: inline-block;
+    background: #101010; color: #fff;
+    border: none; border-radius: 999px;
+    padding: 10px 22px; font-family: inherit;
+    font-size: 14px; font-weight: 700; cursor: pointer;
+  }
+  .btn-lime:hover { opacity: 0.88; }
+
+  /* Пилюлька реплики коллеги */
+  #witness-bubble {
+    position: absolute;
+    bottom: 17%; right: 3%;
+    width: 60%;
+    background: #DED0FC;
+    border-radius: 22px;
+    border: 1.5px solid #101010;
+    box-shadow: 3px 3px 0 #101010;
+    padding: 18px 20px;
+    z-index: 30; display: none;
+  }
+  #witness-bubble.show { display: block; }
+  .bubble-name {
+    font-size: 10px; font-weight: 800;
+    letter-spacing: 0.08em; text-transform: uppercase;
+    color: #101010; margin-bottom: 8px;
+  }
+  #witness-speech { font-size: clamp(12px,1.4vw,14px); line-height: 1.65; color: #101010; }
+  .witness-actions {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 14px;
+  }
+  #witness-actions-system {
+    justify-content: center;
+  }
+
+  /* Системная плашка */
+  #witness-system {
+    position: absolute;
+    bottom: 17%; left: 50%; transform: translateX(-50%);
+    width: 68%;
+    background: #DED0FC;
+    border: 1.5px solid #101010;
+    box-shadow: 3px 3px 0 #101010;
+    border-radius: 22px;
+    padding: 18px 20px;
+    color: #101010;
+    font-size: clamp(12px,1.4vw,14px); line-height: 1.6;
+    font-weight: 700;
+    z-index: 30; display: none; text-align: center;
+  }
+  #witness-system.show { display: block; }
+
+  /* Кнопка «продолжить» свидетеля */
+  #witness-next-btn {
+    position: static;
+    z-index: 40;
+    display: none;
+    white-space: nowrap;
+    margin-top: 0;
+  }
+  #witness-next-btn.show { display: block; }
+
+  /* ══ ЭКРАН 4: ВОПРОС ══ */
+  #screen-question {
+    background: #fff;
+    border-radius: 24px;
+    padding: 28px 28px 32px;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.10);
+  }
+  .q-pill {
+    display: inline-flex; align-items: center; gap: 6px;
+    background: #D0FF99; color: #101010;
+    font-size: 12px; font-weight: 800;
+    padding: 4px 12px; border-radius: 999px;
+    margin-bottom: 10px; letter-spacing: 0.03em;
+  }
+  .q-title {
+    font-size: clamp(17px,2.5vw,22px); font-weight: 900;
+    letter-spacing: -0.03em; margin-bottom: 6px;
+  }
+  .q-task { font-size: 14px; color: #5f6470; line-height: 1.6; margin-bottom: 20px; }
+  .options { display: flex; flex-direction: column; gap: 10px; margin-bottom: 20px; }
+  .option {
+    border: 1.5px solid #e5e5e5; border-radius: 14px;
+    padding: 14px 16px; cursor: pointer;
+    display: flex; gap: 12px; align-items: flex-start;
+    background: #fff; transition: border-color 0.15s;
+  }
+  .option:hover { border-color: #bbb; }
+  .option.selected { border-color: #101010; background: #f7f7f7; }
+  .option.correct { border-color: #22c55e; background: #f0fdf4; }
+  .option.wrong { border-color: #ef4444; background: #fef2f2; }
+  .option-letter {
+    width: 26px; height: 26px; border-radius: 50%;
+    background: #f0f0f0; display: flex; align-items: center;
+    justify-content: center; font-size: 12px; font-weight: 800; flex-shrink: 0;
+  }
+  .option.selected .option-letter { background: #101010; color: #fff; }
+  .option.correct .option-letter { background: #22c55e; color: #fff; }
+  .option.wrong .option-letter { background: #ef4444; color: #fff; }
+  .option-text { font-size: 14px; line-height: 1.55; }
+  .btn-check {
+    display: inline-flex; align-items: center; gap: 8px;
+    background: #101010; color: #fff;
+    border: 0; border-radius: 999px;
+    padding: 13px 28px; font: inherit;
+    font-size: 15px; font-weight: 800;
+    cursor: pointer; margin-bottom: 16px;
+  }
+  .btn-check:disabled { opacity: 0.35; cursor: default; }
+  .btn-check:not(:disabled):hover { opacity: 0.85; }
+  .feedback {
+    display: none; border-radius: 16px;
+    padding: 16px 18px; margin-bottom: 4px;
+  }
+  .feedback.show { display: block; }
+  .feedback.ok { background: #f0fdf4; border: 1.5px solid #22c55e; }
+  .feedback.err { background: #fef2f2; border: 1.5px solid #ef4444; }
+  .feedback h4 { font-size: 14px; font-weight: 800; margin-bottom: 4px; }
+  .feedback p { font-size: 13px; line-height: 1.55; }
+
+  /* ══ ЭКРАН 5: ФИНАЛ — в стиле итогового фрейма из workplace_v12 ══ */
+  #screen-finale {
+    background: #fff;
+    border-radius: 24px;
+    padding: 44px 40px 40px;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.10);
+    text-align: center;
+    animation: fadeIn 0.5s ease;
+  }
+  @keyframes fadeIn { from { opacity:0; transform:translateY(10px); } to { opacity:1; transform:none; } }
+  .final-stars-row {
+    display: none;
+  }
+  .final-title {
+    font-size: clamp(22px, 3.2vw, 30px);
+    font-weight: 900;
+    letter-spacing: -0.04em;
+    color: #101010;
+    margin-bottom: 22px;
+    line-height: 1.1;
+  }
+  .final-expert {
+    background: #fff;
+    border-radius: 16px;
+    padding: 18px 20px;
+    font-size: clamp(14px, 1.6vw, 15px);
+    font-weight: 600;
+    color: #101010;
+    line-height: 1.65;
+    border: 1.5px solid rgba(0,0,0,0.08);
+    box-shadow: 0 4px 18px rgba(0,0,0,0.04);
+    margin: 0 auto 18px;
+    max-width: 560px;
+    text-align: left;
+  }
+  .final-expert::before { content: '✦ '; color: #cbe800; font-weight: 900; }
+  .final-tip {
+    background: #D0FF99;
+    border-color: rgba(16,16,16,0.14);
+    font-weight: 700;
+  }
+  .final-tip::before { content: '✦ '; color: #101010; font-weight: 900; }
+  .final-chain-card {
+    background: #fff;
+    border: 1.5px solid rgba(0,0,0,0.08);
+    border-radius: 16px;
+    padding: 18px 20px;
+    margin: 0 auto 24px;
+    max-width: 560px;
+    text-align: left;
+  }
+  .final-chain-title {
+    font-size: 11px;
+    font-weight: 900;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: rgba(0,0,0,0.38);
+    margin-bottom: 14px;
+  }
+  .chain-step { display: flex; gap: 10px; align-items: flex-start; }
+  .chain-line { display: flex; flex-direction: column; align-items: center; flex-shrink: 0; }
+  .chain-dot { width: 9px; height: 9px; border-radius: 50%; background: #101010; margin-top: 5px; }
+  .chain-conn { width: 2px; height: 18px; background: #101010; opacity: 0.15; }
+  .chain-text { font-size: 13px; line-height: 1.55; padding-bottom: 8px; }
+  .chain-step:last-child .chain-conn { display: none; }
+  .chain-step:last-child .chain-dot { background: #c00; }
+  .btn-restart {
+    display: inline-flex; align-items: center; gap: 8px;
+    background: transparent; color: #101010;
+    border: 1.5px solid #101010; border-radius: 16px;
+    padding: 13px 26px; font: inherit;
+    font-size: clamp(14px, 1.6vw, 15px); font-weight: 800;
+    cursor: pointer; letter-spacing: -0.01em;
+    transition: background 0.15s, transform 0.15s;
+  }
+  .btn-restart:hover { background: #d0ff99; transform: translateY(-1px); }
+</style>
+</head>
+<body>
+<div id="app">
+
+<!-- ══ ЭКРАН 1: СТАРТ ══ -->
+<div id="screen-intro" class="screen active">
+  <div class="start-icon">🔥</div>
+  <div class="start-desc">
+    29 декабря, в последний рабочий день перед праздниками, в офисе сработала пожарная сигнализация.
+    Изучи место инцидента и выясни, что стало причиной задымления.
+  </div>
+  <div class="start-steps">
+    <div class="step-pill p1">
+      <div class="step-num">1</div>
+      <div class="step-text">Осмотри место инцидента</div>
+    </div>
+    <div class="step-arrow">→</div>
+    <div class="step-pill p2">
+      <div class="step-num">2</div>
+      <div class="step-text">Поговори со свидетелем</div>
+    </div>
+    <div class="step-arrow">→</div>
+    <div class="step-pill p3">
+      <div class="step-num">3</div>
+      <div class="step-text">Собери версию событий</div>
+    </div>
+    <div class="step-arrow">→</div>
+    <div class="step-pill p4">
+      <div class="step-num">4</div>
+      <div class="step-text">Узнай, как это предотвратить</div>
+    </div>
+  </div>
+  <button class="btn-start" onclick="showScreen('screen-scene')">Начать расследование! →</button>
+</div>
+
+<!-- ══ ЭКРАН 2: СЦЕНА ══ -->
+<div id="screen-scene" class="screen">
+  <div id="scene-wrap">
+
+    <!-- Фон -->
+    <img id="scene-bg" src="assets/bg.png" alt="">
+
+    <!-- Ассеты-улики (PNG с прозрачностью поверх фона, полный размер) -->
+    <img class="asset-layer" id="layer-провода"   src="assets/провода.png"   alt="">
+    <img class="asset-layer" id="layer-ковер"     src="assets/ковер.png"     alt="">
+    <img class="asset-layer" id="layer-жидкость"  src="assets/жидкость.png"  alt="">
+    <img class="asset-layer" id="layer-гирлянда"  src="assets/гирлянда.png"  alt="">
+    <img class="asset-layer" id="layer-ноутбук"   src="assets/ноутбук.png"   alt="">
+    <img class="asset-layer" id="layer-лампа"     src="assets/лампа.png"     alt="">
+    <img class="asset-layer" id="layer-кружка"    src="assets/кружка.png"    alt="">
+
+    <!-- Счётчик улик -->
+    <div id="clue-counter">0 / 7</div>
+
+    <!-- Онбординг-плашка -->
+    <div id="ob-card">
+      <div class="ob-title">👆 Нажми на первый подозрительный предмет</div>
+      <div class="ob-sub">Исследуй все улики по порядку, чтобы восстановить картину произошедшего</div>
+      <span class="ob-arrow">↓</span>
+    </div>
+
+    <!-- Хотспоты — невидимые зоны клика -->
+    <div class="hotspot pulsing" id="hs0" onclick="clickHotspot(0)"
+         style="left:32.8%;bottom:19.4%;width:24.1%;height:13.7%">
+      <div class="hotspot-ring"></div>
+    </div>
+    <div class="hotspot" id="hs1" onclick="clickHotspot(1)"
+         style="left:17.9%;bottom:1.3%;width:61.0%;height:19.9%">
+      <div class="hotspot-ring"></div>
+    </div>
+    <div class="hotspot" id="hs2" onclick="clickHotspot(2)"
+         style="left:33.8%;top:6.0%;width:26.2%;height:37.3%">
+      <div class="hotspot-ring"></div>
+    </div>
+    <div class="hotspot" id="hs3" onclick="clickHotspot(3)"
+         style="left:75.3%;top:1.6%;width:16.2%;height:35.9%">
+      <div class="hotspot-ring"></div>
+    </div>
+    <div class="hotspot" id="hs4" onclick="clickHotspot(4)"
+         style="left:59.6%;top:21.2%;width:7.3%;height:17.1%">
+      <div class="hotspot-ring"></div>
+    </div>
+    <div class="hotspot" id="hs5" onclick="clickHotspot(5)"
+         style="left:20.3%;top:29.4%;width:15.3%;height:14.5%">
+      <div class="hotspot-ring"></div>
+    </div>
+    <div class="hotspot" id="hs6" onclick="clickHotspot(6)"
+         style="left:0.2%;top:8.4%;width:96.1%;height:16.0%">
+      <div class="hotspot-ring"></div>
+    </div>
+
+    <!-- Плашка улики -->
+    <div id="clue-panel">
+      <div class="clue-top">
+        <div class="clue-icon" id="clue-icon"></div>
+        <div class="clue-name" id="clue-name"></div>
+      </div>
+      <div class="clue-text" id="clue-text"></div>
+      <div class="clue-btn-row">
+        <button class="btn-next" onclick="dismissClue()">Понятно →</button>
+      </div>
+    </div>
+
+    <!-- Плашка завершения осмотра -->
+    <div id="scene-continue">
+      <p>Все улики собраны. Теперь нужно понять контекст произошедшего.</p>
+      <button class="btn-dark" onclick="showScreen('screen-witness')">Поговорить со свидетелем →</button>
+    </div>
+
+  </div>
+</div>
+
+<!-- ══ ЭКРАН 3: СВИДЕТЕЛЬ ══ -->
+<div id="screen-witness" class="screen">
+  <div id="witness-wrap">
+    <img id="witness-bg" src="assets/bg.png" alt="">
+    <img class="witness-layer" src="assets/провода.png" alt="">
+    <img class="witness-layer" src="assets/ковер.png" alt="">
+    <img class="witness-layer" src="assets/жидкость.png" alt="">
+    <img class="witness-layer" src="assets/гирлянда.png" alt="">
+    <img class="witness-layer" src="assets/ноутбук.png" alt="">
+    <img class="witness-layer" src="assets/лампа.png" alt="">
+    <img class="witness-layer" src="assets/кружка.png" alt="">
+    <div id="witness-dim"></div>
+
+    <div id="witness-figure">
+      <img src="assets/свидетель.png" alt="">
+    </div>
+
+    <div id="witness-intro">
+      <p>Коллега, который сидел рядом с местом инцидента, готов рассказать, что произошло в тот день.</p>
+      <button class="btn-lime" onclick="startWitness()">Начать беседу →</button>
+    </div>
+
+    <div id="witness-bubble">
+      <div class="bubble-name">Коллега</div>
+      <p id="witness-speech"></p>
+      <div class="witness-actions" id="witness-actions-bubble"></div>
+    </div>
+
+    <div id="witness-system">
+      <div id="witness-system-text"></div>
+      <div class="witness-actions" id="witness-actions-system"></div>
+    </div>
+
+    <button class="btn-lime" id="witness-next-btn" onclick="witnessNext()">Продолжить →</button>
+  </div>
+</div>
+
+<!-- ══ ЭКРАН 4: ВОПРОС ══ -->
+<div id="screen-question" class="screen">
+  <div class="q-pill">✦ Версия событий</div>
+  <div class="q-title">Какая версия объясняет задымление?</div>
+  <div class="q-task">На основе улик и показаний свидетеля выбери наиболее вероятную цепочку событий.</div>
+  <div class="options">
+    <div class="option" id="opt-A" onclick="selectOption('A')">
+      <div class="option-letter">А</div>
+      <div class="option-text">Высокая нагрузка и спешка → несколько устройств в одном фильтре → провода под ковром → жидкость рядом с техникой → перегрев или короткое замыкание → задымление.</div>
+    </div>
+    <div class="option" id="opt-B" onclick="selectOption('B')">
+      <div class="option-letter">Б</div>
+      <div class="option-text">Слабое освещение → сотрудник поздно ушёл → пожарная сигнализация сработала случайно.</div>
+    </div>
+    <div class="option" id="opt-C" onclick="selectOption('C')">
+      <div class="option-letter">В</div>
+      <div class="option-text">На рабочем месте была гирлянда → только она и стала причиной инцидента.</div>
+    </div>
+  </div>
+  <button class="btn-check" id="check-btn" onclick="checkAnswer()" disabled>Проверить ✦</button>
+  <div class="feedback" id="feedback"></div>
+</div>
+
+<!-- ══ ЭКРАН 5: ФИНАЛ ══ -->
+<div id="screen-finale" class="screen">
+  <div class="final-title">Картина инцидента восстановлена</div>
+  <div class="final-expert">Инциденты редко возникают из-за одного действия. Чаще это цепочка факторов: высокая нагрузка, спешка, перегруженный удлинитель, небезопасные провода, жидкость рядом с техникой и сниженное внимание к базовым правилам.</div>
+  <div class="final-chain-card">
+    <div class="final-chain-title">Цепочка событий</div>
+    <div class="chain-step"><div class="chain-line"><div class="chain-dot"></div><div class="chain-conn"></div></div><div class="chain-text">Высокая нагрузка и спешка перед праздниками</div></div>
+    <div class="chain-step"><div class="chain-line"><div class="chain-dot"></div><div class="chain-conn"></div></div><div class="chain-text">Подключение нескольких устройств в один сетевой фильтр</div></div>
+    <div class="chain-step"><div class="chain-line"><div class="chain-dot"></div><div class="chain-conn"></div></div><div class="chain-text">Провода под ковром, слабое освещение — проблема не замечена</div></div>
+    <div class="chain-step"><div class="chain-line"><div class="chain-dot"></div><div class="chain-conn"></div></div><div class="chain-text">Жидкость оказалась рядом с техникой</div></div>
+    <div class="chain-step"><div class="chain-line"><div class="chain-dot"></div><div class="chain-conn"></div></div><div class="chain-text">Перегрев или короткое замыкание</div></div>
+    <div class="chain-step"><div class="chain-line"><div class="chain-dot"></div><div class="chain-conn"></div></div><div class="chain-text" style="font-weight:800;color:#c00">🔥 Задымление и срабатывание сигнализации</div></div>
+  </div>
+  <div class="final-expert final-tip">Опасную ситуацию проще предотвратить до того, как появился дым. Следи за состоянием техники, не перегружай сеть, держи жидкости подальше от электроприборов и не игнорируй первые признаки риска.</div>
+  <button class="btn-restart" onclick="restartAll()">↺ Пройти заново</button>
+</div>
+
+</div><!-- #app -->
+
+<script>
+var LAYERS = ['провода','ковер','ноутбук','лампа','кружка','жидкость','гирлянда'];
+var CLUES = [
+  {icon:'🔌', name:'Провода и сетевой фильтр',  text:'Ага, его легко не заметить. Кажется, на сеть была высокая нагрузка.'},
+  {icon:'🟫', name:'Провода под ковром',         text:'Это может быть важной уликой. Кабели под ковром могут перегреваться и остаются незамеченными.'},
+  {icon:'💻', name:'Ноутбук',                    text:'Техника подключена к перегруженному фильтру. При перегрузке сети риск возрастает.'},
+  {icon:'💡', name:'Лампа',                      text:'В таком освещении легко не заметить проблему сразу. Ещё одно устройство в той же цепочке.'},
+  {icon:'☕', name:'Кружка рядом с техникой',    text:'Жидкость и техника рядом — рискованное сочетание.'},
+  {icon:'💧', name:'Следы жидкости',             text:'Похоже, пролитая жидкость попала в технику или на провода.'},
+  {icon:'✨', name:'Гирлянда',                   text:'Ещё одно устройство в той же цепочке — гирлянда подключена к уже перегруженному фильтру.'}
+];
+var WITNESS = [
+  {type:'speech', text:'Это был последний день перед праздниками. Все пытались быстрее закрыть задачи. Он подключил дополнительные устройства прямо перед уходом: лампу, зарядку и гирлянду.'},
+  {type:'speech', text:'Кажется, на столе стоял термос. А света было совсем мало — никто особо не смотрел, что происходит под столом с проводами.'},
+  {type:'system', text:'Теперь понятно больше: важны не только предметы на рабочем месте, но и контекст — спешка, нагрузка и сниженное внимание.'}
+];
+
+var found = 0;
+var currentIdx = null;
+var wStep = 0;
+var selOpt = null;
+
+function showScreen(id) {
+  var all = document.querySelectorAll('.screen');
+  for (var i = 0; i < all.length; i++) all[i].classList.remove('active');
+  document.getElementById(id).classList.add('active');
+  window.scrollTo(0, 0);
+}
+
+function clickHotspot(idx) {
+  if (idx !== found) return;
+  currentIdx = idx;
+  var c = CLUES[idx];
+  document.getElementById('clue-icon').textContent = c.icon;
+  document.getElementById('clue-name').textContent = c.name;
+  document.getElementById('clue-text').textContent = c.text;
+  document.getElementById('clue-panel').classList.add('visible');
+  document.getElementById('hs' + idx).classList.remove('pulsing');
+}
+
+function dismissClue() {
+  if (currentIdx === null) return;
+  document.getElementById('hs' + currentIdx).classList.add('done');
+  found++;
+  document.getElementById('clue-counter').textContent = found + ' / 7';
+  document.getElementById('clue-panel').classList.remove('visible');
+  if (found === 1) document.getElementById('ob-card').classList.add('hidden');
+  if (found < 7) document.getElementById('hs' + found).classList.add('pulsing');
+  currentIdx = null;
+  if (found >= 7) document.getElementById('scene-continue').classList.add('show');
+}
+
+function startWitness() {
+  document.getElementById('witness-intro').style.display = 'none';
+  document.getElementById('witness-figure').style.display = 'block';
+  document.getElementById('witness-next-btn').classList.add('show');
+  wStep = 0;
+  showWStep();
+}
+
+function showWStep() {
+  var s = WITNESS[wStep];
+  document.getElementById('witness-bubble').classList.remove('show');
+  document.getElementById('witness-system').classList.remove('show');
+  var btn = document.getElementById('witness-next-btn');
+  btn.textContent = (wStep >= WITNESS.length - 1) ? 'Собрать версию событий →' : 'Продолжить →';
+  btn.classList.add('show');
+  if (s.type === 'speech') {
+    document.getElementById('witness-speech').textContent = s.text;
+    document.getElementById('witness-actions-bubble').appendChild(btn);
+    document.getElementById('witness-bubble').classList.add('show');
+  } else {
+    document.getElementById('witness-system-text').textContent = s.text;
+    document.getElementById('witness-actions-system').appendChild(btn);
+    document.getElementById('witness-system').classList.add('show');
+  }
+}
+
+function witnessNext() {
+  wStep++;
+  if (wStep < WITNESS.length) { showWStep(); }
+  else { showScreen('screen-question'); }
+}
+
+function selectOption(letter) {
+  if (document.getElementById('feedback').classList.contains('show')) return;
+  selOpt = letter;
+  var opts = document.querySelectorAll('.option');
+  for (var i = 0; i < opts.length; i++) opts[i].classList.remove('selected');
+  document.getElementById('opt-' + letter).classList.add('selected');
+  document.getElementById('check-btn').disabled = false;
+}
+
+function checkAnswer() {
+  var fb = document.getElementById('feedback');
+  if (selOpt === 'A') {
+    document.getElementById('opt-A').classList.add('correct');
+    fb.className = 'feedback show ok';
+    fb.innerHTML = '<h4>✓ Верно!</h4><p>Именно так и произошло: несколько рядовых факторов — спешка, перегруженная сеть, провода под ковром, жидкость рядом с техникой — сложились в опасную цепочку.</p><div style="margin-top:12px"><button class="btn-check" onclick="showScreen(\'screen-finale\')">Посмотреть итог →</button></div>';
+  } else {
+    document.getElementById('opt-' + selOpt).classList.add('wrong');
+    fb.className = 'feedback show err';
+    fb.innerHTML = '<h4>✗ Не совсем</h4><p>Отдельные факторы сами по себе не объясняют произошедшее. Подумай: что объединяет все улики?</p><div style="margin-top:10px"><button class="btn-check" style="background:#eee;color:#101010" onclick="resetQ()">Попробовать снова</button></div>';
+  }
+}
+
+function resetQ() {
+  selOpt = null;
+  var opts = document.querySelectorAll('.option');
+  for (var i = 0; i < opts.length; i++) opts[i].classList.remove('selected','correct','wrong');
+  document.getElementById('check-btn').disabled = true;
+  document.getElementById('feedback').className = 'feedback';
+  document.getElementById('feedback').innerHTML = '';
+}
+
+function restartAll() {
+  found = 0; currentIdx = null; wStep = 0; selOpt = null;
+  for (var i = 0; i < 7; i++) {
+    document.getElementById('hs' + i).classList.remove('done','pulsing');
+  }
+  document.getElementById('hs0').classList.add('pulsing');
+  document.getElementById('clue-panel').classList.remove('visible');
+  document.getElementById('scene-continue').classList.remove('show');
+  document.getElementById('ob-card').classList.remove('hidden');
+  document.getElementById('clue-counter').textContent = '0 / 7';
+  resetQ();
+  document.getElementById('witness-intro').style.display = '';
+  document.getElementById('witness-figure').style.display = 'none';
+  document.getElementById('witness-next-btn').classList.remove('show');
+  document.getElementById('witness-bubble').classList.remove('show');
+  document.getElementById('witness-system').classList.remove('show');
+  showScreen('screen-intro');
+}
+</script>
+</body>
+</html>

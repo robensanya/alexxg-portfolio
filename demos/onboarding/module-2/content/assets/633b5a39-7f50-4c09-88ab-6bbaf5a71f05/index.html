@@ -1,0 +1,403 @@
+﻿<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Кейсы по информационной безопасности</title>
+  <style>
+    :root {
+      --ink: #101010;
+      --muted: #5e6470;
+      --white: #ffffff;
+      --border: rgba(16,16,16,0.08);
+      --shadow: 0 12px 34px rgba(16,16,16,0.08);
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      background: transparent;
+      color: var(--ink);
+      font-family: 'StratosSkyeng', 'Onest', Arial, sans-serif;
+    }
+
+    .security-cases {
+      width: 100%;
+      max-width: 780px;
+      margin: 0 auto;
+      padding: 8px 0 40px;
+      --accent: #d0ff99;
+      --accent-soft: #f2f9e5;
+    }
+
+    .security-frame {
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: 28px;
+      box-shadow: var(--shadow);
+    }
+
+    .security-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 18px 20px 0;
+    }
+
+    .security-tag {
+      display: inline-flex;
+      align-items: center;
+      min-height: 34px;
+      padding: 8px 14px;
+      border-radius: 999px;
+      background: var(--accent);
+      font-size: 12px;
+      font-weight: 900;
+      line-height: 1;
+      color: var(--ink);
+    }
+
+    .security-count {
+      flex: 0 0 auto;
+      min-width: 50px;
+      text-align: center;
+      padding: 8px 10px;
+      border-radius: 999px;
+      background: #f3f4f6;
+      font-size: 12px;
+      font-weight: 900;
+      line-height: 1;
+    }
+
+    .security-main {
+      display: grid;
+      grid-template-columns: minmax(0, 43%) minmax(0, 57%);
+      gap: 12px;
+      padding: 16px 20px 20px;
+      align-items: stretch;
+    }
+
+    .security-image {
+      width: 100%;
+      height: 100%;
+      min-height: 456px;
+      display: block;
+      object-fit: cover;
+      border-radius: 22px;
+      border: 1px solid rgba(16,16,16,0.06);
+      background: #e9eaed;
+    }
+
+    .security-info {
+      min-width: 0;
+      display: grid;
+      grid-template-rows: auto 1fr;
+      gap: 12px;
+    }
+
+    .security-story {
+      padding: 14px 0 8px;
+      background: transparent;
+      border: 0;
+    }
+
+    .security-memory {
+      border-radius: 22px;
+      border: 1px solid rgba(16,16,16,0.07);
+      background: var(--accent-soft);
+      padding: 20px;
+      min-height: 210px;
+    }
+
+    .security-title-row {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+
+    .security-num {
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+      background: var(--accent);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 15px;
+      font-weight: 900;
+      line-height: 1;
+      flex: 0 0 auto;
+      border: 1.5px solid rgba(16,16,16,0.12);
+    }
+
+    .security-title {
+      margin: 0;
+      font-size: clamp(24px, 3vw, 31px);
+      line-height: 1.02;
+      letter-spacing: -0.035em;
+      font-weight: 900;
+    }
+
+    .security-text,
+    .security-memory-text {
+      margin: 0;
+      font-size: 15px;
+      line-height: 1.58;
+      color: var(--ink);
+      font-weight: 500;
+    }
+
+    .security-text p,
+    .security-memory-text p {
+      margin: 0 0 12px;
+    }
+
+    .security-text p:last-child,
+    .security-memory-text p:last-child {
+      margin-bottom: 0;
+    }
+
+    .security-memory-label {
+      display: inline-flex;
+      align-items: center;
+      padding: 8px 12px;
+      border-radius: 12px;
+      background: var(--accent);
+      font-size: 12px;
+      font-weight: 900;
+      line-height: 1;
+      margin-bottom: 14px;
+    }
+
+    .security-nav {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 0 20px 20px;
+    }
+
+    .security-btn {
+      appearance: none;
+      border: 1.5px solid var(--ink);
+      background: var(--ink);
+      color: #fff;
+      min-width: 112px;
+      height: 46px;
+      padding: 0 16px;
+      border-radius: 999px;
+      font: inherit;
+      font-size: 14px;
+      font-weight: 900;
+      line-height: 1;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: opacity 0.18s ease, transform 0.18s ease;
+    }
+
+    .security-btn:hover:not(:disabled) { transform: translateY(-1px); }
+    .security-btn:disabled { opacity: 0.28; cursor: default; }
+
+    .security-dots {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      flex: 1;
+      min-width: 0;
+    }
+
+    .security-dot {
+      appearance: none;
+      width: 10px;
+      height: 10px;
+      padding: 0;
+      border-radius: 50%;
+      border: 0;
+      background: #c8ccd3;
+      cursor: pointer;
+      transition: width 0.18s ease, border-radius 0.18s ease, background 0.18s ease;
+    }
+
+    .security-dot.active {
+      width: 28px;
+      border-radius: 999px;
+      background: var(--accent);
+    }
+
+    @media (max-width: 720px) {
+      .security-main { grid-template-columns: 1fr; }
+      .security-image { min-height: 340px; max-height: 520px; }
+      .security-memory { min-height: auto; }
+    }
+
+    @media (max-width: 540px) {
+      .security-frame { border-radius: 22px; }
+      .security-head { padding: 16px 16px 0; }
+      .security-main { padding: 14px 16px 16px; gap: 10px; }
+      .security-story { padding: 8px 0 4px; }
+      .security-memory { padding: 16px; border-radius: 18px; }
+      .security-image { border-radius: 18px; min-height: 300px; }
+      .security-title-row { gap: 10px; margin-bottom: 12px; }
+      .security-num { width: 38px; height: 38px; font-size: 14px; }
+      .security-title { font-size: 22px; }
+      .security-text, .security-memory-text { font-size: 14px; }
+      .security-nav { padding: 0 16px 16px; flex-wrap: wrap; }
+      .security-dots { order: 3; width: 100%; }
+      .security-btn { min-width: calc(50% - 6px); }
+    }
+  </style>
+</head>
+<body>
+  <div class="security-cases" id="securityCases">
+    <section class="security-frame" aria-live="polite">
+      <div class="security-head">
+        <div class="security-tag" id="caseTag"></div>
+        <div class="security-count" id="caseCount"></div>
+      </div>
+
+      <div class="security-main">
+        <div class="security-visual">
+          <img class="security-image" id="caseImage" src="assets/case-zahar.png" alt="Иллюстрация к кейсу" />
+        </div>
+
+        <div class="security-info">
+          <div class="security-story">
+            <div class="security-title-row">
+              <div class="security-num" id="caseNum"></div>
+              <h2 class="security-title" id="caseTitle"></h2>
+            </div>
+            <div class="security-text" id="caseStory"></div>
+          </div>
+
+          <div class="security-memory">
+            <div class="security-memory-label">Что важно запомнить</div>
+            <div class="security-memory-text" id="caseMemory"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="security-nav">
+        <button class="security-btn" type="button" id="prevBtn" aria-label="Предыдущий кейс">← Назад</button>
+        <div class="security-dots" id="caseDots" aria-label="Переключение кейсов"></div>
+        <button class="security-btn" type="button" id="nextBtn" aria-label="Следующий кейс">Дальше →</button>
+      </div>
+    </section>
+  </div>
+
+  <script>
+    (function initSecurityCases() {
+      const cases = [
+        {
+          title: 'Кейс Захара',
+          tag: '#домашняя сеть',
+          image: 'assets/case-zahar.png',
+          color: '#d0ff99',
+          soft: '#f2f9e5',
+          story: ['Захар не обновил роутер, и хакеры взломали его домашнюю сеть. Он быстро отреагировал, поэтому удалось избежать потерь.'],
+          memory: ['Важно следить за безопасностью своих устройств и сети. Даже если что-то уже произошло, помогает вовремя прийти к безопасникам в ~it-security.']
+        },
+        {
+          title: 'Кейс Алины и Юли',
+          tag: '#антивирус',
+          image: 'assets/case-alina-yulia.png',
+          color: '#ffc9f2',
+          soft: '#fff2fb',
+          story: ['Алина хотела скачать фильм, но вместе с ним скачала вирус. Хорошо, что антивирус вовремя отреагировал и устранил проблему. Иначе Алина могла лишиться всех данных с компьютера.', 'У Юли без антивируса утекли банковские карты, рабочие документы, пароли, личные данные и нюдсы.'],
+          memory: ['Антивирус на компьютере обязателен: никто не застрахован от случайного клика.', 'Даже с антивирусом важно разделять личное и рабочее и скачивать файлы только из надежных официальных источников.']
+        },
+        {
+          title: 'Кейс Вадима',
+          tag: '#подозрительные сообщения',
+          image: 'assets/case-vadim.png',
+          color: '#d8f7ff',
+          soft: '#edfafe',
+          story: ['Вадиму пришло пугающее сообщение в Telegram от имени CEO. Он ответил, и началась переписка.', 'Затем ему позвонили якобы из ФСБ, и Вадим сообщил данные, в том числе данные Госуслуг. Через пару дней злоумышленники получили доступ к его Госуслугам и набрали кредитов.'],
+          memory: ['К неожиданным сообщениям и письмам нужно относиться критически.', 'Если сообщение выглядит странно, пугает, торопит или просит данные, лучше остановиться, сделать паузу и подумать. Если остаются сомнения — написать безопасникам в ~it-security.']
+        },
+        {
+          title: 'Кейс Константина',
+          tag: '#пароли и доступы',
+          image: 'assets/case-konstantin.png',
+          color: '#e8ddff',
+          soft: '#f5f1ff',
+          story: ['Константин положил логин и пароль от корпоративной учетной записи в файл, открытый всему интернету. Его нашел добрый хакер и рассказал команде Информационной безопасности Skyeng, а они вовремя среагировали, избежав инцидентов и потерь.', 'Константин использовал один и тот же пароль для всех систем, но во многих была настроена двухфакторная аутентификация — она помогла защитить аккаунты от взлома.'],
+          memory: ['Критичные данные важно хранить в защищенных местах.', 'Для паролей используют менеджеры паролей — приложения, в которых удобно хранить и генерировать разные пароли. Константину бы это было полезно.']
+        },
+        {
+          title: 'Кейс Влада',
+          tag: '#забытые системы',
+          image: 'assets/case-vlad.png',
+          color: '#fff3a8',
+          soft: '#fff9d8',
+          story: ['Влад развернул систему для рабочих задач и активно ее использовал: загрузил туда конфиденциальные данные и настроил интеграции.', 'Через полгода система перестала быть нужной, и Влад больше в ней не работал. Еще через год добрые хакеры добрались до устаревшей системы и воспользовались уязвимостями старой версии, взломав инфраструктуру компании.', 'А ведь Влад мог просто свернуть ненужную систему.'],
+          memory: ['Если команда перестала использовать закупленную или развернутую систему, об этом нужно сообщить в <a href="#" target="_blank" rel="noopener noreferrer">~software-owners</a>.', 'Забытые системы часто не поддерживают, и они становятся целью хакеров.']
+        }
+      ];
+
+      let current = 0;
+      const root = document.getElementById('securityCases');
+      const tag = document.getElementById('caseTag');
+      const count = document.getElementById('caseCount');
+      const num = document.getElementById('caseNum');
+      const title = document.getElementById('caseTitle');
+      const story = document.getElementById('caseStory');
+      const memory = document.getElementById('caseMemory');
+      const image = document.getElementById('caseImage');
+      const prev = document.getElementById('prevBtn');
+      const next = document.getElementById('nextBtn');
+      const dots = document.getElementById('caseDots');
+
+      function renderParagraphs(items) {
+        return items.map(function(item) {
+          return '<p>' + item + '</p>';
+        }).join('');
+      }
+
+      cases.forEach(function(_, index) {
+        const dot = document.createElement('button');
+        dot.type = 'button';
+        dot.className = 'security-dot';
+        dot.setAttribute('aria-label', 'Открыть кейс ' + (index + 1));
+        dot.addEventListener('click', function() { showCase(index); });
+        dots.appendChild(dot);
+      });
+
+      function showCase(index) {
+        current = Math.max(0, Math.min(cases.length - 1, index));
+        const item = cases[current];
+
+        root.style.setProperty('--accent', item.color);
+        root.style.setProperty('--accent-soft', item.soft);
+        tag.textContent = item.tag;
+        count.textContent = (current + 1) + '/' + cases.length;
+        num.textContent = String(current + 1).padStart(2, '0');
+        title.textContent = item.title;
+        story.innerHTML = renderParagraphs(item.story);
+        memory.innerHTML = renderParagraphs(item.memory);
+        image.src = item.image;
+        image.alt = item.title;
+
+        prev.disabled = current === 0;
+        next.disabled = current === cases.length - 1;
+
+        Array.prototype.forEach.call(dots.children, function(dot, dotIndex) {
+          dot.classList.toggle('active', dotIndex === current);
+          dot.setAttribute('aria-current', dotIndex === current ? 'true' : 'false');
+        });
+      }
+
+      prev.addEventListener('click', function() { showCase(current - 1); });
+      next.addEventListener('click', function() { showCase(current + 1); });
+
+      showCase(0);
+    })();
+  </script>
+</body>
+</html>

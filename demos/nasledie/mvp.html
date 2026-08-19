@@ -1,0 +1,2295 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Наследие — Живая память</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400;1,500&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+/* ===== VARIABLES ===== */
+:root {
+  --cream: #faf7f2;
+  --warm-white: #f5f0e8;
+  --parchment: #ede5d4;
+  --parchment-dark: #ddd0b8;
+  --amber: #c8a96e;
+  --amber-light: #e8d5a3;
+  --amber-dark: #9a7a45;
+  --sepia: #6b4f2a;
+  --sepia-dark: #4a3520;
+  --ink: #2c2317;
+  --ink-light: #5a4a38;
+  --ink-muted: #8a7a6a;
+  --sage: #7a9a7a;
+  --rose: #c4a09a;
+  --success: #5a8a6a;
+  --danger: #c47a70;
+  --photo-border: #d4c4a8;
+  --shadow-sm: 0 2px 12px rgba(44,35,23,0.08);
+  --shadow-md: 0 6px 28px rgba(44,35,23,0.12);
+  --shadow-lg: 0 16px 56px rgba(44,35,23,0.16);
+  --radius: 6px;
+  --nav-h: 112px;
+}
+
+/* ===== RESET ===== */
+*, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+html { scroll-behavior: smooth; }
+body {
+  font-family: 'Jost', sans-serif;
+  background: var(--cream);
+  color: var(--ink);
+  font-weight: 300;
+  font-size: 16px;
+  line-height: 1.7;
+  overflow-x: hidden;
+}
+button { cursor: pointer; font-family: 'Jost', sans-serif; }
+input, textarea, select { font-family: 'Jost', sans-serif; }
+a { text-decoration: none; color: inherit; }
+img { max-width: 100%; display: block; }
+
+/* ===== NAVIGATION ===== */
+#nav {
+  position: fixed; top:40px; left:0; right:0; z-index:200;
+  height: 72px;
+  background: rgba(250,247,242,0.96);
+  backdrop-filter: blur(16px);
+  border-bottom: 1px solid var(--parchment);
+  display: flex; align-items: center;
+  padding: 0 32px;
+  gap: 24px;
+}
+.nav-logo {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 24px; font-weight: 500;
+  color: var(--sepia);
+  display: flex; align-items: center; gap: 10px;
+  margin-right: auto;
+}
+.nav-logo-icon {
+  width: 36px; height: 36px;
+  border: 1.5px solid var(--amber);
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 18px;
+}
+.nav-links { display: flex; align-items: center; gap: 4px; }
+.nav-link {
+  padding: 8px 14px;
+  border-radius: 4px;
+  font-size: 13px; font-weight: 400;
+  letter-spacing: 0.05em;
+  color: var(--ink-light);
+  background: none; border: none;
+  transition: all 0.2s;
+  white-space: nowrap;
+}
+.nav-link:hover { background: var(--parchment); color: var(--sepia); }
+.nav-link.active { background: var(--parchment); color: var(--sepia); font-weight: 500; }
+.nav-link.primary {
+  background: var(--sepia); color: var(--cream);
+  margin-left: 8px;
+}
+.nav-link.primary:hover { background: var(--sepia-dark); }
+
+/* ===== PAGES ===== */
+.page { display: none; min-height: 100vh; padding-top: var(--nav-h); }
+.page.active { display: block; }
+
+/* ===== UTILS ===== */
+.container { max-width: 1140px; margin: 0 auto; padding: 0 32px; }
+.section-label {
+  font-size: 11px; letter-spacing: 0.22em; text-transform: uppercase;
+  color: var(--amber-dark); margin-bottom: 14px; font-weight: 500;
+}
+.section-title {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: clamp(30px,4.5vw,52px);
+  font-weight: 400; color: var(--sepia);
+  line-height: 1.15;
+}
+.divider { height: 1px; background: var(--parchment); margin: 0; }
+.tag {
+  display: inline-flex; align-items: center; gap: 6px;
+  background: var(--parchment);
+  border: 1px solid var(--amber-light);
+  padding: 5px 12px; border-radius: 20px;
+  font-size: 13px; color: var(--sepia);
+}
+
+/* BUTTONS */
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+  padding: 14px 28px;
+  font-size: 14px; font-weight: 500;
+  letter-spacing: 0.07em; text-transform: uppercase;
+  border: none; border-radius: var(--radius);
+  transition: all 0.22s; cursor: pointer; white-space: nowrap;
+}
+.btn-lg { padding: 18px 40px; font-size: 15px; }
+.btn-sm { padding: 10px 20px; font-size: 13px; }
+.btn-xs { padding: 7px 14px; font-size: 12px; }
+.btn-primary { background: var(--sepia); color: var(--cream); }
+.btn-primary:hover { background: var(--sepia-dark); transform: translateY(-1px); box-shadow: var(--shadow-md); }
+.btn-outline { background: transparent; color: var(--sepia); border: 1.5px solid var(--amber); }
+.btn-outline:hover { background: var(--parchment); }
+.btn-ghost { background: transparent; color: var(--ink-light); border: 1px solid var(--parchment-dark); }
+.btn-ghost:hover { background: var(--parchment); color: var(--sepia); }
+.btn-success { background: var(--success); color: white; }
+.btn-danger-outline { background: transparent; color: var(--danger); border: 1px solid var(--danger); }
+.btn-amber { background: var(--amber); color: white; }
+
+/* FORM */
+.form-group { margin-bottom: 20px; }
+.form-label {
+  display: block; font-size: 14px; font-weight: 500;
+  color: var(--ink-light); margin-bottom: 8px;
+  letter-spacing: 0.03em;
+}
+.form-control {
+  width: 100%; padding: 14px 16px;
+  border: 1.5px solid var(--parchment-dark);
+  border-radius: var(--radius);
+  background: white; color: var(--ink);
+  font-size: 15px; font-family: 'Jost', sans-serif;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  resize: vertical;
+}
+.form-control:focus {
+  outline: none;
+  border-color: var(--amber);
+  box-shadow: 0 0 0 3px rgba(200,169,110,0.15);
+}
+.form-hint { font-size: 13px; color: var(--ink-muted); margin-top: 6px; }
+select.form-control { appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%236b4f2a' stroke-width='1.5' fill='none'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 16px center; padding-right: 40px; }
+
+/* CARDS */
+.card {
+  background: white;
+  border: 1px solid var(--photo-border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-sm);
+  overflow: hidden;
+  transition: box-shadow 0.25s, transform 0.25s;
+}
+.card:hover { box-shadow: var(--shadow-md); }
+.card-body { padding: 28px; }
+
+/* PHOTO CARD (album style) */
+.photo-card {
+  background: white;
+  padding: 10px 10px 36px;
+  box-shadow: var(--shadow-md);
+  border: 1px solid var(--photo-border);
+  position: relative;
+}
+.photo-card::before {
+  content: '';
+  position: absolute; top: -9px; left: 50%;
+  transform: translateX(-50%) rotate(var(--tape-r, 0deg));
+  width: 44px; height: 18px;
+  background: rgba(200,169,110,0.32);
+  border: 1px solid rgba(200,169,110,0.5);
+}
+
+/* PROGRESS BAR */
+.progress-bar-wrap { background: var(--parchment); border-radius: 4px; height: 8px; overflow: hidden; }
+.progress-bar { height: 100%; background: var(--amber); border-radius: 4px; transition: width 0.4s; }
+
+/* BADGE */
+.badge {
+  display: inline-flex; align-items: center;
+  padding: 3px 10px; border-radius: 20px;
+  font-size: 12px; font-weight: 500; letter-spacing: 0.05em;
+}
+.badge-amber { background: var(--amber-light); color: var(--sepia); }
+.badge-green { background: #d4ead4; color: #3a6a3a; }
+.badge-gray { background: var(--parchment); color: var(--ink-muted); }
+
+/* TOAST */
+#toast-container { position: fixed; bottom: 28px; right: 28px; z-index: 9999; display: flex; flex-direction: column; gap: 10px; }
+.toast {
+  background: var(--sepia); color: var(--cream);
+  padding: 14px 22px; border-radius: var(--radius);
+  font-size: 14px; box-shadow: var(--shadow-lg);
+  animation: toastIn 0.3s ease, toastOut 0.3s ease 2.8s both;
+  display: flex; align-items: center; gap: 10px;
+}
+.toast.success { background: var(--success); }
+.toast.error { background: var(--danger); }
+@keyframes toastIn { from { opacity:0; transform: translateY(16px); } to { opacity:1; transform: translateY(0); } }
+@keyframes toastOut { to { opacity:0; transform: translateY(8px); } }
+
+/* MODAL */
+.modal-overlay {
+  position: fixed; inset: 0; z-index: 500;
+  background: rgba(44,35,23,0.45);
+  display: flex; align-items: center; justify-content: center;
+  padding: 24px;
+  opacity: 0; visibility: hidden;
+  transition: all 0.25s;
+}
+.modal-overlay.open { opacity: 1; visibility: visible; }
+.modal {
+  background: var(--cream);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-lg);
+  max-width: 560px; width: 100%;
+  max-height: 90vh; overflow-y: auto;
+  transform: translateY(24px);
+  transition: transform 0.25s;
+}
+.modal-overlay.open .modal { transform: translateY(0); }
+.modal-header {
+  padding: 28px 32px 20px;
+  border-bottom: 1px solid var(--parchment);
+  display: flex; align-items: center; justify-content: space-between;
+}
+.modal-title {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 26px; color: var(--sepia); font-weight: 500;
+}
+.modal-close { background: none; border: none; font-size: 22px; color: var(--ink-muted); cursor: pointer; line-height: 1; }
+.modal-body { padding: 28px 32px; }
+.modal-footer { padding: 16px 32px 28px; display: flex; gap: 12px; justify-content: flex-end; border-top: 1px solid var(--parchment); }
+
+/* TABS */
+.tabs { display: flex; border-bottom: 1px solid var(--parchment); margin-bottom: 28px; }
+.tab-btn {
+  padding: 12px 20px; background: none; border: none;
+  font-size: 14px; color: var(--ink-muted);
+  border-bottom: 2px solid transparent; margin-bottom: -1px;
+  transition: all 0.2s; font-family: 'Jost', sans-serif;
+  letter-spacing: 0.03em;
+}
+.tab-btn:hover { color: var(--sepia); }
+.tab-btn.active { color: var(--sepia); border-bottom-color: var(--amber); font-weight: 500; }
+.tab-panel { display: none; }
+.tab-panel.active { display: block; }
+
+/* ANIMATIONS */
+@keyframes fadeUp { from { opacity:0; transform:translateY(20px); } to { opacity:1; transform:translateY(0); } }
+@keyframes fadeIn { from { opacity:0; } to { opacity:1; } }
+@keyframes pulse { 0%,60%,100%{transform:translateY(0);opacity:.4} 30%{transform:translateY(-6px);opacity:1} }
+@keyframes spin { to { transform: rotate(360deg); } }
+@keyframes recordPulse { 0%,100%{box-shadow:0 0 0 0 rgba(196,120,112,0.5)} 50%{box-shadow:0 0 0 12px rgba(196,120,112,0)} }
+.fade-up { animation: fadeUp 0.5s ease both; }
+
+/* ============================================================
+   PAGE 1: LANDING / HOME
+   ============================================================ */
+#page-home {}
+
+/* Hero */
+.hero {
+  min-height: calc(100vh - var(--nav-h));
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  align-items: center;
+  gap: 64px;
+  padding: 80px 32px 60px;
+  max-width: 1140px;
+  margin: 0 auto;
+}
+.hero-kicker { display: flex; align-items: center; gap: 10px; margin-bottom: 22px; }
+.hero-kicker-line { width: 32px; height: 1.5px; background: var(--amber); }
+.hero-title {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: clamp(44px, 5.5vw, 74px);
+  font-weight: 300; color: var(--sepia);
+  line-height: 1.1; margin-bottom: 24px;
+}
+.hero-title em { font-style: italic; color: var(--amber-dark); }
+.hero-desc { font-size: 18px; color: var(--ink-light); line-height: 1.8; max-width: 460px; margin-bottom: 44px; }
+.hero-btns { display: flex; gap: 16px; flex-wrap: wrap; }
+.hero-trust { margin-top: 44px; display: flex; gap: 28px; flex-wrap: wrap; }
+.trust-item { display: flex; align-items: center; gap: 8px; font-size: 14px; color: var(--ink-muted); }
+.trust-icon { font-size: 20px; }
+
+/* Album collage */
+.hero-collage { position: relative; height: 500px; }
+.hero-collage .photo-card:nth-child(1) { position:absolute; width:220px; top:0; left:30px; transform: rotate(-3.5deg); --tape-r: 2deg; }
+.hero-collage .photo-card:nth-child(2) { position:absolute; width:195px; top:50px; right:0; transform: rotate(2.8deg); --tape-r: -1.5deg; }
+.hero-collage .photo-card:nth-child(3) { position:absolute; width:210px; bottom:10px; left:0; transform: rotate(1.2deg); --tape-r: 1deg; }
+.hero-collage .photo-card:nth-child(4) { position:absolute; width:180px; bottom:30px; right:40px; transform: rotate(-2deg); --tape-r: -2deg; }
+.photo-thumb {
+  width: 100%; aspect-ratio: 4/3;
+  background: var(--parchment);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 44px;
+  border: 1px solid var(--photo-border);
+}
+.photo-cap {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 12px; font-style: italic;
+  color: var(--ink-muted); text-align: center;
+  margin-top: 8px;
+}
+
+/* Stats */
+.stats-row {
+  background: var(--parchment);
+  border-top: 1px solid var(--photo-border);
+  border-bottom: 1px solid var(--photo-border);
+  padding: 48px 32px;
+  display: flex; justify-content: center; gap: 72px; flex-wrap: wrap;
+}
+.stat-item { text-align: center; }
+.stat-num {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 52px; font-weight: 300; color: var(--sepia);
+  line-height: 1;
+}
+.stat-label { font-size: 13px; letter-spacing: 0.1em; color: var(--ink-muted); text-transform: uppercase; margin-top: 6px; }
+
+/* Features */
+.features-section { padding: 96px 0; background: var(--warm-white); }
+.features-grid {
+  display: grid; grid-template-columns: repeat(3,1fr); gap: 28px;
+  margin-top: 56px;
+}
+.feature-card {
+  background: var(--cream);
+  border: 1px solid var(--parchment);
+  border-radius: var(--radius);
+  padding: 36px 28px;
+  transition: box-shadow 0.25s;
+}
+.feature-card:hover { box-shadow: var(--shadow-md); }
+.feature-icon {
+  width: 56px; height: 56px;
+  background: var(--parchment);
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 24px; margin-bottom: 20px;
+}
+.feature-card h3 { font-family: 'Cormorant Garamond', serif; font-size: 22px; color: var(--sepia); margin-bottom: 10px; }
+.feature-card p { font-size: 15px; color: var(--ink-light); line-height: 1.8; }
+
+/* How it works */
+.how-section { padding: 96px 0; }
+.steps-list { margin-top: 56px; }
+.step-item {
+  display: grid; grid-template-columns: 64px 1fr;
+  gap: 28px; padding: 36px 0;
+  border-bottom: 1px solid var(--parchment);
+  align-items: start;
+}
+.step-item:last-child { border-bottom: none; }
+.step-num {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 60px; font-weight: 300;
+  color: var(--amber-light); line-height: 1;
+}
+.step-body h3 { font-family: 'Cormorant Garamond', serif; font-size: 24px; color: var(--sepia); margin-bottom: 8px; }
+.step-body p { color: var(--ink-light); max-width: 580px; }
+
+/* Quote */
+.quote-section {
+  background: var(--parchment);
+  border-top: 1px solid var(--photo-border);
+  border-bottom: 1px solid var(--photo-border);
+  padding: 80px 32px; text-align: center;
+}
+.quote-text {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: clamp(22px,3vw,38px);
+  font-weight: 300; font-style: italic;
+  color: var(--sepia); max-width: 720px;
+  margin: 0 auto; line-height: 1.5;
+}
+.quote-author { margin-top: 24px; font-size: 13px; letter-spacing: 0.12em; color: var(--amber-dark); text-transform: uppercase; }
+
+/* CTA */
+.cta-section {
+  padding: 96px 32px; text-align: center;
+  background: var(--cream);
+}
+.cta-section h2 { font-family: 'Cormorant Garamond', serif; font-size: clamp(32px,4.5vw,58px); color: var(--sepia); margin-bottom: 20px; line-height: 1.2; }
+.cta-section p { color: var(--ink-light); font-size: 18px; max-width: 500px; margin: 0 auto 40px; }
+
+/* Footer */
+.footer { background: var(--ink); color: var(--parchment); padding: 64px 32px 40px; }
+.footer-grid { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 48px; max-width: 1140px; margin: 0 auto 56px; }
+.footer-brand { font-family: 'Cormorant Garamond', serif; font-size: 28px; color: var(--amber-light); margin-bottom: 14px; }
+.footer-desc { font-size: 14px; color: rgba(237,229,212,0.6); line-height: 1.8; max-width: 280px; }
+.footer-col-title { font-size: 12px; letter-spacing: 0.15em; text-transform: uppercase; color: var(--amber); margin-bottom: 16px; }
+.footer-links { list-style: none; display: flex; flex-direction: column; gap: 10px; }
+.footer-links a { font-size: 14px; color: rgba(237,229,212,0.65); transition: color 0.2s; cursor: pointer; }
+.footer-links a:hover { color: var(--amber-light); }
+.footer-bottom { max-width: 1140px; margin: 0 auto; padding-top: 28px; border-top: 1px solid rgba(200,169,110,0.2); display: flex; justify-content: space-between; align-items: center; }
+.footer-copy { font-size: 13px; color: rgba(237,229,212,0.4); }
+
+/* ============================================================
+   PAGE 2: AUTH
+   ============================================================ */
+#page-auth {
+  display: none;
+  align-items: center; justify-content: center;
+  background: var(--warm-white);
+}
+#page-auth.active { display: flex; }
+.auth-card {
+  background: var(--cream);
+  border: 1px solid var(--photo-border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-lg);
+  padding: 52px 48px;
+  width: 100%; max-width: 440px;
+  text-align: center;
+}
+.auth-logo { font-family: 'Cormorant Garamond', serif; font-size: 30px; color: var(--sepia); margin-bottom: 8px; }
+.auth-subtitle { font-size: 15px; color: var(--ink-light); margin-bottom: 36px; }
+.auth-card h2 { font-family: 'Cormorant Garamond', serif; font-size: 28px; color: var(--sepia); margin-bottom: 28px; }
+.auth-switch { margin-top: 24px; font-size: 14px; color: var(--ink-muted); }
+.auth-switch a { color: var(--amber-dark); cursor: pointer; }
+.auth-divider { display: flex; align-items: center; gap: 12px; margin: 24px 0; color: var(--ink-muted); font-size: 13px; }
+.auth-divider::before, .auth-divider::after { content: ''; flex: 1; height: 1px; background: var(--parchment-dark); }
+
+/* ============================================================
+   PAGE 3: APP (CABINET)
+   ============================================================ */
+#page-app { min-height: 100vh; background: var(--cream); }
+.app-layout { display: grid; grid-template-columns: 260px 1fr; min-height: calc(100vh - var(--nav-h)); }
+
+/* Sidebar */
+.sidebar {
+  background: var(--warm-white);
+  border-right: 1px solid var(--parchment);
+  padding: 32px 20px;
+  position: sticky; top: var(--nav-h);
+  height: calc(100vh - var(--nav-h));
+  overflow-y: auto;
+}
+.sidebar-user { text-align: center; padding-bottom: 28px; border-bottom: 1px solid var(--parchment); margin-bottom: 24px; }
+.sidebar-avatar {
+  width: 72px; height: 72px;
+  background: var(--parchment);
+  border-radius: 50%;
+  border: 2.5px solid var(--amber-light);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 30px; margin: 0 auto 12px;
+}
+.sidebar-name { font-family: 'Cormorant Garamond', serif; font-size: 19px; color: var(--sepia); }
+.sidebar-meta { font-size: 13px; color: var(--ink-muted); }
+.sidebar-progress { margin-top: 14px; }
+.sidebar-progress-label { display: flex; justify-content: space-between; font-size: 12px; color: var(--ink-muted); margin-bottom: 6px; }
+
+.sidebar-nav { list-style: none; display: flex; flex-direction: column; gap: 2px; }
+.sidebar-nav-item button {
+  width: 100%; display: flex; align-items: center; gap: 12px;
+  padding: 13px 14px; border-radius: var(--radius);
+  background: none; border: none; text-align: left;
+  font-size: 15px; color: var(--ink-light);
+  transition: all 0.18s; cursor: pointer;
+}
+.sidebar-nav-item button:hover { background: var(--parchment); color: var(--sepia); }
+.sidebar-nav-item button.active { background: var(--parchment); color: var(--sepia); font-weight: 500; }
+.sidebar-nav-item .nav-icon { font-size: 19px; flex-shrink: 0; }
+.sidebar-section-label { font-size: 10px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--ink-muted); padding: 16px 14px 6px; }
+
+/* Main content */
+.app-main { padding: 40px 48px; min-width: 0; }
+.app-section { display: none; }
+.app-section.active { display: block; animation: fadeUp 0.35s ease; }
+.app-section-header { margin-bottom: 36px; }
+.app-section-header h1 { font-family: 'Cormorant Garamond', serif; font-size: 38px; font-weight: 400; color: var(--sepia); }
+.app-section-header p { font-size: 16px; color: var(--ink-light); margin-top: 6px; }
+
+/* Dashboard */
+.dash-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 20px; margin-bottom: 36px; }
+.dash-card {
+  background: white; border: 1px solid var(--photo-border);
+  border-radius: var(--radius); padding: 24px;
+  box-shadow: var(--shadow-sm);
+}
+.dash-card-icon { font-size: 28px; margin-bottom: 12px; }
+.dash-card-val { font-family: 'Cormorant Garamond', serif; font-size: 38px; color: var(--sepia); font-weight: 300; line-height: 1; }
+.dash-card-label { font-size: 13px; color: var(--ink-muted); margin-top: 4px; }
+.dash-recent-title { font-family: 'Cormorant Garamond', serif; font-size: 24px; color: var(--sepia); margin-bottom: 18px; }
+.recent-list { display: flex; flex-direction: column; gap: 12px; }
+.recent-item {
+  display: flex; align-items: center; gap: 16px;
+  padding: 16px 20px;
+  background: white; border: 1px solid var(--photo-border);
+  border-radius: var(--radius);
+  transition: box-shadow 0.2s; cursor: pointer;
+}
+.recent-item:hover { box-shadow: var(--shadow-sm); }
+.recent-icon { font-size: 28px; flex-shrink: 0; }
+.recent-info { flex: 1; }
+.recent-title { font-family: 'Cormorant Garamond', serif; font-size: 18px; color: var(--sepia); }
+.recent-meta { font-size: 13px; color: var(--ink-muted); margin-top: 2px; }
+.recent-badge { flex-shrink: 0; }
+
+/* Interview wizard */
+.wizard { max-width: 760px; }
+.wizard-progress { display: flex; align-items: center; gap: 8px; margin-bottom: 36px; }
+.wizard-step-dot {
+  width: 10px; height: 10px; border-radius: 50%;
+  background: var(--parchment-dark);
+  transition: background 0.25s;
+}
+.wizard-step-dot.done { background: var(--amber); }
+.wizard-step-dot.active { background: var(--sepia); width: 12px; height: 12px; }
+.wizard-step-label { font-size: 13px; color: var(--ink-muted); margin-left: 4px; }
+.theme-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 16px; }
+.theme-card {
+  background: white; border: 2px solid var(--parchment-dark);
+  border-radius: var(--radius); padding: 24px 20px;
+  text-align: center; cursor: pointer;
+  transition: all 0.2s;
+}
+.theme-card:hover { border-color: var(--amber); background: var(--warm-white); }
+.theme-card.selected { border-color: var(--sepia); background: var(--parchment); }
+.theme-card-icon { font-size: 32px; margin-bottom: 10px; }
+.theme-card-name { font-family: 'Cormorant Garamond', serif; font-size: 18px; color: var(--sepia); font-weight: 500; }
+.theme-card-count { font-size: 12px; color: var(--ink-muted); margin-top: 4px; }
+
+.interview-q {
+  background: var(--warm-white); border: 1px solid var(--parchment);
+  border-radius: var(--radius); padding: 28px 32px;
+  margin-bottom: 24px;
+}
+.interview-q-num { font-size: 12px; letter-spacing: 0.15em; color: var(--amber-dark); text-transform: uppercase; margin-bottom: 10px; }
+.interview-q-text { font-family: 'Cormorant Garamond', serif; font-size: 24px; color: var(--sepia); line-height: 1.4; }
+.interview-q-hint { font-size: 14px; color: var(--ink-muted); margin-top: 10px; font-style: italic; }
+
+/* Recording UI */
+.rec-area { margin-bottom: 20px; }
+.rec-controls { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; margin-bottom: 16px; }
+.rec-btn {
+  width: 72px; height: 72px; border-radius: 50%;
+  border: none; background: var(--danger);
+  color: white; font-size: 26px;
+  display: flex; align-items: center; justify-content: center;
+  transition: all 0.2s; cursor: pointer;
+  box-shadow: 0 4px 16px rgba(196,120,112,0.4);
+}
+.rec-btn:hover { transform: scale(1.06); }
+.rec-btn.recording { animation: recordPulse 1.5s infinite; }
+.rec-timer { font-family: 'Cormorant Garamond', serif; font-size: 32px; color: var(--sepia); letter-spacing: 0.05em; }
+.rec-status { font-size: 14px; color: var(--ink-muted); }
+.rec-wave { display: flex; align-items: center; gap: 3px; height: 36px; }
+.rec-wave span {
+  display: block; width: 4px; background: var(--amber);
+  border-radius: 2px; min-height: 4px;
+  animation: wave 0.8s ease-in-out infinite;
+}
+.rec-wave span:nth-child(2){animation-delay:.1s} .rec-wave span:nth-child(3){animation-delay:.2s}
+.rec-wave span:nth-child(4){animation-delay:.15s} .rec-wave span:nth-child(5){animation-delay:.05s}
+.rec-wave span:nth-child(6){animation-delay:.25s} .rec-wave span:nth-child(7){animation-delay:.12s}
+@keyframes wave { 0%,100%{height:6px} 50%{height:28px} }
+.rec-wave.paused span { animation-play-state: paused; }
+
+.transcription-box { margin-top: 16px; }
+.transcription-label { font-size: 13px; color: var(--ink-muted); margin-bottom: 8px; display: flex; align-items: center; gap: 8px; }
+.transcribing-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--amber); animation: spin 1s linear infinite; }
+
+.interview-nav { display: flex; gap: 12px; justify-content: space-between; align-items: center; margin-top: 28px; }
+.q-counter { font-size: 14px; color: var(--ink-muted); }
+
+/* Timeline */
+.timeline { position: relative; padding-left: 40px; }
+.timeline::before { content: ''; position: absolute; left: 12px; top: 0; bottom: 0; width: 2px; background: var(--parchment-dark); }
+.timeline-entry { position: relative; margin-bottom: 40px; }
+.timeline-dot {
+  position: absolute; left: -36px; top: 4px;
+  width: 16px; height: 16px; border-radius: 50%;
+  background: var(--amber); border: 3px solid var(--cream);
+  box-shadow: 0 0 0 2px var(--amber);
+}
+.timeline-year { font-family: 'Cormorant Garamond', serif; font-size: 13px; color: var(--amber-dark); font-weight: 500; letter-spacing: 0.08em; margin-bottom: 6px; text-transform: uppercase; }
+.timeline-card {
+  background: white; border: 1px solid var(--photo-border);
+  border-radius: var(--radius); padding: 22px 24px;
+  box-shadow: var(--shadow-sm); cursor: pointer;
+  transition: box-shadow 0.2s;
+}
+.timeline-card:hover { box-shadow: var(--shadow-md); }
+.timeline-card-title { font-family: 'Cormorant Garamond', serif; font-size: 20px; color: var(--sepia); margin-bottom: 6px; }
+.timeline-card-text { font-size: 14px; color: var(--ink-light); line-height: 1.7; }
+.timeline-card-footer { margin-top: 14px; display: flex; gap: 10px; align-items: center; }
+
+/* Youth mode */
+.youth-banner {
+  background: linear-gradient(135deg, #e8f0e8, #f0e8f0);
+  border: 1px solid #c0d0c0;
+  border-radius: var(--radius);
+  padding: 32px; margin-bottom: 32px;
+  display: flex; align-items: center; gap: 24px;
+}
+.youth-banner-icon { font-size: 52px; flex-shrink: 0; }
+.youth-banner h2 { font-family: 'Cormorant Garamond', serif; font-size: 26px; color: #3a5a3a; margin-bottom: 6px; }
+.youth-banner p { font-size: 15px; color: #5a6a5a; }
+.capsule-grid { display: grid; grid-template-columns: repeat(2,1fr); gap: 20px; }
+.capsule-card {
+  background: white; border: 1px solid var(--photo-border);
+  border-radius: var(--radius); padding: 24px;
+  box-shadow: var(--shadow-sm); cursor: pointer;
+  transition: all 0.22s;
+}
+.capsule-card:hover { box-shadow: var(--shadow-md); transform: translateY(-2px); }
+.capsule-date { font-size: 12px; color: var(--amber-dark); letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 8px; }
+.capsule-title { font-family: 'Cormorant Garamond', serif; font-size: 20px; color: var(--sepia); margin-bottom: 8px; }
+.capsule-preview { font-size: 14px; color: var(--ink-light); line-height: 1.6; }
+.compare-view { background: white; border: 1px solid var(--photo-border); border-radius: var(--radius); overflow: hidden; }
+.compare-header { background: var(--parchment); padding: 16px 24px; display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.compare-col-title { font-size: 13px; font-weight: 500; color: var(--sepia); letter-spacing: 0.05em; text-transform: uppercase; }
+.compare-body { padding: 24px; display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.compare-entry { padding: 16px; background: var(--warm-white); border-radius: 4px; font-size: 15px; color: var(--ink); line-height: 1.7; }
+
+/* Media library */
+.media-toolbar { display: flex; gap: 12px; align-items: center; margin-bottom: 28px; flex-wrap: wrap; }
+.media-search { flex: 1; min-width: 200px; }
+.media-search input { padding: 12px 16px; padding-left: 40px; }
+.media-search-wrap { position: relative; }
+.media-search-icon { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: var(--ink-muted); }
+.media-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px,1fr)); gap: 20px; }
+.media-card {
+  background: white; padding: 9px 9px 32px;
+  border: 1px solid var(--photo-border);
+  box-shadow: var(--shadow-sm); cursor: pointer;
+  transition: all 0.22s;
+}
+.media-card:hover { box-shadow: var(--shadow-md); transform: translateY(-3px) rotate(0.5deg); }
+.media-thumb {
+  aspect-ratio: 4/3; background: var(--parchment);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 38px; border: 1px solid var(--photo-border);
+  position: relative; overflow: hidden;
+}
+.media-type-badge {
+  position: absolute; bottom: 6px; right: 6px;
+  background: rgba(44,35,23,0.65); color: white;
+  font-size: 10px; padding: 2px 8px; border-radius: 2px;
+  letter-spacing: 0.1em; text-transform: uppercase;
+}
+.media-name { font-family: 'Cormorant Garamond', serif; font-size: 13px; color: var(--ink-light); text-align: center; margin-top: 9px; font-style: italic; }
+
+/* Upload dropzone */
+.dropzone {
+  border: 2px dashed var(--amber-light);
+  border-radius: var(--radius); padding: 56px 32px;
+  text-align: center; background: var(--warm-white);
+  margin-bottom: 36px; cursor: pointer;
+  transition: all 0.2s;
+}
+.dropzone:hover, .dropzone.dragover {
+  border-color: var(--amber); background: var(--parchment);
+}
+.dropzone-icon { font-size: 48px; margin-bottom: 14px; }
+.dropzone h3 { font-family: 'Cormorant Garamond', serif; font-size: 22px; color: var(--sepia); margin-bottom: 8px; }
+.dropzone p { font-size: 14px; color: var(--ink-muted); margin-bottom: 20px; }
+.dropzone-types { display: flex; justify-content: center; gap: 10px; flex-wrap: wrap; margin-bottom: 20px; }
+
+/* Settings */
+.settings-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 28px; }
+.settings-card { background: white; border: 1px solid var(--photo-border); border-radius: var(--radius); padding: 28px; box-shadow: var(--shadow-sm); }
+.settings-card h3 { font-family: 'Cormorant Garamond', serif; font-size: 20px; color: var(--sepia); margin-bottom: 20px; padding-bottom: 14px; border-bottom: 1px solid var(--parchment); }
+.toggle-row { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid var(--parchment); }
+.toggle-row:last-child { border-bottom: none; }
+.toggle-label { font-size: 15px; color: var(--ink); }
+.toggle-desc { font-size: 13px; color: var(--ink-muted); margin-top: 2px; }
+.toggle-switch { position: relative; width: 48px; height: 26px; flex-shrink: 0; }
+.toggle-switch input { opacity: 0; width: 0; height: 0; }
+.toggle-slider {
+  position: absolute; cursor: pointer; inset: 0;
+  background: var(--parchment-dark); border-radius: 13px;
+  transition: 0.3s;
+}
+.toggle-slider::before {
+  content: ''; position: absolute;
+  width: 20px; height: 20px; border-radius: 50%;
+  background: white; left: 3px; top: 3px;
+  transition: 0.3s; box-shadow: 0 1px 4px rgba(0,0,0,0.2);
+}
+.toggle-switch input:checked + .toggle-slider { background: var(--amber); }
+.toggle-switch input:checked + .toggle-slider::before { transform: translateX(22px); }
+
+/* AI Chat */
+.ai-chat-wrap { max-width: 720px; }
+.chat-messages { background: var(--warm-white); border: 1px solid var(--parchment); border-radius: var(--radius); padding: 24px; min-height: 280px; max-height: 420px; overflow-y: auto; margin-bottom: 16px; display: flex; flex-direction: column; gap: 18px; }
+.chat-msg { display: flex; gap: 12px; align-items: flex-start; }
+.chat-msg.user { flex-direction: row-reverse; }
+.chat-avatar { width: 38px; height: 38px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0; }
+.chat-avatar.ai { background: var(--parchment); }
+.chat-avatar.user { background: var(--sepia); color: white; }
+.chat-bubble { padding: 14px 18px; border-radius: 0 8px 8px 8px; font-size: 15px; line-height: 1.7; max-width: 540px; }
+.chat-bubble.ai { background: white; border: 1px solid var(--parchment); color: var(--ink); }
+.chat-bubble.user { background: var(--sepia); color: var(--cream); border-radius: 8px 0 8px 8px; }
+.chat-input-row { display: flex; gap: 12px; align-items: flex-end; }
+.chat-input-row textarea { flex: 1; min-height: 52px; max-height: 120px; resize: none; }
+.dots { display: flex; gap: 4px; align-items: center; padding: 6px 0; }
+.dots span { width: 7px; height: 7px; background: var(--amber); border-radius: 50%; animation: pulse 1.2s infinite; }
+.dots span:nth-child(2){animation-delay:.2s} .dots span:nth-child(3){animation-delay:.4s}
+
+/* ============================================================
+   PAGE: FEED (public)
+   ============================================================ */
+#page-feed .feed-layout { display: grid; grid-template-columns: 1fr 300px; gap: 48px; max-width: 1100px; margin: 0 auto; padding: 48px 32px; align-items: start; }
+.feed-post { background: white; border: 1px solid var(--photo-border); margin-bottom: 28px; box-shadow: var(--shadow-sm); transition: box-shadow 0.25s; border-radius: var(--radius); overflow: hidden; }
+.feed-post:hover { box-shadow: var(--shadow-md); }
+.post-head { display: flex; gap: 14px; align-items: center; padding: 18px 22px; border-bottom: 1px solid var(--parchment); }
+.post-ava { width: 46px; height: 46px; border-radius: 50%; background: var(--parchment); display: flex; align-items: center; justify-content: center; font-size: 22px; border: 2px solid var(--amber-light); flex-shrink: 0; }
+.post-author-name { font-family: 'Cormorant Garamond', serif; font-size: 18px; color: var(--sepia); font-weight: 500; }
+.post-date { font-size: 12px; color: var(--ink-muted); }
+.post-media-area { background: var(--parchment); min-height: 240px; display: flex; align-items: center; justify-content: center; font-size: 64px; position: relative; }
+.post-media-tag { position: absolute; top: 14px; left: 14px; background: rgba(250,247,242,0.92); border: 1px solid var(--photo-border); padding: 4px 12px; border-radius: 20px; font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--sepia); }
+.post-body { padding: 22px; }
+.post-q { font-size: 13px; font-style: italic; color: var(--amber-dark); margin-bottom: 10px; }
+.post-text { font-size: 16px; color: var(--ink); line-height: 1.8; }
+.post-foot { padding: 14px 22px; border-top: 1px solid var(--parchment); display: flex; gap: 20px; }
+.post-action { background: none; border: none; font-size: 13px; color: var(--ink-muted); display: flex; align-items: center; gap: 6px; cursor: pointer; padding: 6px; transition: color 0.2s; font-family: 'Jost', sans-serif; }
+.post-action:hover { color: var(--sepia); }
+.feed-sidebar-widget { background: var(--warm-white); border: 1px solid var(--parchment); border-radius: var(--radius); padding: 24px; margin-bottom: 20px; }
+.feed-widget-title { font-family: 'Cormorant Garamond', serif; font-size: 20px; color: var(--sepia); margin-bottom: 18px; padding-bottom: 12px; border-bottom: 1px solid var(--parchment); }
+.suggest-user { display: flex; gap: 12px; align-items: center; margin-bottom: 16px; }
+.suggest-ava { width: 40px; height: 40px; background: var(--parchment); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 18px; border: 1.5px solid var(--amber-light); flex-shrink: 0; }
+.suggest-name { font-family: 'Cormorant Garamond', serif; font-size: 15px; color: var(--sepia); font-weight: 500; }
+.suggest-meta { font-size: 12px; color: var(--ink-muted); }
+
+/* Export section */
+.export-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 20px; }
+.export-card { background: white; border: 1px solid var(--photo-border); border-radius: var(--radius); padding: 28px 22px; text-align: center; box-shadow: var(--shadow-sm); cursor: pointer; transition: all 0.22s; }
+.export-card:hover { box-shadow: var(--shadow-md); transform: translateY(-2px); }
+.export-icon { font-size: 40px; margin-bottom: 14px; }
+.export-card h3 { font-family: 'Cormorant Garamond', serif; font-size: 20px; color: var(--sepia); margin-bottom: 8px; }
+.export-card p { font-size: 14px; color: var(--ink-muted); line-height: 1.6; }
+
+/* Responsive */
+@media (max-width: 900px) {
+  .hero { grid-template-columns: 1fr; }
+  .hero-collage { display: none; }
+  .features-grid { grid-template-columns: 1fr 1fr; }
+  .app-layout { grid-template-columns: 1fr; }
+  .sidebar { display: none; }
+  .dash-grid { grid-template-columns: 1fr 1fr; }
+  .theme-grid { grid-template-columns: 1fr 1fr; }
+  .capsule-grid { grid-template-columns: 1fr; }
+  .settings-grid { grid-template-columns: 1fr; }
+  #page-feed .feed-layout { grid-template-columns: 1fr; }
+  .footer-grid { grid-template-columns: 1fr 1fr; }
+}
+@media (max-width: 600px) {
+  .features-grid { grid-template-columns: 1fr; }
+  .dash-grid { grid-template-columns: 1fr; }
+  .export-grid { grid-template-columns: 1fr; }
+  .compare-body, .compare-header { grid-template-columns: 1fr; }
+  nav { padding: 0 16px; gap: 8px; }
+  .nav-links .nav-link { display: none; }
+  .nav-links .nav-link.primary, .nav-links .nav-link:last-child { display: inline-flex; }
+  .app-main { padding: 24px 20px; }
+}
+</style>
+</head>
+<body>
+
+<!-- ===== PORTFOLIO WALKTHROUGH NAV ===== -->
+<div style="position:fixed;top:0;left:0;right:0;height:40px;z-index:500;background:#2c2317;display:flex;align-items:center;justify-content:center;gap:4px;font-family:'Jost',sans-serif;box-shadow:0 1px 0 rgba(255,255,255,.06)">
+  <a href="landing.html" style="padding:9px 18px;font-size:12px;font-weight:500;letter-spacing:.06em;text-transform:uppercase;color:rgba(250,247,242,.55);border-bottom:2px solid transparent;transition:color .15s">Лендинг</a>
+  <a href="mvp.html" style="padding:9px 18px;font-size:12px;font-weight:500;letter-spacing:.06em;text-transform:uppercase;color:#e8d5a3;border-bottom:2px solid #c8a96e;transition:color .15s">MVP</a>
+  <a href="roadmap.html" style="padding:9px 18px;font-size:12px;font-weight:500;letter-spacing:.06em;text-transform:uppercase;color:rgba(250,247,242,.55);border-bottom:2px solid transparent;transition:color .15s">Роадмап</a>
+</div>
+
+<!-- ===== NAVIGATION ===== -->
+<nav id="nav">
+  <div class="nav-logo">
+    <div class="nav-logo-icon">🌿</div>
+    Наследие
+  </div>
+  <div class="nav-links" id="nav-links">
+    <button class="nav-link active" onclick="goPage('home')" id="nl-home">Главная</button>
+    <button class="nav-link" onclick="goPage('feed')" id="nl-feed">Лента</button>
+    <button class="nav-link" onclick="goPage('about')" id="nl-about">О проекте</button>
+    <button class="nav-link" id="nl-app" onclick="goPage('app')" style="display:none">Мой архив</button>
+    <button class="nav-link primary" id="nl-auth" onclick="goPage('auth')">Войти</button>
+    <button class="nav-link primary" id="nl-logout" onclick="logout()" style="display:none">Выйти</button>
+  </div>
+</nav>
+
+<!-- ===== TOAST ===== -->
+<div id="toast-container"></div>
+
+<!-- ============================================================
+     PAGE: HOME
+     ============================================================ -->
+<div class="page active" id="page-home">
+
+  <!-- Hero -->
+  <section class="hero">
+    <div class="hero-text fade-up">
+      <div class="hero-kicker">
+        <div class="hero-kicker-line"></div>
+        <span class="section-label" style="margin:0">Живая память для будущих поколений</span>
+      </div>
+      <h1 class="hero-title">
+        Ваша история —<br>
+        <em>дар для тех,</em><br>
+        кто придёт после
+      </h1>
+      <p class="hero-desc">
+        Запишите интервью о своей жизни вместе с умным помощником. 
+        Сохраните воспоминания, ценности и характер — 
+        чтобы внуки знали, каким человеком вы были.
+      </p>
+      <div class="hero-btns">
+        <button class="btn btn-primary btn-lg" onclick="goPage('auth')">Начать бесплатно</button>
+        <button class="btn btn-outline btn-lg" onclick="goPage('feed')">Смотреть истории</button>
+      </div>
+      <div class="hero-trust">
+        <div class="trust-item"><span class="trust-icon">🔒</span> Полная приватность</div>
+        <div class="trust-item"><span class="trust-icon">🎙️</span> Запись голосом</div>
+        <div class="trust-item"><span class="trust-icon">🤖</span> ИИ-помощник</div>
+      </div>
+    </div>
+    <div class="hero-collage">
+      <div class="photo-card">
+        <div class="photo-thumb">👴</div>
+        <div class="photo-cap">Дедушка Иван, 1968</div>
+      </div>
+      <div class="photo-card">
+        <div class="photo-thumb">👵</div>
+        <div class="photo-cap">Бабушка Нина</div>
+      </div>
+      <div class="photo-card">
+        <div class="photo-thumb">👨‍👩‍👧</div>
+        <div class="photo-cap">Семья, лето 1989</div>
+      </div>
+      <div class="photo-card">
+        <div class="photo-thumb">🏡</div>
+        <div class="photo-cap">Наш дом</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Stats -->
+  <div class="stats-row">
+    <div class="stat-item"><div class="stat-num">12 400</div><div class="stat-label">Историй сохранено</div></div>
+    <div class="stat-item"><div class="stat-num">3 200</div><div class="stat-label">Семей в архиве</div></div>
+    <div class="stat-item"><div class="stat-num">48 000</div><div class="stat-label">Часов воспоминаний</div></div>
+    <div class="stat-item"><div class="stat-num">97%</div><div class="stat-label">Довольны сервисом</div></div>
+  </div>
+
+  <!-- Features -->
+  <section class="features-section">
+    <div class="container">
+      <div class="section-label">Возможности</div>
+      <h2 class="section-title">Всё, что нужно для живой памяти</h2>
+      <div class="features-grid">
+        <div class="feature-card">
+          <div class="feature-icon">🎙️</div>
+          <h3>Умное интервью</h3>
+          <p>ИИ-помощник разработает персональные вопросы о вашей жизни и будет задавать их по одному, без спешки.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">📝</div>
+          <h3>Автотранскрипция</h3>
+          <p>Говорите голосом — сервис автоматически переведёт вашу речь в текст, который можно отредактировать.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">📸</div>
+          <h3>Семейный архив</h3>
+          <p>Загружайте фото, видео и аудио. Всё хранится надёжно и организованно, как настоящий альбом.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">📅</div>
+          <h3>Таймлайн жизни</h3>
+          <p>Все ваши истории выстраиваются в красивую хронологию — путешествие по десятилетиям вашей жизни.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">🌱</div>
+          <h3>Капсула времени</h3>
+          <p>Для молодёжи: записывайте ответы раз в полгода и наблюдайте, как меняются ваши цели и ценности.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">📖</div>
+          <h3>Книга памяти</h3>
+          <p>Сервис автоматически создаёт красивую PDF-книгу из ваших историй — её можно подарить детям.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- How it works -->
+  <section class="how-section">
+    <div class="container">
+      <div class="section-label">Как это работает</div>
+      <h2 class="section-title">Четыре шага к живой памяти</h2>
+      <div class="steps-list">
+        <div class="step-item"><div class="step-num">01</div><div class="step-body"><h3>Выберите тему</h3><p>Детство, семья, карьера, любовь или жизненные уроки — выберите, о чём хотите рассказать сегодня.</p></div></div>
+        <div class="step-item"><div class="step-num">02</div><div class="step-body"><h3>Отвечайте на вопросы</h3><p>ИИ-помощник задаёт вопросы один за другим. Отвечайте голосом или текстом, в своём темпе.</p></div></div>
+        <div class="step-item"><div class="step-num">03</div><div class="step-body"><h3>Добавьте воспоминания</h3><p>Прикрепите фотографии, видео или документы — всё, что делает историю живой.</p></div></div>
+        <div class="step-item"><div class="step-num">04</div><div class="step-body"><h3>Поделитесь с близкими</h3><p>Откройте доступ семье или оставьте только для себя. Ваша история останется навсегда.</p></div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Quote -->
+  <div class="quote-section">
+    <p class="quote-text">«Пока человека помнят — он жив. Наследие помогает сохранить не только образ, но и душу.»</p>
+    <p class="quote-author">— Команда Наследия</p>
+  </div>
+
+  <!-- CTA -->
+  <div class="cta-section">
+    <h2>Начните сегодня.<br>Это не займёт много времени.</h2>
+    <p>Первая запись — уже шаг навстречу тем, кто будет помнить вас.</p>
+    <button class="btn btn-primary btn-lg" onclick="goPage('auth')">Создать мой архив</button>
+  </div>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="footer-grid">
+      <div>
+        <div class="footer-brand">🌿 Наследие</div>
+        <p class="footer-desc">Сервис сохранения живой памяти для ваших близких и будущих поколений. Миссия — сохранить историю каждого человека.</p>
+      </div>
+      <div>
+        <div class="footer-col-title">Продукт</div>
+        <ul class="footer-links">
+          <li><a onclick="goPage('auth')">Начать</a></li>
+          <li><a onclick="goPage('feed')">Лента историй</a></li>
+          <li><a onclick="goPage('about')">О проекте</a></li>
+          <li><a>Цены</a></li>
+        </ul>
+      </div>
+      <div>
+        <div class="footer-col-title">Поддержка</div>
+        <ul class="footer-links">
+          <li><a>Как пользоваться</a></li>
+          <li><a>Часто задаваемые вопросы</a></li>
+          <li><a>Связаться с нами</a></li>
+          <li><a>Для пожилых</a></li>
+        </ul>
+      </div>
+      <div>
+        <div class="footer-col-title">Правовое</div>
+        <ul class="footer-links">
+          <li><a>Конфиденциальность</a></li>
+          <li><a>Пользовательское соглашение</a></li>
+          <li><a>Хранение данных</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span class="footer-copy">© 2025 Наследие. Все права защищены.</span>
+      <span class="footer-copy">Сделано с любовью в России 🌿</span>
+    </div>
+  </footer>
+</div>
+
+<!-- ============================================================
+     PAGE: ABOUT
+     ============================================================ -->
+<div class="page" id="page-about">
+  <div class="container" style="padding-top:64px;padding-bottom:80px;max-width:800px">
+    <div class="section-label">Наша миссия</div>
+    <h1 class="section-title" style="margin-bottom:28px">Мы сохраняем историю<br>каждого человека</h1>
+    <p style="font-size:18px;color:var(--ink-light);line-height:1.9;margin-bottom:32px">
+      Наследие — это платформа для сохранения личной и семейной истории. Мы верим, что каждая прожитая жизнь — это уникальное сокровище, которое заслуживает быть сохранённым для потомков.
+    </p>
+    <p style="font-size:17px;color:var(--ink-light);line-height:1.9;margin-bottom:32px">
+      Ежегодно миллионы людей уходят, не оставив рассказа о себе. Их дети и внуки не знают, как они жили, о чём мечтали, что их радовало и чего они боялись. Мы хотим изменить это.
+    </p>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px;margin:48px 0">
+      <div class="card card-body">
+        <div style="font-size:32px;margin-bottom:12px">🎯</div>
+        <h3 style="font-family:'Cormorant Garamond',serif;font-size:20px;color:var(--sepia);margin-bottom:8px">Цель</h3>
+        <p style="font-size:15px;color:var(--ink-light)">Сделать процесс записи личной истории простым и доступным для людей любого возраста и технического уровня.</p>
+      </div>
+      <div class="card card-body">
+        <div style="font-size:32px;margin-bottom:12px">💛</div>
+        <h3 style="font-family:'Cormorant Garamond',serif;font-size:20px;color:var(--sepia);margin-bottom:8px">Ценности</h3>
+        <p style="font-size:15px;color:var(--ink-light)">Уважение к каждой судьбе, забота о приватности, простота использования и надёжность хранения данных.</p>
+      </div>
+      <div class="card card-body">
+        <div style="font-size:32px;margin-bottom:12px">🌍</div>
+        <h3 style="font-family:'Cormorant Garamond',serif;font-size:20px;color:var(--sepia);margin-bottom:8px">Масштаб</h3>
+        <p style="font-size:15px;color:var(--ink-light)">Мы стремимся сохранить историю миллионов людей по всему миру — на разных языках и для разных культур.</p>
+      </div>
+      <div class="card card-body">
+        <div style="font-size:32px;margin-bottom:12px">🔐</div>
+        <h3 style="font-family:'Cormorant Garamond',serif;font-size:20px;color:var(--sepia);margin-bottom:8px">Надёжность</h3>
+        <p style="font-size:15px;color:var(--ink-light)">Ваши данные хранятся с шифрованием, резервируются в нескольких дата-центрах и никогда не передаются третьим лицам.</p>
+      </div>
+    </div>
+    <div style="text-align:center;margin-top:56px">
+      <button class="btn btn-primary btn-lg" onclick="goPage('auth')">Присоединиться к Наследию</button>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================
+     PAGE: AUTH
+     ============================================================ -->
+<div class="page" id="page-auth">
+  <div class="auth-card">
+    <div class="auth-logo">🌿 Наследие</div>
+    <p class="auth-subtitle">Живая память для будущих поколений</p>
+
+    <!-- Login form -->
+    <div id="auth-login">
+      <h2>Добро пожаловать</h2>
+      <div class="form-group">
+        <label class="form-label">Электронная почта</label>
+        <input type="email" class="form-control" placeholder="ваша@почта.ru" id="login-email">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Пароль</label>
+        <input type="password" class="form-control" placeholder="Ваш пароль" id="login-pass">
+      </div>
+      <button class="btn btn-primary" style="width:100%" onclick="doLogin()">Войти</button>
+      <p class="auth-switch">Нет аккаунта? <a onclick="showAuthForm('register')">Зарегистрироваться</a></p>
+      <div class="auth-divider">или</div>
+      <button class="btn btn-ghost" style="width:100%" onclick="doDemo()">🎭 Войти как демо-пользователь</button>
+    </div>
+
+    <!-- Register form -->
+    <div id="auth-register" style="display:none">
+      <h2>Создать архив</h2>
+      <div class="form-group">
+        <label class="form-label">Ваше имя</label>
+        <input type="text" class="form-control" placeholder="Иван Петрович" id="reg-name">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Электронная почта</label>
+        <input type="email" class="form-control" placeholder="ваша@почта.ru" id="reg-email">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Пароль</label>
+        <input type="password" class="form-control" placeholder="Минимум 8 символов" id="reg-pass">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Год рождения <span style="color:var(--ink-muted);font-weight:300">(необязательно)</span></label>
+        <input type="number" class="form-control" placeholder="1960" min="1900" max="2010" id="reg-year">
+      </div>
+      <button class="btn btn-primary" style="width:100%" onclick="doRegister()">Создать архив</button>
+      <p class="auth-switch">Уже есть аккаунт? <a onclick="showAuthForm('login')">Войти</a></p>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================
+     PAGE: APP
+     ============================================================ -->
+<div class="page" id="page-app">
+  <div class="app-layout">
+
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="sidebar-user">
+        <div class="sidebar-avatar" id="sb-avatar">👤</div>
+        <div class="sidebar-name" id="sb-name">Иван Петрович</div>
+        <div class="sidebar-meta">Москва · с 2025</div>
+        <div class="sidebar-progress">
+          <div class="sidebar-progress-label"><span>Профиль заполнен</span><span id="sb-pct">42%</span></div>
+          <div class="progress-bar-wrap"><div class="progress-bar" id="sb-bar" style="width:42%"></div></div>
+        </div>
+      </div>
+      <div class="sidebar-section-label">Основное</div>
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-item"><button class="active" onclick="showSection('dash',this)"><span class="nav-icon">🏠</span> Главная</button></li>
+        <li class="sidebar-nav-item"><button onclick="showSection('interview',this)"><span class="nav-icon">🎙️</span> Записать интервью</button></li>
+        <li class="sidebar-nav-item"><button onclick="showSection('timeline',this)"><span class="nav-icon">📅</span> Моя история</button></li>
+        <li class="sidebar-nav-item"><button onclick="showSection('media',this)"><span class="nav-icon">🗂️</span> Медиафайлы</button></li>
+      </ul>
+      <div class="sidebar-section-label">Специальные</div>
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-item"><button onclick="showSection('youth',this)"><span class="nav-icon">🌱</span> Капсула времени</button></li>
+        <li class="sidebar-nav-item"><button onclick="showSection('ai',this)"><span class="nav-icon">🤖</span> ИИ-помощник</button></li>
+        <li class="sidebar-nav-item"><button onclick="showSection('export',this)"><span class="nav-icon">📥</span> Скачать историю</button></li>
+      </ul>
+      <div class="sidebar-section-label">Аккаунт</div>
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-item"><button onclick="showSection('settings',this)"><span class="nav-icon">⚙️</span> Настройки</button></li>
+      </ul>
+    </aside>
+
+    <!-- Main -->
+    <main class="app-main">
+
+      <!-- === DASHBOARD === -->
+      <div class="app-section active" id="section-dash">
+        <div class="app-section-header">
+          <h1 id="dash-greeting">Добрый день, Иван Петрович 👋</h1>
+          <p>Ваш семейный архив ждёт новых историй</p>
+        </div>
+        <div class="dash-grid">
+          <div class="dash-card">
+            <div class="dash-card-icon">🎙️</div>
+            <div class="dash-card-val" id="dc-interviews">7</div>
+            <div class="dash-card-label">Интервью записано</div>
+          </div>
+          <div class="dash-card">
+            <div class="dash-card-icon">📸</div>
+            <div class="dash-card-val" id="dc-media">23</div>
+            <div class="dash-card-label">Медиафайлов</div>
+          </div>
+          <div class="dash-card">
+            <div class="dash-card-icon">⏱️</div>
+            <div class="dash-card-val">3.2 ч</div>
+            <div class="dash-card-label">Общее время записей</div>
+          </div>
+        </div>
+        <div style="background:var(--warm-white);border:1px solid var(--parchment);border-radius:var(--radius);padding:24px;margin-bottom:32px">
+          <div style="font-family:'Cormorant Garamond',serif;font-size:20px;color:var(--sepia);margin-bottom:16px">Прогресс архива</div>
+          <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:12px">
+            <div style="text-align:center">
+              <div style="font-size:24px;margin-bottom:6px">👶</div>
+              <div class="progress-bar-wrap"><div class="progress-bar" style="width:80%;background:var(--sage)"></div></div>
+              <div style="font-size:11px;color:var(--ink-muted);margin-top:4px">Детство</div>
+            </div>
+            <div style="text-align:center">
+              <div style="font-size:24px;margin-bottom:6px">👨‍👩‍👧</div>
+              <div class="progress-bar-wrap"><div class="progress-bar" style="width:60%"></div></div>
+              <div style="font-size:11px;color:var(--ink-muted);margin-top:4px">Семья</div>
+            </div>
+            <div style="text-align:center">
+              <div style="font-size:24px;margin-bottom:6px">💼</div>
+              <div class="progress-bar-wrap"><div class="progress-bar" style="width:40%"></div></div>
+              <div style="font-size:11px;color:var(--ink-muted);margin-top:4px">Карьера</div>
+            </div>
+            <div style="text-align:center">
+              <div style="font-size:24px;margin-bottom:6px">❤️</div>
+              <div class="progress-bar-wrap"><div class="progress-bar" style="width:20%;background:var(--rose)"></div></div>
+              <div style="font-size:11px;color:var(--ink-muted);margin-top:4px">Любовь</div>
+            </div>
+            <div style="text-align:center">
+              <div style="font-size:24px;margin-bottom:6px">🦉</div>
+              <div class="progress-bar-wrap"><div class="progress-bar" style="width:10%;background:var(--amber-dark)"></div></div>
+              <div style="font-size:11px;color:var(--ink-muted);margin-top:4px">Мудрость</div>
+            </div>
+          </div>
+        </div>
+        <div class="dash-recent-title">Последние записи</div>
+        <div class="recent-list" id="recent-list">
+          <div class="recent-item" onclick="showSection('timeline',null)">
+            <div class="recent-icon">🎙️</div>
+            <div class="recent-info">
+              <div class="recent-title">Детство в деревне</div>
+              <div class="recent-meta">Тема: Детство · 12 марта 2025 · Аудио 8 мин</div>
+            </div>
+            <div class="recent-badge"><span class="badge badge-green">✓ Завершено</span></div>
+          </div>
+          <div class="recent-item" onclick="showSection('timeline',null)">
+            <div class="recent-icon">📸</div>
+            <div class="recent-info">
+              <div class="recent-title">Свадьба, 1978 год</div>
+              <div class="recent-meta">Фотография · Загружена 10 марта</div>
+            </div>
+            <div class="recent-badge"><span class="badge badge-amber">📸 Фото</span></div>
+          </div>
+          <div class="recent-item" onclick="showSection('interview',null)">
+            <div class="recent-icon">✏️</div>
+            <div class="recent-info">
+              <div class="recent-title">Моя карьера — черновик</div>
+              <div class="recent-meta">Тема: Карьера · Начато 5 марта</div>
+            </div>
+            <div class="recent-badge"><span class="badge badge-gray">Черновик</span></div>
+          </div>
+        </div>
+        <div style="margin-top:28px">
+          <button class="btn btn-primary" onclick="showSection('interview',null);document.querySelectorAll('.sidebar-nav-item button')[1].click()">+ Записать новое интервью</button>
+        </div>
+      </div>
+
+      <!-- === INTERVIEW (WIZARD) === -->
+      <div class="app-section" id="section-interview">
+        <div class="app-section-header">
+          <h1>Записать интервью</h1>
+          <p>Ответьте на вопросы голосом или текстом — в своём темпе</p>
+        </div>
+        <div class="wizard" id="wizard-wrap">
+
+          <!-- Step 1: theme -->
+          <div id="wizard-step1">
+            <div class="wizard-progress">
+              <div class="wizard-step-dot active"></div>
+              <div class="wizard-step-dot"></div>
+              <div class="wizard-step-dot"></div>
+              <span class="wizard-step-label">Шаг 1 из 3: Выберите тему</span>
+            </div>
+            <div style="font-family:'Cormorant Garamond',serif;font-size:26px;color:var(--sepia);margin-bottom:20px">О чём хотите рассказать сегодня?</div>
+            <div class="theme-grid">
+              <div class="theme-card" onclick="selectTheme(this,'childhood')">
+                <div class="theme-card-icon">👶</div>
+                <div class="theme-card-name">Детство</div>
+                <div class="theme-card-count">12 вопросов</div>
+              </div>
+              <div class="theme-card" onclick="selectTheme(this,'family')">
+                <div class="theme-card-icon">👨‍👩‍👧</div>
+                <div class="theme-card-name">Семья</div>
+                <div class="theme-card-count">10 вопросов</div>
+              </div>
+              <div class="theme-card" onclick="selectTheme(this,'career')">
+                <div class="theme-card-icon">💼</div>
+                <div class="theme-card-name">Карьера</div>
+                <div class="theme-card-count">9 вопросов</div>
+              </div>
+              <div class="theme-card" onclick="selectTheme(this,'love')">
+                <div class="theme-card-icon">❤️</div>
+                <div class="theme-card-name">Любовь</div>
+                <div class="theme-card-count">8 вопросов</div>
+              </div>
+              <div class="theme-card" onclick="selectTheme(this,'wisdom')">
+                <div class="theme-card-icon">🦉</div>
+                <div class="theme-card-name">Мудрость</div>
+                <div class="theme-card-count">11 вопросов</div>
+              </div>
+              <div class="theme-card" onclick="selectTheme(this,'values')">
+                <div class="theme-card-icon">🌟</div>
+                <div class="theme-card-name">Ценности</div>
+                <div class="theme-card-count">7 вопросов</div>
+              </div>
+            </div>
+            <div style="margin-top:24px">
+              <button class="btn btn-primary" onclick="startInterview()" id="btn-start-interview" disabled style="opacity:0.5">Начать интервью →</button>
+            </div>
+          </div>
+
+          <!-- Step 2: questions -->
+          <div id="wizard-step2" style="display:none">
+            <div class="wizard-progress" id="w2-progress"></div>
+            <div class="interview-q">
+              <div class="interview-q-num" id="q-num">Вопрос 1 из 12</div>
+              <div class="interview-q-text" id="q-text">Где вы родились и как выглядело это место в вашем детстве?</div>
+              <div class="interview-q-hint" id="q-hint">Расскажите о доме, улице, природе — всё, что помните</div>
+            </div>
+            <div class="rec-area">
+              <div class="rec-controls">
+                <button class="rec-btn" id="rec-btn" onclick="toggleRecord()">🎙️</button>
+                <div>
+                  <div class="rec-timer" id="rec-timer">0:00</div>
+                  <div class="rec-status" id="rec-status">Нажмите для записи</div>
+                </div>
+                <div class="rec-wave paused" id="rec-wave">
+                  <span></span><span></span><span></span><span></span><span></span><span></span><span></span>
+                </div>
+              </div>
+            </div>
+            <div class="transcription-box">
+              <div class="transcription-label">
+                <span id="trans-label">Или напишите ответ текстом:</span>
+                <span id="transcribing-ind" style="display:none"><span class="transcribing-dot"></span> Распознаю речь...</span>
+              </div>
+              <textarea class="form-control" id="answer-text" rows="5" placeholder="Напишите ваш ответ здесь..."></textarea>
+            </div>
+            <div class="interview-nav">
+              <button class="btn btn-ghost btn-sm" onclick="prevQ()">← Назад</button>
+              <span class="q-counter" id="q-counter">1 / 12</span>
+              <div style="display:flex;gap:10px">
+                <button class="btn btn-ghost btn-sm" onclick="skipQ()">Пропустить</button>
+                <button class="btn btn-primary btn-sm" onclick="nextQ()">Следующий →</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Step 3: done -->
+          <div id="wizard-step3" style="display:none;text-align:center;padding:48px 0">
+            <div style="font-size:64px;margin-bottom:24px">🎉</div>
+            <div style="font-family:'Cormorant Garamond',serif;font-size:36px;color:var(--sepia);margin-bottom:16px">Интервью завершено!</div>
+            <p style="font-size:17px;color:var(--ink-light);max-width:440px;margin:0 auto 36px;line-height:1.8">Ваша история сохранена. Вы можете дополнить её фотографиями или записать ещё одно интервью.</p>
+            <div style="display:flex;gap:16px;justify-content:center;flex-wrap:wrap">
+              <button class="btn btn-primary" onclick="showSection('timeline',null)">Посмотреть в архиве</button>
+              <button class="btn btn-outline" onclick="resetWizard()">Записать ещё одно</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- === TIMELINE === -->
+      <div class="app-section" id="section-timeline">
+        <div class="app-section-header" style="display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:16px">
+          <div>
+            <h1>Моя история</h1>
+            <p>Хронология вашей жизни</p>
+          </div>
+          <div style="display:flex;gap:10px">
+            <input class="form-control" style="width:200px;padding:10px 14px" placeholder="🔍 Поиск...">
+            <select class="form-control" style="width:160px;padding:10px 14px">
+              <option>Все темы</option>
+              <option>Детство</option>
+              <option>Семья</option>
+              <option>Карьера</option>
+            </select>
+          </div>
+        </div>
+        <div class="timeline">
+          <div class="timeline-entry">
+            <div class="timeline-dot"></div>
+            <div class="timeline-year">2025 — Март</div>
+            <div class="timeline-card">
+              <div class="timeline-card-title">Детство в деревне</div>
+              <div class="timeline-card-text">Я родился в маленькой деревне Тверской области. Помню, как ранним утром дедушка брал меня на рыбалку — тогда казалось, что реки бесконечные...</div>
+              <div class="timeline-card-footer">
+                <span class="badge badge-amber">👶 Детство</span>
+                <span class="badge badge-green">🎙️ Аудио 8 мин</span>
+                <button class="btn btn-ghost btn-xs" style="margin-left:auto">Открыть</button>
+              </div>
+            </div>
+          </div>
+          <div class="timeline-entry">
+            <div class="timeline-dot" style="background:var(--rose)"></div>
+            <div class="timeline-year">2025 — Март</div>
+            <div class="timeline-card">
+              <div class="timeline-card-title">Как мы познакомились с Ниной</div>
+              <div class="timeline-card-text">Это было на танцах в Доме культуры. Она стояла у стены в голубом платье. Я подошёл и попросил разрешения на танец — сердце колотилось...</div>
+              <div class="timeline-card-footer">
+                <span class="badge" style="background:#fce4e2;color:#8a4040">❤️ Любовь</span>
+                <span class="badge badge-green">✓ Завершено</span>
+                <button class="btn btn-ghost btn-xs" style="margin-left:auto">Открыть</button>
+              </div>
+            </div>
+          </div>
+          <div class="timeline-entry">
+            <div class="timeline-dot" style="background:var(--sage)"></div>
+            <div class="timeline-year">2025 — Февраль</div>
+            <div class="timeline-card">
+              <div class="timeline-card-title">Тридцать лет на заводе</div>
+              <div class="timeline-card-text">В 1975 году меня взяли инженером на Калининский завод. Я не думал, что останусь там на тридцать лет. Но это стало моим домом...</div>
+              <div class="timeline-card-footer">
+                <span class="badge" style="background:#e0eae0;color:#3a5a3a">💼 Карьера</span>
+                <span class="badge badge-gray">Черновик</span>
+                <button class="btn btn-ghost btn-xs" style="margin-left:auto">Открыть</button>
+              </div>
+            </div>
+          </div>
+          <div style="text-align:center;margin-top:36px">
+            <button class="btn btn-outline" onclick="showSection('interview',null)">+ Добавить новую историю</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- === MEDIA === -->
+      <div class="app-section" id="section-media">
+        <div class="app-section-header">
+          <h1>Медиафайлы</h1>
+          <p>Фотографии, видео, аудио и документы</p>
+        </div>
+        <div class="dropzone" id="dropzone" onclick="document.getElementById('file-input').click()">
+          <input type="file" id="file-input" multiple accept="image/*,video/*,audio/*,.pdf" style="display:none" onchange="handleFiles(this.files)">
+          <div class="dropzone-icon">📂</div>
+          <h3>Перетащите файлы сюда</h3>
+          <p>или нажмите, чтобы выбрать</p>
+          <div class="dropzone-types">
+            <span class="tag">📸 Фото</span>
+            <span class="tag">🎥 Видео</span>
+            <span class="tag">🎵 Аудио</span>
+            <span class="tag">📄 Документы</span>
+          </div>
+          <p style="font-size:12px;color:var(--amber-dark)">JPG, PNG, MP4, MP3, PDF · до 500 МБ на файл</p>
+        </div>
+        <div class="media-toolbar">
+          <div class="media-search-wrap" style="flex:1">
+            <span class="media-search-icon">🔍</span>
+            <input class="form-control" style="padding-left:40px" placeholder="Поиск по названию...">
+          </div>
+          <select class="form-control" style="width:160px">
+            <option>Все типы</option>
+            <option>Фото</option>
+            <option>Видео</option>
+            <option>Аудио</option>
+          </select>
+          <select class="form-control" style="width:160px">
+            <option>По дате (новые)</option>
+            <option>По дате (старые)</option>
+            <option>По названию</option>
+          </select>
+        </div>
+        <div class="media-grid" id="media-grid">
+          <div class="media-card"><div class="media-thumb">📸<span class="media-type-badge">фото</span></div><div class="media-name">Свадьба, 1978</div></div>
+          <div class="media-card"><div class="media-thumb">🎵<span class="media-type-badge">аудио</span></div><div class="media-name">Любимая песня</div></div>
+          <div class="media-card"><div class="media-thumb">🎥<span class="media-type-badge">видео</span></div><div class="media-name">Дача, 2001</div></div>
+          <div class="media-card"><div class="media-thumb">📸<span class="media-type-badge">фото</span></div><div class="media-name">Дедушка</div></div>
+          <div class="media-card"><div class="media-thumb">📄<span class="media-type-badge">докум.</span></div><div class="media-name">Диплом, 1965</div></div>
+          <div class="media-card"><div class="media-thumb">📸<span class="media-type-badge">фото</span></div><div class="media-name">Крым, 1985</div></div>
+        </div>
+      </div>
+
+      <!-- === YOUTH (capsule) === -->
+      <div class="app-section" id="section-youth">
+        <div class="app-section-header">
+          <h1>Капсула времени</h1>
+          <p>Записывайте ответы регулярно и наблюдайте за своим развитием</p>
+        </div>
+        <div class="youth-banner">
+          <div class="youth-banner-icon">🌱</div>
+          <div>
+            <h2>Как вы меняетесь со временем?</h2>
+            <p>Отвечайте на одни и те же вопросы каждые 6 месяцев. Через год вы увидите, как эволюционировали ваши мысли, цели и ценности.</p>
+          </div>
+        </div>
+        <div class="tabs">
+          <button class="tab-btn active" onclick="switchTab(this,'tab-capsules')">Мои капсулы</button>
+          <button class="tab-btn" onclick="switchTab(this,'tab-compare')">Сравнить ответы</button>
+          <button class="tab-btn" onclick="switchTab(this,'tab-new-capsule')">Новая запись</button>
+        </div>
+        <div class="tab-panel active" id="tab-capsules">
+          <div class="capsule-grid">
+            <div class="capsule-card">
+              <div class="capsule-date">Октябрь 2024</div>
+              <div class="capsule-title">Осень 2024 — Начало пути</div>
+              <div class="capsule-preview">«Я хочу стать дизайнером и открыть собственную студию. Мой главный страх — не реализовать свой потенциал...»</div>
+              <div style="margin-top:14px;display:flex;gap:8px">
+                <span class="badge badge-green">✓ Завершена</span>
+                <button class="btn btn-ghost btn-xs" style="margin-left:auto" onclick="switchTabById('section-youth','tab-compare')">Сравнить</button>
+              </div>
+            </div>
+            <div class="capsule-card">
+              <div class="capsule-date">Апрель 2025</div>
+              <div class="capsule-title">Весна 2025 — Полгода спустя</div>
+              <div class="capsule-preview">«Студия всё ещё мечта, но теперь я понимаю, что важнее — делать работу, которая помогает людям...»</div>
+              <div style="margin-top:14px;display:flex;gap:8px">
+                <span class="badge badge-amber">🕐 Заполнена</span>
+                <button class="btn btn-ghost btn-xs" style="margin-left:auto">Открыть</button>
+              </div>
+            </div>
+            <div class="capsule-card" style="border-style:dashed;border-color:var(--amber-light);background:var(--warm-white);display:flex;align-items:center;justify-content:center;min-height:140px;flex-direction:column;gap:10px">
+              <div style="font-size:32px">+</div>
+              <div style="font-family:'Cormorant Garamond',serif;font-size:18px;color:var(--sepia)">Октябрь 2025</div>
+              <div style="font-size:13px;color:var(--ink-muted)">Через 6 месяцев</div>
+            </div>
+          </div>
+        </div>
+        <div class="tab-panel" id="tab-compare">
+          <div class="compare-view">
+            <div class="compare-header">
+              <div class="compare-col-title">🍂 Октябрь 2024</div>
+              <div class="compare-col-title">🌸 Апрель 2025</div>
+            </div>
+            <div style="padding:16px 24px;font-size:13px;color:var(--amber-dark);font-style:italic;border-bottom:1px solid var(--parchment)">Кем я хочу стать?</div>
+            <div class="compare-body">
+              <div class="compare-entry">«Я хочу стать дизайнером и открыть собственную студию. Главное — творческая свобода и независимость.»</div>
+              <div class="compare-entry">«Студия — это всё ещё цель. Но теперь важнее не свобода сама по себе, а делать что-то значимое для других.»</div>
+            </div>
+            <div style="padding:16px 24px;font-size:13px;color:var(--amber-dark);font-style:italic;border-top:1px solid var(--parchment);border-bottom:1px solid var(--parchment)">Мой главный страх</div>
+            <div class="compare-body">
+              <div class="compare-entry">«Не реализовать свой потенциал. Застрять в работе, которая не приносит смысла.»</div>
+              <div class="compare-entry">«Страх не исчез, но стал тише. Теперь я больше боюсь потерять близких, чем не реализоваться.»</div>
+            </div>
+          </div>
+        </div>
+        <div class="tab-panel" id="tab-new-capsule">
+          <div style="max-width:600px">
+            <!-- прогресс-точки -->
+            <div class="wizard-progress" id="capsule-progress" style="margin-bottom:24px"></div>
+
+            <!-- карточка вопроса -->
+            <div class="interview-q" style="margin-bottom:20px">
+              <div class="interview-q-num"  id="capsule-q-num">Вопрос 1 из 5</div>
+              <div class="interview-q-text" id="capsule-q-text">Кем вы хотите стать?</div>
+              <div class="interview-q-hint" id="capsule-q-hint">Подумайте о профессии, личности, месте в жизни</div>
+            </div>
+
+            <textarea class="form-control" id="capsule-answer" rows="4"
+              placeholder="Напишите ваш ответ..."></textarea>
+
+            <!-- навигация -->
+            <div style="margin-top:20px;display:flex;gap:12px;align-items:center;justify-content:space-between">
+              <button id="capsule-btn-prev"
+                class="btn btn-ghost btn-sm"
+                onclick="capsulePrev()"
+                style="visibility:hidden">← Назад</button>
+
+              <button class="btn btn-ghost btn-sm"
+                onclick="capsuleSkip()">Пропустить</button>
+
+              <button id="capsule-btn-next"
+                class="btn btn-primary btn-sm"
+                onclick="capsuleNext()">Следующий →</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- === AI CHAT === -->
+      <div class="app-section" id="section-ai">
+        <div class="app-section-header">
+          <h1>ИИ-помощник</h1>
+          <p>Поговорите с помощником — он поможет раскрыть вашу историю</p>
+        </div>
+        <div class="ai-chat-wrap">
+          <div class="chat-messages" id="ai-chat-msgs">
+            <div class="chat-msg">
+              <div class="chat-avatar ai">🌿</div>
+              <div class="chat-bubble ai">Здравствуйте! Я ваш личный летописец. Помогу вам рассказать историю вашей жизни — интересную, глубокую и настоящую.<br><br><strong>С чего начнём? Расскажите: где вы родились и каким было ваше детство?</strong></div>
+            </div>
+          </div>
+          <div class="chat-input-row">
+            <textarea class="form-control" id="ai-input" rows="2" placeholder="Напишите ваш ответ..." onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendAI()}"></textarea>
+            <button class="btn btn-primary" onclick="sendAI()">Отправить</button>
+          </div>
+          <div style="margin-top:12px;display:flex;gap:10px;flex-wrap:wrap">
+            <button class="btn btn-ghost btn-sm" onclick="suggestAI()">💡 Предложить вопросы</button>
+            <button class="btn btn-ghost btn-sm" onclick="saveAI()">💾 Сохранить как историю</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- === EXPORT === -->
+      <div class="app-section" id="section-export">
+        <div class="app-section-header">
+          <h1>Скачать историю</h1>
+          <p>Сохраните всё на личное устройство или поделитесь с близкими</p>
+        </div>
+        <div class="export-grid">
+          <div class="export-card" onclick="fakeExport('PDF-книга')">
+            <div class="export-icon">📖</div>
+            <h3>Книга памяти</h3>
+            <p>Все ваши истории в красивом PDF-формате с фотографиями</p>
+            <div style="margin-top:16px"><span class="badge badge-amber">Популярно</span></div>
+          </div>
+          <div class="export-card" onclick="fakeExport('ZIP-архив')">
+            <div class="export-icon">📦</div>
+            <h3>Полный архив</h3>
+            <p>ZIP-файл со всеми медиафайлами, текстами и аудиозаписями</p>
+            <div style="margin-top:16px"><span class="badge badge-gray">ZIP · ~2.3 ГБ</span></div>
+          </div>
+          <div class="export-card" onclick="fakeExport('Текстовый документ')">
+            <div class="export-icon">📄</div>
+            <h3>Только тексты</h3>
+            <p>Все расшифровки интервью в формате Word или PDF</p>
+            <div style="margin-top:16px"><span class="badge badge-gray">DOCX / PDF</span></div>
+          </div>
+        </div>
+        <div style="margin-top:36px;background:var(--warm-white);border:1px solid var(--parchment);border-radius:var(--radius);padding:28px">
+          <div style="font-family:'Cormorant Garamond',serif;font-size:22px;color:var(--sepia);margin-bottom:16px">🔗 Поделиться с семьёй</div>
+          <p style="font-size:15px;color:var(--ink-light);margin-bottom:16px">Создайте защищённую ссылку для доступа к вашему архиву</p>
+          <div style="display:flex;gap:12px;flex-wrap:wrap">
+            <input class="form-control" value="https://nasledie.ru/archive/ivan-petrov-xyz" readonly style="flex:1;background:var(--cream);font-size:14px">
+            <button class="btn btn-primary btn-sm" onclick="toast('Ссылка скопирована ✓','success')">Скопировать</button>
+          </div>
+          <div style="margin-top:16px;display:flex;gap:10px;flex-wrap:wrap">
+            <button class="btn btn-ghost btn-sm" onclick="toast('Приглашение отправлено','success')">📧 Пригласить по email</button>
+            <button class="btn btn-danger-outline btn-sm" onclick="toast('Ссылка отключена','error')">🚫 Отключить доступ</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- === SETTINGS === -->
+      <div class="app-section" id="section-settings">
+        <div class="app-section-header">
+          <h1>Настройки</h1>
+        </div>
+        <div class="settings-grid">
+          <div class="settings-card">
+            <h3>👤 Профиль</h3>
+            <div class="form-group"><label class="form-label">Имя</label><input class="form-control" value="Иван Петрович"></div>
+            <div class="form-group"><label class="form-label">Email</label><input class="form-control" value="ivan@example.ru" type="email"></div>
+            <div class="form-group"><label class="form-label">Год рождения</label><input class="form-control" value="1955" type="number"></div>
+            <div class="form-group"><label class="form-label">Город</label><input class="form-control" value="Москва"></div>
+            <button class="btn btn-primary btn-sm" onclick="toast('Изменения сохранены ✓','success')">Сохранить</button>
+          </div>
+          <div class="settings-card">
+            <h3>🔔 Уведомления</h3>
+            <div class="toggle-row">
+              <div><div class="toggle-label">Email-напоминания</div><div class="toggle-desc">Раз в месяц — добавить новую историю</div></div>
+              <label class="toggle-switch"><input type="checkbox" checked><span class="toggle-slider"></span></label>
+            </div>
+            <div class="toggle-row">
+              <div><div class="toggle-label">Дата капсулы времени</div><div class="toggle-desc">Напомним открыть капсулу через 6 месяцев</div></div>
+              <label class="toggle-switch"><input type="checkbox" checked><span class="toggle-slider"></span></label>
+            </div>
+            <div class="toggle-row">
+              <div><div class="toggle-label">Новые комментарии</div><div class="toggle-desc">Когда семья комментирует истории</div></div>
+              <label class="toggle-switch"><input type="checkbox"><span class="toggle-slider"></span></label>
+            </div>
+          </div>
+          <div class="settings-card">
+            <h3>🔒 Приватность</h3>
+            <div class="toggle-row">
+              <div><div class="toggle-label">Профиль публичный</div><div class="toggle-desc">Другие пользователи видят ваш профиль</div></div>
+              <label class="toggle-switch"><input type="checkbox"><span class="toggle-slider"></span></label>
+            </div>
+            <div class="toggle-row">
+              <div><div class="toggle-label">Показывать в ленте</div><div class="toggle-desc">Публичные истории видны всем</div></div>
+              <label class="toggle-switch"><input type="checkbox" checked><span class="toggle-slider"></span></label>
+            </div>
+            <div class="toggle-row">
+              <div><div class="toggle-label">Семейный доступ</div><div class="toggle-desc">Родственники видят приватные истории</div></div>
+              <label class="toggle-switch"><input type="checkbox" checked><span class="toggle-slider"></span></label>
+            </div>
+            <div style="margin-top:20px">
+              <button class="btn btn-danger-outline btn-sm" onclick="toast('Запрос на удаление отправлен','error')">Удалить аккаунт</button>
+            </div>
+          </div>
+          <div class="settings-card">
+            <h3>🎨 Оформление</h3>
+            <div class="form-group">
+              <label class="form-label">Размер шрифта</label>
+              <select class="form-control">
+                <option>Обычный</option>
+                <option>Крупный</option>
+                <option>Очень крупный</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Язык интерфейса</label>
+              <select class="form-control"><option>Русский</option><option>English</option></select>
+            </div>
+            <div class="toggle-row">
+              <div><div class="toggle-label">Тёмная тема</div><div class="toggle-desc">Снижает нагрузку на глаза</div></div>
+              <label class="toggle-switch"><input type="checkbox"><span class="toggle-slider"></span></label>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </main>
+  </div>
+</div>
+
+<!-- ============================================================
+     PAGE: FEED
+     ============================================================ -->
+<div class="page" id="page-feed">
+  <div style="background:var(--warm-white);border-bottom:1px solid var(--parchment);padding:24px 32px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:16px">
+    <div>
+      <div class="section-label" style="margin-bottom:4px">Сообщество</div>
+      <h1 style="font-family:'Cormorant Garamond',serif;font-size:36px;color:var(--sepia);font-weight:400">Лента историй</h1>
+    </div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap">
+      <button class="btn btn-ghost btn-sm active-filter" onclick="filterFeed(this,'all')">Все</button>
+      <button class="btn btn-ghost btn-sm" onclick="filterFeed(this,'video')">🎥 Видео</button>
+      <button class="btn btn-ghost btn-sm" onclick="filterFeed(this,'audio')">🎵 Аудио</button>
+      <button class="btn btn-ghost btn-sm" onclick="filterFeed(this,'photo')">📸 Фото</button>
+    </div>
+  </div>
+  <div class="feed-layout">
+    <main>
+      <div class="feed-post">
+        <div class="post-head">
+          <div class="post-ava">👵</div>
+          <div><div class="post-author-name">Тамара Николаевна С.</div><div class="post-date">Москва · 2 дня назад</div></div>
+        </div>
+        <div class="post-media-area"><span>🎥</span><span class="post-media-tag">Видео · 4:32</span></div>
+        <div class="post-body">
+          <div class="post-q">Вопрос: Какое воспоминание из детства самое живое в вашей памяти?</div>
+          <p class="post-text">Помню, как мама пекла пироги каждое воскресенье. Этот запах ванили и корицы до сих пор кажется мне самым родным на свете. Мы жили в коммуналке, и вся семья собиралась на кухне...</p>
+        </div>
+        <div class="post-foot">
+          <button class="post-action" onclick="likePost(this)">🤍 <span>142</span></button>
+          <button class="post-action">💬 23 ответа</button>
+          <button class="post-action">↗️ Поделиться</button>
+        </div>
+      </div>
+      <div class="feed-post">
+        <div class="post-head">
+          <div class="post-ava">👴</div>
+          <div><div class="post-author-name">Виктор Михайлович Р.</div><div class="post-date">Санкт-Петербург · 4 дня назад</div></div>
+        </div>
+        <div class="post-media-area" style="background:#f0ede8"><span>🎵</span><span class="post-media-tag">Аудио · 12:07</span></div>
+        <div class="post-body">
+          <div class="post-q">Вопрос: Кем вы мечтали стать в юности и как сложилась ваша жизнь?</div>
+          <p class="post-text">В детстве я хотел быть капитаном корабля. Море казалось бесконечным и свободным. Но судьба привела меня к книгам — я стал учителем литературы. И знаете, это тоже своего рода море...</p>
+        </div>
+        <div class="post-foot">
+          <button class="post-action" onclick="likePost(this)">🤍 <span>89</span></button>
+          <button class="post-action">💬 17 ответов</button>
+          <button class="post-action">↗️ Поделиться</button>
+        </div>
+      </div>
+      <div class="feed-post">
+        <div class="post-head">
+          <div class="post-ava">👩</div>
+          <div><div class="post-author-name">Людмила Васильевна К.</div><div class="post-date">Екатеринбург · 1 неделю назад</div></div>
+        </div>
+        <div class="post-media-area" style="background:#f5f0e8">
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:4px;width:100%;height:100%;padding:4px">
+            <div style="background:var(--parchment);display:flex;align-items:center;justify-content:center;font-size:36px;border-radius:2px">📸</div>
+            <div style="background:var(--parchment);display:flex;align-items:center;justify-content:center;font-size:36px;border-radius:2px">📸</div>
+          </div>
+          <span class="post-media-tag">Фото · 6 снимков</span>
+        </div>
+        <div class="post-body">
+          <div class="post-q">Вопрос: Что вы считаете главным делом вашей жизни?</div>
+          <p class="post-text">Трое детей и семеро внуков. Это и есть моё главное дело. Каждый из них — отдельная вселенная. Смотришь на них и понимаешь: вот для чего всё было...</p>
+        </div>
+        <div class="post-foot">
+          <button class="post-action" onclick="likePost(this)">🤍 <span>317</span></button>
+          <button class="post-action">💬 54 ответа</button>
+          <button class="post-action">↗️ Поделиться</button>
+        </div>
+      </div>
+    </main>
+    <aside>
+      <div class="feed-sidebar-widget">
+        <div class="feed-widget-title">Рекомендуем</div>
+        <div class="suggest-user"><div class="suggest-ava">👨</div><div class="suggest-info"><div class="suggest-name">Александр И.</div><div class="suggest-meta">Ветеран · 12 историй</div></div><button class="btn btn-ghost btn-xs" onclick="toast('Вы подписаны ✓','success')">+ Читать</button></div>
+        <div class="suggest-user"><div class="suggest-ava">👩</div><div class="suggest-info"><div class="suggest-name">Нина Борисовна</div><div class="suggest-meta">Педагог · 8 историй</div></div><button class="btn btn-ghost btn-xs" onclick="toast('Вы подписаны ✓','success')">+ Читать</button></div>
+        <div class="suggest-user"><div class="suggest-ava">👴</div><div class="suggest-info"><div class="suggest-name">Фёдор Степанович</div><div class="suggest-meta">Инженер · 5 историй</div></div><button class="btn btn-ghost btn-xs" onclick="toast('Вы подписаны ✓','success')">+ Читать</button></div>
+      </div>
+      <div class="feed-sidebar-widget">
+        <div class="feed-widget-title">Вопрос недели</div>
+        <div style="padding:14px;background:var(--cream);border:1px solid var(--parchment);border-radius:4px;font-size:15px;color:var(--ink-light);font-style:italic;line-height:1.7;margin-bottom:14px">«Какой совет вы бы дали себе в 20 лет?»</div>
+        <button class="btn btn-primary btn-sm" style="width:100%" onclick="goPage('auth')">Ответить →</button>
+      </div>
+      <div class="feed-sidebar-widget">
+        <div class="feed-widget-title">Темы</div>
+        <div style="display:flex;flex-wrap:wrap;gap:8px">
+          <span class="tag" style="cursor:pointer">👶 Детство</span>
+          <span class="tag" style="cursor:pointer">❤️ Любовь</span>
+          <span class="tag" style="cursor:pointer">💼 Карьера</span>
+          <span class="tag" style="cursor:pointer">🦉 Мудрость</span>
+          <span class="tag" style="cursor:pointer">🏡 Дом</span>
+        </div>
+      </div>
+    </aside>
+  </div>
+</div>
+
+<!-- ============================================================
+     JAVASCRIPT
+     ============================================================ -->
+<script>
+// ============ STATE ============
+let state = {
+  loggedIn: false,
+  userName: 'Иван Петрович',
+  currentPage: 'home',
+  currentSection: 'dash',
+  // wizard
+  selectedTheme: null,
+  currentQ: 0,
+  answers: {},
+  isRecording: false,
+  recInterval: null,
+  recSec: 0,
+  // AI chat
+  aiWaiting: false,
+  aiQIdx: 0,
+  // media
+  mediaCount: 6,
+  interviewCount: 7,
+};
+
+const QUESTIONS = {
+  childhood: [
+    { q:'Где вы родились и как выглядело это место в детстве?', h:'Расскажите о доме, улице, природе — всё, что помните' },
+    { q:'Какие самые яркие воспоминания из раннего детства?', h:'Первые образы, запахи, звуки' },
+    { q:'Расскажите о своих родителях — какими они были?', h:'Характер, привычки, как они относились к вам' },
+    { q:'Были ли у вас братья и сёстры? Как складывались отношения?', h:'Дружба, соперничество, совместные игры' },
+    { q:'Какие игры вы любили в детстве?', h:'Уличные игры, игрушки, занятия' },
+    { q:'Каким был ваш дом? Опишите комнаты, запахи, атмосферу.', h:'Детали, которые вы до сих пор помните' },
+    { q:'Кто из взрослых оказал на вас наибольшее влияние в детстве?', h:'Учитель, бабушка, сосед — кто угодно' },
+    { q:'Какой была ваша школа? Любимые и нелюбимые предметы?', h:'Учителя, друзья, атмосфера' },
+    { q:'О чём вы мечтали, когда были ребёнком?', h:'Кем хотели стать, куда поехать, что иметь' },
+    { q:'Было ли у вас какое-то любимое место — своё «тайное» пространство?', h:'Где вы чувствовали себя в безопасности и свободе' },
+    { q:'Какие праздники были особенными в вашей семье?', h:'Как их отмечали, какие традиции' },
+    { q:'Чего вы боялись в детстве?', h:'Страхи, которые казались огромными' },
+  ],
+  family: [
+    { q:'Расскажите о своей семье — кто в ней был самым важным?', h:'Родители, бабушки, дедушки, братья, сёстры' },
+    { q:'Какие семейные традиции вы помните и сохранили?', h:'Праздники, ритуалы, привычки' },
+    { q:'Что вы хотите передать своим детям и внукам?', h:'Ценности, навыки, истории' },
+    { q:'Расскажите о своих родителях — их характер, судьба, чему они вас научили?', h:'Слова, поступки, уроки' },
+    { q:'Есть ли в вашей семье истории, которые передавались из поколения в поколение?', h:'Легенды, воспоминания, документы' },
+    { q:'Как изменились ваши отношения с семьёй с возрастом?', h:'Понимание, конфликты, примирение' },
+    { q:'Кто в семье был самым мудрым? Что вы у него почерпнули?', h:'Слова, советы, пример жизни' },
+    { q:'Какой момент в семейной жизни вы бы хотели пережить снова?', h:'Счастливый, трогательный или смешной' },
+    { q:'Что для вас значит «дом»?', h:'Место, люди, ощущение' },
+    { q:'Что бы вы хотели, чтобы ваши близкие знали о вас?', h:'То, что трудно говорить вслух' },
+  ],
+  career: [
+    { q:'Как вы выбрали свою профессию? Это была мечта или случайность?', h:'История выбора пути' },
+    { q:'Первая работа — каково это было?', h:'Трудности, радости, первые коллеги' },
+    { q:'Кем вы гордитесь в своей профессиональной жизни?', h:'Достижения, которые важны лично для вас' },
+    { q:'Был ли в карьере момент, когда вы хотели всё бросить?', h:'Что удержало или что изменилось' },
+    { q:'Какой самый важный урок вы получили на работе?', h:'От коллег, ситуаций или ошибок' },
+    { q:'Как работа повлияла на вашу личность?', h:'Что она вам дала и что забрала' },
+    { q:'Если бы можно было выбрать другую профессию — что бы вы выбрали?', h:'Мечта, которую вы не реализовали' },
+    { q:'Расскажите о человеке, который помог вам в карьере.', h:'Наставник, коллега, начальник' },
+    { q:'Что вы считаете главным профессиональным достижением?', h:'Проект, должность, признание — что угодно' },
+  ],
+  love: [
+    { q:'Как вы познакомились с главным человеком в вашей жизни?', h:'Первая встреча, первые впечатления' },
+    { q:'Что вас привлекло в этом человеке?', h:'Внешность, характер, слова' },
+    { q:'Расскажите о вашей свадьбе или о том, как вы решили быть вместе.', h:'Детали, которые помните' },
+    { q:'Какой момент в ваших отношениях вы считаете самым дорогим?', h:'Счастливый, трогательный, смешной' },
+    { q:'Через какие трудности вы прошли вместе?', h:'Как это укрепило отношения' },
+    { q:'Что вы поняли о любви с годами?', h:'То, что молодые не понимают' },
+    { q:'Как изменились ваши отношения со временем?', h:'Что выросло, что стало иначе' },
+    { q:'Что вы хотите сказать своему любимому человеку?', h:'То, что, возможно, редко говорите' },
+  ],
+  wisdom: [
+    { q:'Что вы считаете самым важным в жизни?', h:'Ваши главные ценности' },
+    { q:'Какой совет вы бы дали себе в 20 лет?', h:'Что вы знаете сейчас, чего не знали тогда' },
+    { q:'Через какое самое большое испытание вы прошли?', h:'И что оно вам дало' },
+    { q:'В чём вы изменили своё мнение с возрастом?', h:'Убеждения, которые оказались неверными' },
+    { q:'Что делает человека счастливым — по-вашему опыту?', h:'Не слова, а то, что вы видели в жизни' },
+    { q:'Чего вы сожалеете? И чему это сожаление вас научило?', h:'Можно говорить честно' },
+    { q:'Что в мире изменилось за вашу жизнь — к лучшему и к худшему?', h:'Ваш взгляд с высоты опыта' },
+    { q:'Какой главный урок вы хотите передать следующим поколениям?', h:'Одна идея, которая важнее всего' },
+    { q:'Как вы хотите, чтобы вас помнили?', h:'Не должности и звания — а человеческие качества' },
+    { q:'Что для вас значит прожить хорошую жизнь?', h:'Ваше личное определение' },
+    { q:'Есть ли то, за что вы благодарны судьбе?', h:'Люди, события, обстоятельства' },
+  ],
+  values: [
+    { q:'Что для вас значит честность?', h:'Были ли моменты, когда она дорого вам стоила?' },
+    { q:'Верите ли вы в судьбу или в то, что человек сам строит свою жизнь?', h:'Ваш жизненный опыт по этому вопросу' },
+    { q:'Что вы считаете своим главным достоинством?', h:'То, что вам самим в себе нравится' },
+    { q:'Над чем вы работали над собой всю жизнь?', h:'Слабость, которую вы пытались преодолеть' },
+    { q:'Что вас вдохновляет?', h:'Люди, природа, идеи, искусство' },
+    { q:'Какую роль в вашей жизни играла вера — религиозная или иная?', h:'Что давало силы в трудные моменты' },
+    { q:'Чем вы хотите быть полезны миру?', h:'Большое или маленькое — всё важно' },
+  ],
+};
+
+const AI_QUESTIONS = [
+  'Расскажите: где вы родились и каким было ваше детство?',
+  'Кто из людей оказал на вас наибольшее влияние в жизни?',
+  'Какой период жизни вы считаете самым счастливым?',
+  'Через какое испытание вы прошли и что оно вам дало?',
+  'Что для вас значит прожить хорошую жизнь?',
+  'Какой совет вы бы дали своим детям или внукам?',
+  'Есть ли что-то, что вы хотели бы успеть сделать?',
+  'Как вы хотите, чтобы вас помнили близкие?',
+];
+
+// ============ NAVIGATION ============
+function goPage(id) {
+  if ((id === 'app') && !state.loggedIn) { goPage('auth'); return; }
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-link[id^=nl-]').forEach(a => a.classList.remove('active'));
+  document.getElementById('page-' + id).classList.add('active');
+  const nl = document.getElementById('nl-' + id);
+  if (nl) nl.classList.add('active');
+  state.currentPage = id;
+  window.scrollTo(0,0);
+}
+
+function showSection(id, btn) {
+  document.querySelectorAll('.app-section').forEach(s => s.classList.remove('active'));
+  document.getElementById('section-' + id).classList.add('active');
+  if (btn) {
+    document.querySelectorAll('.sidebar-nav-item button').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+  }
+  state.currentSection = id;
+}
+
+// ============ AUTH ============
+function showAuthForm(form) {
+  document.getElementById('auth-login').style.display = form === 'login' ? 'block' : 'none';
+  document.getElementById('auth-register').style.display = form === 'register' ? 'block' : 'none';
+}
+
+function doLogin() {
+  const email = document.getElementById('login-email').value.trim();
+  const pass = document.getElementById('login-pass').value.trim();
+  if (!email || !pass) { toast('Заполните все поля','error'); return; }
+  loginSuccess('Иван Петрович');
+}
+
+function doRegister() {
+  const name = document.getElementById('reg-name').value.trim();
+  const email = document.getElementById('reg-email').value.trim();
+  const pass = document.getElementById('reg-pass').value.trim();
+  if (!name || !email || !pass) { toast('Заполните все поля','error'); return; }
+  loginSuccess(name);
+}
+
+function doDemo() {
+  loginSuccess('Иван Петрович');
+}
+
+function loginSuccess(name) {
+  state.loggedIn = true;
+  state.userName = name;
+  document.getElementById('sb-name').textContent = name;
+  document.getElementById('dash-greeting').textContent = `Добрый день, ${name.split(' ')[0]} 👋`;
+  document.getElementById('nl-auth').style.display = 'none';
+  document.getElementById('nl-logout').style.display = 'inline-flex';
+  document.getElementById('nl-app').style.display = 'inline-flex';
+  goPage('app');
+  toast(`Добро пожаловать, ${name.split(' ')[0]}! 🌿`, 'success');
+}
+
+function logout() {
+  state.loggedIn = false;
+  document.getElementById('nl-auth').style.display = 'inline-flex';
+  document.getElementById('nl-logout').style.display = 'none';
+  document.getElementById('nl-app').style.display = 'none';
+  goPage('home');
+  toast('Вы вышли из аккаунта');
+}
+
+// ============ WIZARD / INTERVIEW ============
+let selectedThemeKey = null;
+
+function selectTheme(el, key) {
+  document.querySelectorAll('.theme-card').forEach(c => c.classList.remove('selected'));
+  el.classList.add('selected');
+  selectedThemeKey = key;
+  const btn = document.getElementById('btn-start-interview');
+  btn.disabled = false; btn.style.opacity = '1';
+}
+
+function startInterview() {
+  if (!selectedThemeKey) return;
+  state.currentQ = 0;
+  state.answers = {};
+  document.getElementById('wizard-step1').style.display = 'none';
+  document.getElementById('wizard-step2').style.display = 'block';
+  loadQuestion();
+}
+
+function loadQuestion() {
+  const qs = QUESTIONS[selectedThemeKey];
+  const q = qs[state.currentQ];
+  const total = qs.length;
+  document.getElementById('q-num').textContent = `Вопрос ${state.currentQ+1} из ${total}`;
+  document.getElementById('q-text').textContent = q.q;
+  document.getElementById('q-hint').textContent = q.h;
+  document.getElementById('q-counter').textContent = `${state.currentQ+1} / ${total}`;
+  document.getElementById('answer-text').value = state.answers[state.currentQ] || '';
+  // progress dots
+  let dots = '';
+  for (let i=0; i<total; i++) {
+    let cls = i < state.currentQ ? 'done' : (i === state.currentQ ? 'active' : '');
+    dots += `<div class="wizard-step-dot ${cls}"></div>`;
+  }
+  dots += `<span class="wizard-step-label">Шаг 2 из 3: Запись ответов</span>`;
+  document.getElementById('w2-progress').innerHTML = dots;
+  stopRecord();
+}
+
+function saveCurrentAnswer() {
+  state.answers[state.currentQ] = document.getElementById('answer-text').value;
+}
+
+function nextQ() {
+  saveCurrentAnswer();
+  const total = QUESTIONS[selectedThemeKey].length;
+  if (state.currentQ < total-1) {
+    state.currentQ++;
+    loadQuestion();
+  } else {
+    finishInterview();
+  }
+}
+
+function prevQ() {
+  saveCurrentAnswer();
+  if (state.currentQ > 0) { state.currentQ--; loadQuestion(); }
+}
+
+function skipQ() {
+  const total = QUESTIONS[selectedThemeKey].length;
+  if (state.currentQ < total-1) { state.currentQ++; loadQuestion(); }
+  else finishInterview();
+}
+
+function finishInterview() {
+  stopRecord();
+  document.getElementById('wizard-step2').style.display = 'none';
+  document.getElementById('wizard-step3').style.display = 'block';
+  state.interviewCount++;
+  document.getElementById('dc-interviews').textContent = state.interviewCount;
+  addRecentItem('🎙️', `Интервью — ${themeLabel(selectedThemeKey)}`, 'Только что записано', 'badge-green', '✓ Завершено');
+  toast('Интервью сохранено в архив ✓', 'success');
+}
+
+function themeLabel(key) {
+  const m = { childhood:'Детство', family:'Семья', career:'Карьера', love:'Любовь', wisdom:'Мудрость', values:'Ценности' };
+  return m[key] || key;
+}
+
+function resetWizard() {
+  selectedThemeKey = null;
+  document.querySelectorAll('.theme-card').forEach(c => c.classList.remove('selected'));
+  document.getElementById('wizard-step1').style.display = 'block';
+  document.getElementById('wizard-step2').style.display = 'none';
+  document.getElementById('wizard-step3').style.display = 'none';
+  document.getElementById('btn-start-interview').disabled = true;
+  document.getElementById('btn-start-interview').style.opacity = '0.5';
+}
+
+// ============ RECORDING ============
+function toggleRecord() {
+  if (state.isRecording) stopRecord();
+  else startRecord();
+}
+
+function startRecord() {
+  state.isRecording = true;
+  state.recSec = 0;
+  const btn = document.getElementById('rec-btn');
+  btn.textContent = '⏹️'; btn.classList.add('recording');
+  document.getElementById('rec-status').textContent = 'Идёт запись...';
+  document.getElementById('rec-wave').classList.remove('paused');
+  state.recInterval = setInterval(() => {
+    state.recSec++;
+    const m = Math.floor(state.recSec/60);
+    const s = state.recSec % 60;
+    document.getElementById('rec-timer').textContent = `${m}:${s.toString().padStart(2,'0')}`;
+  }, 1000);
+  // simulate transcription after 3s
+  setTimeout(() => {
+    if (!state.isRecording) return;
+    document.getElementById('transcribing-ind').style.display = 'inline-flex';
+    document.getElementById('trans-label').style.display = 'none';
+    setTimeout(() => {
+      if (!state.isRecording) return;
+      document.getElementById('transcribing-ind').style.display = 'none';
+      document.getElementById('trans-label').style.display = 'inline';
+      const q = QUESTIONS[selectedThemeKey]?.[state.currentQ];
+      const samples = [
+        'Я родился в небольшом городе на Урале. Помню деревянный дом, большой двор и яблоневый сад за забором. Летом мы с соседскими ребятами играли допоздна, пока мамы не звали нас домой...',
+        'Мой отец был строгим, но справедливым человеком. Он никогда не повышал голос, но его слово было законом. Мама, напротив, была мягкой — она всегда находила время выслушать.',
+        'Помню первый рабочий день — я страшно волновался. Коллеги встретили настороженно, как это всегда бывает с новичками. Но уже через месяц мы стали друзьями.',
+      ];
+      const txt = samples[state.currentQ % samples.length];
+      document.getElementById('answer-text').value = txt;
+    }, 2000);
+  }, 3000);
+}
+
+function stopRecord() {
+  if (!state.isRecording && !state.recInterval) return;
+  state.isRecording = false;
+  clearInterval(state.recInterval);
+  state.recInterval = null;
+  const btn = document.getElementById('rec-btn');
+  if (btn) { btn.textContent = '🎙️'; btn.classList.remove('recording'); }
+  const wave = document.getElementById('rec-wave');
+  if (wave) wave.classList.add('paused');
+  const status = document.getElementById('rec-status');
+  if (status) status.textContent = state.recSec > 0 ? `Записано ${state.recSec} сек.` : 'Нажмите для записи';
+}
+
+// ============ MEDIA UPLOAD ============
+function handleFiles(files) {
+  const grid = document.getElementById('media-grid');
+  const icons = { image:'📸', video:'🎥', audio:'🎵', default:'📄' };
+  const labels = { image:'фото', video:'видео', audio:'аудио', default:'докум.' };
+  Array.from(files).forEach(f => {
+    const type = Object.keys(icons).find(k => f.type.startsWith(k)) || 'default';
+    const card = document.createElement('div');
+    card.className = 'media-card';
+    card.style.animation = 'fadeUp 0.4s ease both';
+    card.innerHTML = `<div class="media-thumb">${icons[type]}<span class="media-type-badge">${labels[type]}</span></div><div class="media-name">${f.name.split('.')[0]}</div>`;
+    grid.prepend(card);
+    state.mediaCount++;
+  });
+  document.getElementById('dc-media').textContent = state.mediaCount;
+  toast(`Загружено ${files.length} файл(ов) ✓`, 'success');
+}
+
+// Drag and drop
+const dz = document.getElementById('dropzone');
+if (dz) {
+  dz.addEventListener('dragover', e => { e.preventDefault(); dz.classList.add('dragover'); });
+  dz.addEventListener('dragleave', () => dz.classList.remove('dragover'));
+  dz.addEventListener('drop', e => { e.preventDefault(); dz.classList.remove('dragover'); handleFiles(e.dataTransfer.files); });
+}
+
+// ============ AI CHAT ============
+function sendAI() {
+  if (state.aiWaiting) return;
+  const input = document.getElementById('ai-input');
+  const text = input.value.trim();
+  if (!text) return;
+  addChatMsg('user', text);
+  input.value = '';
+  state.aiWaiting = true;
+  const thinking = addChatMsg('ai', null, true);
+  setTimeout(() => {
+    thinking.remove();
+    state.aiQIdx = (state.aiQIdx+1) % AI_QUESTIONS.length;
+    const reply = `Спасибо, это очень важная часть вашей истории. Продолжим.<br><br><strong>${AI_QUESTIONS[state.aiQIdx]}</strong>`;
+    addChatMsg('ai', reply);
+    state.aiWaiting = false;
+  }, 1800);
+}
+
+function addChatMsg(role, html, thinking=false) {
+  const msgs = document.getElementById('ai-chat-msgs');
+  const div = document.createElement('div');
+  div.className = `chat-msg ${role}`;
+  const ava = document.createElement('div');
+  ava.className = `chat-avatar ${role}`;
+  ava.textContent = role === 'ai' ? '🌿' : '👤';
+  const bubble = document.createElement('div');
+  bubble.className = `chat-bubble ${role}`;
+  if (thinking) bubble.innerHTML = '<div class="dots"><span></span><span></span><span></span></div>';
+  else bubble.innerHTML = html;
+  div.appendChild(ava);
+  div.appendChild(bubble);
+  msgs.appendChild(div);
+  msgs.scrollTop = msgs.scrollHeight;
+  return div;
+}
+
+function suggestAI() {
+  const qs = AI_QUESTIONS.slice(0,3).map(q=>`• ${q}`).join('<br>');
+  addChatMsg('ai', `Вот несколько направлений, которые мы можем исследовать:<br><br>${qs}<br><br>Выберите любой или просто расскажите, что хочется.`);
+}
+
+function saveAI() {
+  toast('История сохранена в архив ✓', 'success');
+  addRecentItem('🤖','Разговор с ИИ-помощником','Только что','badge-amber','🤖 ИИ');
+}
+
+// ============ TABS ============
+function switchTab(btn, panelId) {
+  // Ищем ближайший контейнер с вкладками — .tabs или .app-section
+  const tabsContainer = btn.closest('.tabs');
+  const sectionContainer = btn.closest('.app-section') || document.body;
+
+  // Снимаем active со всех tab-btn в этом .tabs блоке
+  if (tabsContainer) {
+    tabsContainer.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  } else {
+    sectionContainer.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  }
+
+  // Скрываем все tab-panel в этой секции
+  sectionContainer.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+
+  // Активируем нужный
+  btn.classList.add('active');
+  const panel = document.getElementById(panelId);
+  if (panel) panel.classList.add('active');
+}
+
+// Вспомогательная функция — переключить вкладку по id панели из любого места
+function switchTabById(sectionId, panelId) {
+  const section = document.getElementById(sectionId);
+  if (!section) return;
+  const btn = section.querySelector(`[onclick*="${panelId}"]`);
+  if (btn) switchTab(btn, panelId);
+}
+
+// ============ CAPSULE QUESTIONS ============
+const CAPSULE_QUESTIONS = [
+  { q: 'Кем вы хотите стать?',            h: 'Подумайте о профессии, личности, месте в жизни' },
+  { q: 'Что для вас сейчас важнее всего?', h: 'Ценности, люди, цели — что на первом месте' },
+  { q: 'Каковы ваши главные цели?',         h: 'На ближайшие 6–12 месяцев' },
+  { q: 'Чего вы боитесь больше всего?',     h: 'Страхи, которые мешают или беспокоят' },
+  { q: 'Чем вы гордитесь прямо сейчас?',   h: 'Поступки, достижения, изменения в себе' },
+];
+
+let capsuleQIdx = 0;
+const capsuleAnswers = {};
+
+function renderCapsuleQ() {
+  const q = CAPSULE_QUESTIONS[capsuleQIdx];
+  const total = CAPSULE_QUESTIONS.length;
+
+  document.getElementById('capsule-q-num').textContent   = `Вопрос ${capsuleQIdx + 1} из ${total}`;
+  document.getElementById('capsule-q-text').textContent  = q.q;
+  document.getElementById('capsule-q-hint').textContent  = q.h;
+  document.getElementById('capsule-answer').value        = capsuleAnswers[capsuleQIdx] || '';
+
+  // прогресс-точки
+  let dots = '';
+  for (let i = 0; i < total; i++) {
+    let cls = i < capsuleQIdx ? 'done' : (i === capsuleQIdx ? 'active' : '');
+    dots += `<div class="wizard-step-dot ${cls}"></div>`;
+  }
+  document.getElementById('capsule-progress').innerHTML = dots;
+
+  // кнопки
+  document.getElementById('capsule-btn-prev').style.visibility = capsuleQIdx === 0 ? 'hidden' : 'visible';
+  const nextBtn = document.getElementById('capsule-btn-next');
+  if (capsuleQIdx === total - 1) {
+    nextBtn.textContent = 'Завершить капсулу ✓';
+    nextBtn.onclick = finishCapsule;
+  } else {
+    nextBtn.textContent = 'Следующий →';
+    nextBtn.onclick = capsuleNext;
+  }
+}
+
+function capsuleSaveCurrentAnswer() {
+  capsuleAnswers[capsuleQIdx] = document.getElementById('capsule-answer').value;
+}
+
+function capsuleNext() {
+  capsuleSaveCurrentAnswer();
+  if (capsuleQIdx < CAPSULE_QUESTIONS.length - 1) {
+    capsuleQIdx++;
+    renderCapsuleQ();
+  }
+}
+
+function capsulePrev() {
+  capsuleSaveCurrentAnswer();
+  if (capsuleQIdx > 0) {
+    capsuleQIdx--;
+    renderCapsuleQ();
+  }
+}
+
+function capsuleSkip() {
+  if (capsuleQIdx < CAPSULE_QUESTIONS.length - 1) {
+    capsuleQIdx++;
+    renderCapsuleQ();
+  } else {
+    finishCapsule();
+  }
+}
+
+function finishCapsule() {
+  capsuleSaveCurrentAnswer();
+  toast('Капсула времени сохранена! 🌱 Откроем её через 6 месяцев.', 'success');
+  capsuleQIdx = 0;
+  Object.keys(capsuleAnswers).forEach(k => delete capsuleAnswers[k]);
+  // Возвращаемся на вкладку «Мои капсулы»
+  const section = document.getElementById('section-youth');
+  const btn = section.querySelector('[onclick*="tab-capsules"]');
+  if (btn) switchTab(btn, 'tab-capsules');
+  renderCapsuleQ();
+}
+
+// ============ FEED ============
+function likePost(btn) {
+  const span = btn.querySelector('span');
+  const n = parseInt(span.textContent);
+  if (btn.dataset.liked) { span.textContent = n-1; btn.innerHTML = `🤍 <span>${n-1}</span>`; delete btn.dataset.liked; }
+  else { btn.innerHTML = `❤️ <span>${n+1}</span>`; btn.dataset.liked = '1'; }
+}
+
+function filterFeed(btn, type) {
+  document.querySelectorAll('.active-filter').forEach(b => { b.classList.remove('active-filter'); b.style.background=''; });
+  btn.classList.add('active-filter'); btn.style.background = 'var(--parchment)';
+  // just UI
+}
+
+// ============ TOAST ============
+function toast(msg, type='') {
+  const cont = document.getElementById('toast-container');
+  const t = document.createElement('div');
+  t.className = `toast ${type}`;
+  t.innerHTML = `<span>${type==='success'?'✓':type==='error'?'✕':'🌿'}</span> ${msg}`;
+  cont.appendChild(t);
+  setTimeout(() => t.remove(), 3200);
+}
+
+// ============ EXPORT ============
+function fakeExport(type) {
+  toast(`Подготавливаем ${type}...`);
+  setTimeout(() => toast(`${type} готов! Скачивание начнётся...`, 'success'), 1500);
+}
+
+// ============ RECENT ============
+function addRecentItem(icon, title, meta, badgeCls, badgeTxt) {
+  const list = document.getElementById('recent-list');
+  const item = document.createElement('div');
+  item.className = 'recent-item';
+  item.style.animation = 'fadeUp 0.35s ease both';
+  item.innerHTML = `<div class="recent-icon">${icon}</div><div class="recent-info"><div class="recent-title">${title}</div><div class="recent-meta">${meta}</div></div><div class="recent-badge"><span class="badge ${badgeCls}">${badgeTxt}</span></div>`;
+  list.prepend(item);
+}
+
+// ============ INIT ============
+document.addEventListener('DOMContentLoaded', () => {
+  renderCapsuleQ();
+});
+</script>
+</body>
+</html>

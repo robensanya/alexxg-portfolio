@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Инфобезопасность</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: #f7f7f7;
+      font-family: 'StratosSkyeng', 'Stratos Skyeng', 'Onest', 'Segoe UI', sans-serif;
+      color: #101010;
+    }
+
+    .isi-block {
+      width: 100%;
+      max-width: 780px;
+      margin: 0 auto;
+      padding: 28px 20px;
+      background: #f7f7f7;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .isi-star {
+      position: absolute;
+      color: #baff00;
+      line-height: 1;
+      pointer-events: none;
+      user-select: none;
+      z-index: 0;
+    }
+    .isi-star-1 { top: 18px; right: 10px; font-size: 34px; transform: rotate(-12deg); }
+    .isi-star-2 { top: 42%; left: 2px; font-size: 24px; transform: rotate(15deg); }
+    .isi-star-3 { bottom: 100px; right: -2px; font-size: 30px; transform: rotate(-8deg); }
+    .isi-star-4 { bottom: 28px; left: 48%; font-size: 22px; transform: rotate(20deg); }
+
+    /* подсказка над всем блоком */
+    .isi-hint {
+      font-size: 12px;
+      color: #888;
+      letter-spacing: -0.01em;
+      margin-bottom: 10px;
+      position: relative;
+      z-index: 1;
+      padding-left: 296px;
+    }
+
+    .isi-wrap {
+      display: grid;
+      grid-template-columns: 280px 1fr;
+      align-items: stretch;
+      gap: 16px;
+      position: relative;
+      z-index: 1;
+    }
+
+    /* --- ЛЕВАЯ КОЛОНКА: картинка --- */
+    .isi-stage {
+      position: relative;
+      height: 100%;
+      min-height: 650px;
+    }
+
+    .isi-char {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      object-position: center center;
+      opacity: 0;
+      transition: opacity 0.35s ease;
+    }
+    .isi-char.active { opacity: 1; }
+
+    .isi-char.isi-char-bleed {
+      width: 150%;
+    }
+
+    #char2.isi-char-bleed {
+      object-position: left center;
+    }
+
+    /* --- ПРАВАЯ КОЛОНКА: плашки --- */
+    .isi-cards {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      align-content: start;
+    }
+
+    .isi-card {
+      position: relative;
+      z-index: 2;
+      background: #ffffff;
+      border-radius: 28px;
+      overflow: hidden;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+      cursor: pointer;
+      outline: 2px solid transparent;
+      transition: transform 0.18s ease, outline-color 0.18s ease, box-shadow 0.18s ease;
+    }
+
+    .isi-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 28px rgba(0,0,0,0.09);
+    }
+
+    .isi-card.active { outline-color: #101010; }
+
+    .isi-card-head {
+      padding: 14px 20px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      background: #ffffff;
+      transition: background 0.25s ease;
+    }
+
+    .isi-card.active.c-pink  .isi-card-head { background: #ffc9f2; }
+    .isi-card.active.c-sky   .isi-card-head { background: #d8f7ff; }
+    .isi-card.active.c-lime  .isi-card-head { background: #d0ff99; }
+
+    .isi-num {
+      width: 36px;
+      height: 36px;
+      border-radius: 999px;
+      border: 1.5px solid #101010;
+      background: rgba(255,255,255,0.65);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 13px;
+      font-weight: 800;
+      flex-shrink: 0;
+    }
+
+    .isi-card-head h3 {
+      margin: 0;
+      font-size: 15px;
+      font-weight: 800;
+      line-height: 1.2;
+      letter-spacing: -0.03em;
+    }
+
+    .isi-card-body {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.4s cubic-bezier(0.4,0,0.2,1);
+    }
+    .isi-card.active .isi-card-body { max-height: 500px; }
+
+    .isi-list {
+      list-style: none;
+      padding: 12px 20px 18px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .isi-list li {
+      font-size: 14px;
+      line-height: 1.5;
+      background: #f7f7f7;
+      border-radius: 16px;
+      padding: 10px 14px;
+      display: flex;
+      gap: 10px;
+      align-items: flex-start;
+    }
+
+    .isi-list li::before {
+      content: '';
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: #101010;
+      opacity: 0.25;
+      flex-shrink: 0;
+      margin-top: 5px;
+    }
+
+    @media (max-width: 560px) {
+      .isi-wrap { grid-template-columns: 1fr; }
+      .isi-stage { height: 240px; min-height: 0; }
+      .isi-char.isi-char-bleed { width: 100%; }
+      .isi-hint { padding-left: 0; }
+      .isi-block { padding: 20px 12px; }
+    }
+  </style>
+</head>
+<body>
+<section class="isi-block">
+  <div class="isi-star isi-star-1">✦</div>
+  <div class="isi-star isi-star-2">✦</div>
+  <div class="isi-star isi-star-3">✦</div>
+  <div class="isi-star isi-star-4">✦</div>
+
+  <p class="isi-hint">Нажми на правило ↓</p>
+
+  <div class="isi-wrap">
+
+    <!-- Персонаж слева -->
+    <div class="isi-stage">
+      <img class="isi-char active" id="char0" src="char1.png" alt="">
+      <img class="isi-char isi-char-bleed" id="char1" src="char2.png" alt="">
+      <img class="isi-char isi-char-bleed" id="char2" src="char3.png" alt="">
+    </div>
+
+    <!-- Плашки справа -->
+    <div class="isi-cards">
+
+      <div class="isi-card c-pink active" onclick="isiSwitch(0)">
+        <div class="isi-card-head">
+          <span class="isi-num">01</span>
+          <h3>Не разглашаем</h3>
+        </div>
+        <div class="isi-card-body">
+          <ul class="isi-list">
+            <li>Делись конфиденциальной информацией и обсуждай её только с теми, у кого есть доступ.</li>
+            <li>Не рассказывай конфиденциальную информацию в открытых источниках, в том числе в открытых каналах TiMe и на страницах Confluence.</li>
+            <li>Не обсуждай конфиденциальную информацию в местах, где могут подслушать.</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="isi-card c-sky" onclick="isiSwitch(1)">
+        <div class="isi-card-head">
+          <span class="isi-num">02</span>
+          <h3>Храним и передаём только в корпоративной среде</h3>
+        </div>
+        <div class="isi-card-body">
+          <ul class="isi-list">
+            <li>Передавай конфиденциальную информацию только в рабочих инструментах. Команда информационной безопасности отслеживает их состояние и защищает данные в них.</li>
+            <li>Никогда не используй для передачи конфиденциальной информации сторонние мессенджеры и другие внешние ресурсы.</li>
+            <li>Выдавай доступ к файлам по корпоративной почте или используй общие диски на команду.</li>
+            <li>Если делишься файлом с сотрудником другой организации, используй выдачу доступа по почте.</li>
+            <li>Не загружай конфиденциальные данные во внешние хранилища.</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="isi-card c-lime" onclick="isiSwitch(2)">
+        <div class="isi-card-head">
+          <span class="isi-num">03</span>
+          <h3>Соблюдаем физическую безопасность и гигиену файлов</h3>
+        </div>
+        <div class="isi-card-body">
+          <ul class="isi-list">
+            <li>Не оставляй документы и файлы с важной информацией без присмотра, даже если они просто открыты на экране устройства.</li>
+            <li>Удаляй файлы с важными данными, если больше не будешь ими пользоваться.</li>
+          </ul>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<script>
+  var isiCards = document.querySelectorAll('.isi-card');
+  var isiChars = document.querySelectorAll('.isi-char');
+
+  function isiSwitch(i) {
+    isiCards.forEach(function(c) { c.classList.remove('active'); });
+    isiChars.forEach(function(c) { c.classList.remove('active'); });
+    isiCards[i].classList.add('active');
+    isiChars[i].classList.add('active');
+  }
+</script>
+</body>
+</html>

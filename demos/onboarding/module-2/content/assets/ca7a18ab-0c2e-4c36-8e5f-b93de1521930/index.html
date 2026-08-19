@@ -1,0 +1,363 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Признаки фишинга</title>
+  <style>
+    :root {
+      --accent: #d0ff76;
+      --accent-2: #b9ff4d;
+      --ink: #101114;
+      --ink-soft: #434854;
+      --border: rgba(16, 17, 20, 0.12);
+      --shadow: 0 18px 50px rgba(0,0,0,0.18);
+    }
+
+    * { box-sizing: border-box; }
+
+    html, body {
+      margin: 0;
+      padding: 0;
+      background: transparent;
+      font-family: 'StratosSkyeng', 'Arial', sans-serif;
+      color: var(--ink);
+    }
+
+    .widget {
+      width: 100%;
+      max-width: 780px;
+      margin: 0 auto;
+      background: transparent;
+    }
+
+    .scene {
+      position: relative;
+      width: 100%;
+      line-height: 0;
+      background: transparent;
+      isolation: isolate;
+    }
+
+    .scene img {
+      width: 100%;
+      height: auto;
+      display: block;
+      background: transparent;
+      user-select: none;
+      -webkit-user-drag: none;
+    }
+
+    .marker {
+      position: absolute;
+      width: 44px;
+      height: 44px;
+      border: 0;
+      border-radius: 50%;
+      background: #0e0f13;
+      color: #fff;
+      font: inherit;
+      font-size: 16px;
+      font-weight: 800;
+      cursor: pointer;
+      box-shadow: 0 10px 24px rgba(0,0,0,0.22);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: transform 0.18s ease, box-shadow 0.18s ease, background 0.18s ease;
+      z-index: 3;
+      line-height: 1;
+    }
+
+    .marker:hover,
+    .marker:focus-visible {
+      outline: none;
+      transform: scale(1.08);
+      box-shadow: 0 14px 30px rgba(0,0,0,0.28);
+    }
+
+    .marker.active {
+      background: var(--accent-2);
+      color: #000;
+    }
+
+    .popup {
+      position: absolute;
+      width: min(340px, calc(100vw - 32px));
+      background: rgba(255,255,255,0.98);
+      border: 1px solid var(--border);
+      border-radius: 24px;
+      box-shadow: var(--shadow);
+      padding: 18px 18px 16px;
+      opacity: 0;
+      pointer-events: none;
+      transform: translateY(10px) scale(0.98);
+      transition: opacity 0.18s ease, transform 0.18s ease;
+      z-index: 4;
+      line-height: 1.4;
+    }
+
+    .popup.open {
+      opacity: 1;
+      pointer-events: auto;
+      transform: translateY(0) scale(1);
+    }
+
+    .popup::before {
+      content: '';
+      position: absolute;
+      width: 16px;
+      height: 16px;
+      background: rgba(255,255,255,0.98);
+      transform: rotate(45deg);
+      z-index: -1;
+    }
+
+    .popup[data-dir='left']::before {
+      left: -8px;
+      top: 26px;
+      border-left: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .popup[data-dir='right']::before {
+      right: -8px;
+      top: 26px;
+      border-right: 1px solid var(--border);
+      border-top: 1px solid var(--border);
+    }
+
+    .popup[data-dir='top']::before {
+      left: 26px;
+      bottom: -8px;
+      border-right: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .popup[data-dir='bottom']::before {
+      left: 26px;
+      top: -8px;
+      border-left: 1px solid var(--border);
+      border-top: 1px solid var(--border);
+    }
+
+    .popup-top {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+
+    .popup-title {
+      margin: 0;
+      font-size: 22px;
+      line-height: 1.02;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+    }
+
+    .popup-close {
+      flex: 0 0 auto;
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      border: 0;
+      background: #121317;
+      color: #fff;
+      font: inherit;
+      font-size: 18px;
+      line-height: 1;
+      cursor: pointer;
+    }
+
+    .popup-body {
+      font-size: 15px;
+      line-height: 1.5;
+      color: var(--ink-soft);
+    }
+
+    .popup-body p {
+      margin: 0 0 10px;
+    }
+
+    .popup-body p:last-child { margin-bottom: 0; }
+
+    .popup-body ul {
+      margin: 10px 0 0 0;
+      padding-left: 20px;
+    }
+
+    .popup-body li {
+      margin-bottom: 6px;
+    }
+
+    .popup-label {
+      display: inline-flex;
+      align-items: center;
+      min-height: 28px;
+      padding: 7px 12px;
+      border-radius: 999px;
+      background: var(--accent);
+      color: #000;
+      font-size: 12px;
+      font-weight: 800;
+      line-height: 1;
+      margin-bottom: 12px;
+    }
+
+    /* Marker positions */
+    .m1 { left: 81%; top: 22%; }
+    .m2 { left: 53.2%; top: 20%; }
+    .m3 { left: 72.8%; top: 40.2%; }
+    .m4 { left: 58%; top: 46.8%; }
+
+    /* Popup positions: все попапы слева от своих маркеров,
+       top подобран так, чтобы стрелка (центр на 34px) смотрела в центр маркера */
+    .p1 { left: calc(81% - 350px); top: 20%; }
+    .p2 { left: calc(53.2% - 350px); top: 18%; }
+    .p3 { left: calc(72.8% - 350px); top: 38.3%; }
+    .p4 { left: calc(58% - 350px); top: 44.9%; }
+
+    @media (max-width: 900px) {
+      .marker { width: 40px; height: 40px; font-size: 15px; }
+      .popup { width: min(320px, calc(100vw - 24px)); }
+      .popup-title { font-size: 20px; }
+    }
+
+    @media (max-width: 760px) {
+      .popup {
+        position: fixed;
+        left: 12px !important;
+        right: 12px;
+        top: auto !important;
+        bottom: 12px;
+        width: auto;
+        max-width: none;
+        z-index: 20;
+        transform: translateY(16px);
+      }
+      .popup.open { transform: translateY(0); }
+      .popup::before { display: none; }
+      .marker { width: 38px; height: 38px; font-size: 14px; }
+      .popup-title { font-size: 18px; }
+      .popup-body { font-size: 14px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="widget">
+    <div class="scene" id="scene">
+      <img src="assets/scene.png" alt="Сцена с фишинг-мошенником и жертвой" />
+
+      <button class="marker m1" data-popup="popup1" aria-label="Открыть подсказку: Давят на эмоции">1</button>
+      <button class="marker m2" data-popup="popup2" aria-label="Открыть подсказку: Странный адрес сайта или отправителя">2</button>
+      <button class="marker m3" data-popup="popup3" aria-label="Открыть подсказку: Подозрительные ссылки и вложения">3</button>
+      <button class="marker m4" data-popup="popup4" aria-label="Открыть подсказку: Просят учетные данные">4</button>
+
+      <div class="popup p1" id="popup1" data-dir="right" role="dialog" aria-modal="false" aria-labelledby="popup1-title">
+        <div class="popup-label">Маркер 1</div>
+        <div class="popup-top">
+          <h3 class="popup-title" id="popup1-title">Давят на эмоции</h3>
+          <button class="popup-close" aria-label="Закрыть">×</button>
+        </div>
+        <div class="popup-body">
+          <p>Старайся мыслить критически и не поддаваться эмоциям. Мошеннику нужно, чтобы ты сделал необдуманный шаг.</p>
+          <p>Если письмо или сообщение пугает, торопит, давит на срочность или вызывает сильные эмоции, остановись и подумай.</p>
+        </div>
+      </div>
+
+      <div class="popup p2" id="popup2" data-dir="right" role="dialog" aria-modal="false" aria-labelledby="popup2-title">
+        <div class="popup-label">Маркер 2</div>
+        <div class="popup-top">
+          <h3 class="popup-title" id="popup2-title">Странный адрес сайта или отправителя</h3>
+          <button class="popup-close" aria-label="Закрыть">×</button>
+        </div>
+        <div class="popup-body">
+          <p>Обращай внимание на домен.</p>
+          <p>Например, tinkoff.ru и tinkof.ru могут отличаться одной буквой — результат авторизации будет разным.</p>
+          <p>Даже если письмо выглядит официально, незнакомый или странный адрес отправителя — повод насторожиться.</p>
+        </div>
+      </div>
+
+      <div class="popup p3" id="popup3" data-dir="right" role="dialog" aria-modal="false" aria-labelledby="popup3-title">
+        <div class="popup-label">Маркер 3</div>
+        <div class="popup-top">
+          <h3 class="popup-title" id="popup3-title">Подозрительные ссылки и вложения</h3>
+          <button class="popup-close" aria-label="Закрыть">×</button>
+        </div>
+        <div class="popup-body">
+          <p>Не переходи по ссылкам и не скачивай файлы из неожиданных писем или от неизвестных отправителей.</p>
+          <p>Особенно осторожно относись к файлам форматов:</p>
+          <ul>
+            <li>.exe</li>
+            <li>.js</li>
+            <li>.bat</li>
+            <li>.scr</li>
+          </ul>
+          <p>Если прислали архив, а ты его не ждал — это уже подозрительно.</p>
+        </div>
+      </div>
+
+      <div class="popup p4" id="popup4" data-dir="right" role="dialog" aria-modal="false" aria-labelledby="popup4-title">
+        <div class="popup-label">Маркер 4</div>
+        <div class="popup-top">
+          <h3 class="popup-title" id="popup4-title">Просят учетные данные</h3>
+          <button class="popup-close" aria-label="Закрыть">×</button>
+        </div>
+        <div class="popup-body">
+          <p>Компаниям незачем просить пароли и логины в письмах.</p>
+          <p>Если письмо просит ввести логин, пароль, код 2FA или другие данные доступа — это признак мошенничества.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      const scene = document.getElementById('scene');
+      const markers = Array.from(scene.querySelectorAll('.marker'));
+      const popups = Array.from(scene.querySelectorAll('.popup'));
+
+      function closeAll() {
+        markers.forEach(btn => btn.classList.remove('active'));
+        popups.forEach(popup => popup.classList.remove('open'));
+      }
+
+      markers.forEach(btn => {
+        btn.addEventListener('click', function (e) {
+          e.stopPropagation();
+          const targetId = btn.getAttribute('data-popup');
+          const popup = document.getElementById(targetId);
+          const isOpen = popup.classList.contains('open');
+          closeAll();
+          if (!isOpen) {
+            btn.classList.add('active');
+            popup.classList.add('open');
+          }
+        });
+      });
+
+      popups.forEach(popup => {
+        popup.addEventListener('click', function (e) {
+          e.stopPropagation();
+        });
+        const close = popup.querySelector('.popup-close');
+        if (close) {
+          close.addEventListener('click', function () {
+            closeAll();
+          });
+        }
+      });
+
+      document.addEventListener('click', function () {
+        closeAll();
+      });
+
+      document.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape') closeAll();
+      });
+    })();
+  </script>
+</body>
+</html>

@@ -1,0 +1,567 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Инспекция рабочего места</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: transparent;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    font-family: 'StratosSkyeng', 'Stratos Skyeng', 'Onest', 'Segoe UI', sans-serif;
+  }
+
+  #app { width: 100%; max-width: 840px; margin: 0 auto; }
+
+  /* ── screen visibility ── */
+  .screen { display: none; }
+  .screen.active { display: block; }
+
+  /* ══ 1. START SCREEN ══ */
+  #start-screen {
+    background: #fff;
+    border-radius: 24px;
+    padding: 36px 28px 32px;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.10);
+    text-align: center;
+  }
+  .start-icon { font-size: 44px; margin-bottom: 14px; }
+  .start-title {
+    font-size: clamp(20px, 3vw, 26px);
+    font-weight: 900;
+    letter-spacing: -0.04em;
+    color: #101010;
+    margin-bottom: 8px;
+  }
+  .start-desc {
+    font-size: clamp(14px, 1.6vw, 14px);
+    color: #5f6470;
+    line-height: 1.6;
+    margin-bottom: 24px;
+    max-width: 480px;
+    margin-left: auto; margin-right: auto;
+    font-weight: 500;
+  }
+  .start-steps {
+    display: flex;
+    gap: 8px;
+    justify-content: center;
+    align-items: flex-start;
+    margin-bottom: 28px;
+    flex-wrap: wrap;
+  }
+  .step-pill {
+    border-radius: 14px;
+    padding: 10px 12px;
+    width: 138px;
+    text-align: left;
+    border: 1.5px solid #101010;
+    box-shadow: 3px 3px 0 #101010;
+    flex-shrink: 0;
+  }
+  .step-pill:nth-child(1) { background: #d0ff99; transform: rotate(-1.8deg); }
+  .step-pill:nth-child(2) { background: #d8f7ff; transform: rotate(1.4deg); }
+  .step-pill:nth-child(3) { background: #ffc9f2; transform: rotate(-1.2deg); }
+  .step-pill:nth-child(4) { background: #ffd9a0; transform: rotate(1.6deg); }
+  .step-pill.p1 { background: #d0ff99; transform: rotate(-1.8deg); }
+  .step-pill.p2 { background: #d8f7ff; transform: rotate(1.4deg); }
+  .step-pill.p3 { background: #ffc9f2; transform: rotate(-1.2deg); }
+  .step-pill.p4 { background: #ffd9a0; transform: rotate(1.6deg); }
+  .step-num {
+    width: 20px; height: 20px;
+    border-radius: 50%;
+    background: #101010; color: #fff;
+    font-size: 10px; font-weight: 900;
+    display: flex; align-items: center; justify-content: center;
+    margin-bottom: 7px;
+  }
+  .step-text {
+    font-size: clamp(14px, 1.2vw, 16px);
+    font-weight: 700; color: #101010;
+    line-height: 1.4; max-width: 110px;
+  }
+  .step-arrow {
+    font-size: 16px; color: #101010; opacity: 0.35;
+    align-self: center; flex-shrink: 0; font-weight: 900;
+  }
+  .btn-start {
+    display: inline-flex; align-items: center; gap: 8px;
+    background: #101010; color: #fff;
+    border: 0; border-radius: 16px;
+    padding: 14px 28px; font: inherit;
+    font-size: clamp(14px, 1.7vw, 15px); font-weight: 800;
+    cursor: pointer; letter-spacing: -0.01em;
+    transition: transform 0.15s, box-shadow 0.15s;
+  }
+  .btn-start:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(0,0,0,0.18); }
+
+  /* ══ 2. ONBOARDING SCREEN ══ */
+  #onboard-screen {
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.15);
+  }
+  #onboarding-wrap {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 2048 / 1149;
+    overflow: hidden;
+    cursor: pointer;
+  }
+  #onboarding-wrap img.ob-bg {
+    width: 100%; height: 100%;
+    display: block; pointer-events: none;
+  }
+
+  /* Dashed desk indicator */
+  #ob-desk-hotspot {
+    position: absolute;
+    left: 51%; top: 56%;
+    width: 44%; height: 38%;
+    border: 2px dashed rgba(255,255,255,0.6);
+    border-radius: 10px;
+    pointer-events: none;
+    animation: dashPulse 2s ease-in-out infinite;
+  }
+  @keyframes dashPulse {
+    0%,100% { border-color: rgba(255,255,255,0.4); }
+    50%      { border-color: rgba(255,255,255,0.85); }
+  }
+
+  /* Info card — positioned in upper area (window zone) */
+  #ob-overlay {
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    pointer-events: none;
+  }
+  .ob-card {
+    position: absolute;
+    top: 5%;
+    left: 19%;
+    width: 52%;
+    background: #00C1FF;
+    color: #fff;
+    border-radius: 18px;
+    padding: 14px 20px 18px;
+    text-align: center;
+    box-shadow: 0 8px 32px rgba(0,193,255,0.45);
+    animation: pulse 2s ease-in-out infinite;
+    pointer-events: auto;
+  }
+  @keyframes pulse {
+    0%,100% { box-shadow: 0 8px 32px rgba(0,193,255,0.4); }
+    50%      { box-shadow: 0 8px 48px rgba(0,193,255,0.8); }
+  }
+  .ob-problem {
+    font-size: clamp(14px, 1.2vw, 16px);
+    font-weight: 600; opacity: 0.9;
+    line-height: 1.5; margin-bottom: 6px;
+    max-width: 88%; margin-left: auto; margin-right: auto;
+  }
+  .ob-action {
+    font-size: clamp(14px, 1.5vw, 15px);
+    font-weight: 900; line-height: 1.3;
+  }
+  .ob-arrow {
+    display: block; margin-top: 4px;
+    font-size: 1.1em;
+    animation: bounce 1s ease-in-out infinite;
+  }
+  @keyframes bounce {
+    0%,100% { transform: translateY(0); }
+    50%      { transform: translateY(5px); }
+  }
+
+  /* ══ 3. SCENE SCREEN ══ */
+  #scene-screen {
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.15);
+  }
+  #scene-wrap {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 2048 / 1136;
+    overflow: hidden;
+    user-select: none;
+  }
+  #scene-wrap img.layer {
+    position: absolute; top: 0; left: 0;
+    width: 100%; height: 100%;
+    display: none; pointer-events: none;
+  }
+  #scene-wrap img.layer.visible { display: block; }
+
+  /* Stars */
+  #stars {
+    position: absolute; top: 3%; left: 3%;
+    display: flex; gap: 3px; z-index: 80;
+    background: rgba(0,0,0,0.45);
+    padding: 5px 11px; border-radius: 999px;
+    backdrop-filter: blur(4px);
+  }
+  .star {
+    font-size: clamp(14px, 2vw, 18px);
+    color: rgba(255,255,255,0.22);
+    transition: color 0.3s, transform 0.3s;
+  }
+  .star.earned {
+    color: #00C1FF; transform: scale(1.3);
+    filter: drop-shadow(0 0 4px rgba(0,193,255,0.7));
+  }
+
+  /* Hotspots */
+  .hotspot {
+    position: absolute; cursor: pointer;
+    border-radius: 8px; z-index: 30;
+  }
+  .hotspot:hover { outline: 2px dashed rgba(255,255,255,0.55); }
+  .hotspot.done { cursor: default; pointer-events: none; }
+
+  /* Info panel */
+  #info-panel {
+    position: absolute; bottom: 3%; left: 50%;
+    transform: translateX(-50%);
+    background: #00C1FF; color: #fff;
+    padding: 12px 20px 14px; border-radius: 18px;
+    font-size: clamp(14px, 1.4vw, 16px); font-weight: 600;
+    text-align: center; width: 90%;
+    box-shadow: 0 6px 24px rgba(0,193,255,0.35);
+    z-index: 90; display: none; line-height: 1.5;
+    animation: slideUp 0.3s ease;
+  }
+  @keyframes slideUp {
+    from { opacity:0; transform: translateX(-50%) translateY(8px); }
+    to   { opacity:1; transform: translateX(-50%) translateY(0); }
+  }
+  #info-panel.visible { display: block; }
+  #info-title { display: block; font-weight: 900; font-size: 1.15em; margin-bottom: 3px; }
+  #info-text  { display: block; max-width: 580px; margin: 0 auto; }
+  .info-btn-row { margin-top: 9px; }
+  .info-close {
+    display: inline-block; padding: 6px 18px;
+    background: rgba(255,255,255,0.22); border-radius: 999px;
+    font-size: 0.9em; font-weight: 700; cursor: pointer;
+    border: 1.5px solid rgba(255,255,255,0.45);
+    color: #fff; font-family: inherit;
+    transition: background 0.15s;
+  }
+  .info-close:hover { background: rgba(255,255,255,0.38); }
+
+  /* ══ 4. FINAL SCREEN ══ */
+  #final-screen {
+    background: #fff; border-radius: 24px;
+    padding: 44px 40px 40px;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.10);
+    text-align: center;
+    animation: fadeIn 0.5s ease;
+  }
+  @keyframes fadeIn { from { opacity:0; transform:translateY(10px); } to { opacity:1; transform:none; } }
+
+  .final-stars-row {
+    font-size: clamp(24px, 4vw, 36px);
+    letter-spacing: 6px; margin-bottom: 16px; color: #00C1FF;
+  }
+  .final-stars-row .empty { color: #e0e0e0; }
+  .final-title {
+    font-size: clamp(22px, 3.2vw, 30px); font-weight: 900;
+    letter-spacing: -0.04em; color: #101010;
+    margin-bottom: 20px; line-height: 1.1;
+  }
+  .final-expert {
+    background: #fff3a8; border-radius: 16px;
+    padding: 16px 20px;
+    font-size: clamp(14px, 1.6vw, 15px); font-weight: 600;
+    color: #101010; line-height: 1.65;
+    border: 1.5px solid rgba(0,0,0,0.08);
+    transform: rotate(-0.4deg); margin-bottom: 28px;
+    max-width: 480px; margin-left: auto; margin-right: auto;
+    text-align: left;
+  }
+  .final-expert::before { content: '✦ '; color: #cbe800; font-weight: 900; }
+  .btn-restart {
+    display: inline-flex; align-items: center; gap: 8px;
+    background: transparent; color: #101010;
+    border: 1.5px solid #101010; border-radius: 16px;
+    padding: 13px 26px; font: inherit;
+    font-size: clamp(14px, 1.6vw, 15px); font-weight: 800;
+    cursor: pointer; letter-spacing: -0.01em;
+    transition: background 0.15s, transform 0.15s;
+  }
+  .btn-restart:hover { background: #d0ff99; transform: translateY(-1px); }
+</style>
+</head>
+<body>
+<div id="app">
+
+  <!-- ══ SCREEN 1: START ══ -->
+  <div id="start-screen" class="screen active">
+    <div class="start-icon">🔍</div>
+    <div class="start-title">Инспекция рабочего места</div>
+    <div class="start-desc">Ты — инспектор по охране труда. Найди нарушения и настрой рабочее место так, чтобы оно соответствовало базовым принципам безопасной работы.</div>
+    <div class="start-steps">
+      <div class="step-pill p1">
+        <div class="step-num">1</div>
+        <div class="step-text">Кликай на предметы, которые кажутся неправильными</div>
+      </div>
+      <div class="step-arrow">→</div>
+      <div class="step-pill p2">
+        <div class="step-num">2</div>
+        <div class="step-text">Предмет заменится на правильный с пояснением</div>
+      </div>
+      <div class="step-arrow">→</div>
+      <div class="step-pill p3">
+        <div class="step-num">3</div>
+        <div class="step-text">Получай звёздочку ★ за каждое исправление</div>
+      </div>
+      <div class="step-arrow">→</div>
+      <div class="step-pill p4">
+        <div class="step-num">4</div>
+        <div class="step-text">Найди все 6 нарушений — рабочее место настроено!</div>
+      </div>
+    </div>
+    <button class="btn-start" onclick="goToOnboard()">Начать инспекцию →</button>
+  </div>
+
+  <!-- ══ SCREEN 2: ONBOARDING ══ -->
+  <div id="onboard-screen" class="screen">
+    <div id="onboarding-wrap" onclick="clickDesk()">
+      <img class="ob-bg" src="start_scene.png" alt="Рабочее место">
+      <div id="ob-desk-hotspot"></div>
+      <div id="ob-overlay">
+        <div class="ob-card">
+          <div class="ob-problem">Если ты работаешь из дома, выбирай правильный стол: он должен позволять держать предплечья горизонтально — так снижается нагрузка на плечи, шею и запястья. Низкий стол вынуждает опускать руки и сутулиться.</div>
+          <div class="ob-action">Давай попробуем вместе! Нажми на стол, чтобы заменить его на правильный.</div>
+          <span class="ob-arrow">👇</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ SCREEN 3: SCENE ══ -->
+  <div id="scene-screen" class="screen">
+    <div id="scene-wrap">
+      <img class="layer visible" id="bg-main" src="main_before_window.png" alt="">
+      <img class="layer" id="desk-bad"     src="desk_bad.png"            alt="">
+      <img class="layer" id="desk-good"    src="desk_good.png"           alt="">
+      <img class="layer" id="window-bad"   src="window_bad.png"          alt="">
+      <img class="layer" id="window-good"  src="window_good_correct.png" alt="">
+      <img class="layer" id="chair-bad"    src="chair_bad.png"           alt="">
+      <img class="layer" id="chair-good"   src="chair_good.png"          alt="">
+      <img class="layer" id="lamp-bad"     src="lamp_bad.png"            alt="">
+      <img class="layer" id="lamp-good"    src="lamp_good.png"           alt="">
+      <img class="layer" id="monitor-bad"  src="monitor_no_break.png"    alt="">
+      <img class="layer" id="monitor-good" src="monitor_with_break.png"  alt="">
+      <img class="layer" id="dimmer-bad"   src="dimmer_bad.png"          alt="">
+      <img class="layer" id="dimmer-good"  src="dimmer_good.png"         alt="">
+
+      <div id="stars">
+        <span class="star" id="star-1">★</span>
+        <span class="star" id="star-2">★</span>
+        <span class="star" id="star-3">★</span>
+        <span class="star" id="star-4">★</span>
+        <span class="star" id="star-5">★</span>
+        <span class="star" id="star-6">★</span>
+      </div>
+
+      <!-- Window: 27.9% 4% 25% 57% -->
+      <div class="hotspot" id="hs-window"
+        style="left:27.9%;top:4%;width:25%;height:57%;display:none;"
+        onclick="clickItem('window')"></div>
+      <!-- Chair: 51.2% 77% 12.1% 22.4% -->
+      <div class="hotspot" id="hs-chair"
+        style="left:51.2%;top:77%;width:12.1%;height:22.4%;display:none;"
+        onclick="clickItem('chair')"></div>
+      <!-- Lamp: 79.9% 44.3% 5.5% 20.6% -->
+      <div class="hotspot" id="hs-lamp"
+        style="left:79.9%;top:44.3%;width:5.5%;height:20.6%;display:none;"
+        onclick="clickItem('lamp')"></div>
+      <!-- Monitor: 63.3% 44.5% 12.5% 18.7% -->
+      <div class="hotspot" id="hs-monitor"
+        style="left:63.3%;top:44.5%;width:12.5%;height:18.7%;display:none;"
+        onclick="clickItem('monitor')"></div>
+      <!-- AC: 71% 2.1% 9% 13.5% -->
+      <div class="hotspot" id="hs-dimmer"
+        style="left:71%;top:2.1%;width:9%;height:13.5%;display:none;"
+        onclick="clickItem('dimmer')"></div>
+
+      <div id="info-panel">
+        <span id="info-title"></span>
+        <span id="info-text"></span>
+        <div class="info-btn-row">
+          <button class="info-close" onclick="closeInfo()">Понятно →</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ SCREEN 4: FINAL ══ -->
+  <div id="final-screen" class="screen">
+    <div class="final-stars-row" id="final-stars-display"></div>
+    <div class="final-title"     id="final-title"></div>
+    <div class="final-expert"    id="final-expert"></div>
+    <button class="btn-restart" onclick="restartExercise()">↺ Пройти заново</button>
+  </div>
+
+</div>
+
+<script>
+var TOTAL = 6;
+var fixed = { window:false, chair:false, lamp:false, monitor:false, dimmer:false };
+var fixedCount = 0;
+var bgIsLight = false;
+
+var INFO = {
+  desk:    { title:'Стол выровнен ✓',                    text:'Правильная высота стола позволяет держать предплечья горизонтально. Это снижает нагрузку на плечи, шею и запястья.' },
+  window:  { title:'Окно открыто ✓',                     text:'Регулярное проветривание обеспечивает приток свежего воздуха и снижает концентрацию CO₂. Рекомендуется проветривать каждые 1–2 часа.' },
+  chair:   { title:'Стул отрегулирован ✓',               text:'Правильная высота: ступни полностью стоят на полу, колени под углом 90°. Спинка поддерживает поясницу и предотвращает боли в спине.' },
+  lamp:    { title:'Освещение настроено ✓',              text:'Рабочая лампа снижает контраст между экраном и фоном. Источник света — сбоку или сзади, не перед глазами и не отражается в мониторе.' },
+  monitor: { title:'Напоминания о перерывах включены ✓', text:'Работа без перерывов более 2 часов увеличивает усталость глаз. Правило 20-20-20: каждые 20 минут — 20 секунд смотреть на предмет в 6 метрах.' },
+  dimmer:  { title:'Температура отрегулирована ✓',       text:'Оптимальная температура для умственного труда — 20–22°C. При более высокой концентрация снижается, при низкой — возрастает дискомфорт.' }
+};
+
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(function(s){ s.classList.remove('active'); });
+  document.getElementById(id).classList.add('active');
+}
+
+function showLayer(id) { document.getElementById(id).classList.add('visible'); }
+function hideLayer(id) { document.getElementById(id).classList.remove('visible'); }
+
+function switchBgToLight() {
+  if (bgIsLight) return;
+  bgIsLight = true;
+  var bg = document.getElementById('bg-main');
+  bg.style.transition = 'none';
+  bg.style.opacity = '1';
+  // force reflow then fade out, swap src, fade in
+  void bg.offsetHeight;
+  bg.style.transition = 'opacity 0.5s ease';
+  bg.style.opacity = '0';
+  setTimeout(function(){
+    bg.src = 'main_after_window.png';
+    bg.style.opacity = '1';
+  }, 260);
+}
+
+function earnStar() {
+  fixedCount++;
+  var s = document.getElementById('star-' + fixedCount);
+  if (!s) return;
+  s.classList.add('earned');
+  s.style.transform = 'scale(1.7)';
+  setTimeout(function(){ s.style.transform = 'scale(1.3)'; }, 350);
+}
+
+function goToOnboard() {
+  showScreen('onboard-screen');
+}
+
+function clickDesk() {
+  showScreen('scene-screen');
+
+  showLayer('desk-good');
+  showLayer('window-bad');
+  showLayer('chair-bad');
+  showLayer('lamp-bad');
+  showLayer('monitor-bad');
+  showLayer('dimmer-bad');
+
+  ['window','chair','lamp','monitor','dimmer'].forEach(function(id){
+    document.getElementById('hs-' + id).style.display = 'block';
+  });
+
+  earnStar();
+  showInfo('desk');
+}
+
+function clickItem(item) {
+  if (fixed[item]) return;
+  fixed[item] = true;
+
+  if (item === 'window' || item === 'lamp') switchBgToLight();
+
+  hideLayer(item + '-bad');
+  showLayer(item + '-good');
+  document.getElementById('hs-' + item).classList.add('done');
+
+  earnStar();
+  showInfo(item);
+
+  if (fixedCount >= TOTAL) {
+    setTimeout(function(){ closeInfo(); showFinal(); }, 2400);
+  }
+}
+
+function showInfo(item) {
+  document.getElementById('info-title').textContent = INFO[item].title;
+  document.getElementById('info-text').textContent  = INFO[item].text;
+  document.getElementById('info-panel').classList.add('visible');
+}
+
+function closeInfo() {
+  document.getElementById('info-panel').classList.remove('visible');
+}
+
+function showFinal() {
+  var starsEl  = document.getElementById('final-stars-display');
+  var titleEl  = document.getElementById('final-title');
+  var expertEl = document.getElementById('final-expert');
+
+  var html = '';
+  for (var i = 1; i <= TOTAL; i++) {
+    html += (i <= fixedCount) ? '<span>★</span>' : '<span class="empty">★</span>';
+  }
+  starsEl.innerHTML = html;
+
+  if (fixedCount >= TOTAL) {
+    titleEl.textContent  = 'Все нарушения устранены!';
+    expertEl.textContent = 'В большинстве случаев улучшение рабочего места — это комбинация простых действий: настройки среды и регулярной корректировки условий в течение дня.';
+  } else if (fixedCount >= 4) {
+    titleEl.textContent  = 'Почти всё исправлено';
+    expertEl.textContent = 'Остались элементы, которые создают нагрузку. Часть факторов можно изменить самостоятельно, часть — требует обращения к компании.';
+  } else {
+    titleEl.textContent  = 'Риски не устранены';
+    expertEl.textContent = 'Часть условий по-прежнему влияет на самочувствие и работоспособность. Попробуй пройти заново и найти все нарушения.';
+  }
+
+  showScreen('final-screen');
+}
+
+function restartExercise() {
+  fixed = { window:false, chair:false, lamp:false, monitor:false, dimmer:false };
+  fixedCount = 0;
+  bgIsLight = false;
+
+  for (var i = 1; i <= TOTAL; i++) {
+    var s = document.getElementById('star-' + i);
+    s.classList.remove('earned');
+    s.style.transform = '';
+  }
+
+  ['desk-bad','desk-good','window-bad','window-good',
+   'chair-bad','chair-good','lamp-bad','lamp-good',
+   'monitor-bad','monitor-good','dimmer-bad','dimmer-good'
+  ].forEach(hideLayer);
+
+  var bg = document.getElementById('bg-main');
+  bg.style.transition = 'none';
+  bg.src = 'main_before_window.png';
+
+  ['window','chair','lamp','monitor','dimmer'].forEach(function(id){
+    var hs = document.getElementById('hs-' + id);
+    hs.classList.remove('done');
+    hs.style.display = 'none';
+  });
+
+  closeInfo();
+  showScreen('start-screen');
+}
+</script>
+</body>
+</html>

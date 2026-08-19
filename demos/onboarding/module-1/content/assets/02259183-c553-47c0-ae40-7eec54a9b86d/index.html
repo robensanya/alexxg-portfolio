@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Первый шаг в комьюнити</title>
+<style>
+  :root {
+    --bg: #f7f7f7;
+    --card: #f1f1f1;
+    --text: #111111;
+    --lime: #c7ff00;
+    --blue: #42b8ff;
+    --yellow: #D0FF99;
+    --shadow: 0 18px 50px rgba(20, 20, 20, .08);
+    --radius: 34px;
+  }
+
+  * { box-sizing: border-box; }
+
+  html, body {
+    margin: 0;
+    padding: 0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'StratosSkyeng', 'Stratos Skyeng', 'Onest', 'Segoe UI', Arial, sans-serif;
+  }
+
+  body {
+    display: flex;
+    justify-content: center;
+    padding: 12px;
+  }
+
+  .community-widget {
+    width: 100%;
+    max-width: 860px;
+  }
+
+  .scene {
+    position: relative;
+    overflow: hidden;
+    min-height: 640px;
+    background: #f7f7f7;
+    border-radius: var(--radius);
+    padding: 18px 24px 18px;
+  }
+
+  .star {
+    position: absolute;
+    z-index: 1;
+    color: var(--lime);
+    font-weight: 900;
+    line-height: 1;
+    filter: drop-shadow(0 5px 8px rgba(111, 156, 0, .16));
+    pointer-events: none;
+    user-select: none;
+  }
+
+  .star.s1 { left: 28px; top: 88px; font-size: 42px; transform: rotate(10deg); }
+  .star.s2 { right: 46px; top: 102px; font-size: 32px; transform: rotate(-8deg); }
+  .star.s3 { left: 8%; bottom: 120px; font-size: 28px; transform: rotate(-12deg); }
+  .star.s4 { right: 8%; bottom: 150px; font-size: 38px; transform: rotate(8deg); }
+  .star.s5 { left: 50%; top: 40px; font-size: 26px; opacity: .92; }
+  .star.s6 { right: 36px; bottom: 42px; font-size: 24px; opacity: .92; }
+
+  .top-card {
+    position: relative;
+    z-index: 4;
+    max-width: 560px;
+    min-height: 78px;
+    margin: 0 auto 6px;
+    background: rgba(255,255,255,.92);
+    border: 1px solid rgba(255,255,255,.78);
+    border-radius: 24px;
+    box-shadow: var(--shadow);
+    padding: 18px 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    transition: opacity .24s ease, transform .24s ease;
+  }
+
+  .top-card.is-changing {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+
+  /* ↓ CHANGED: smaller font, lighter weight */
+  .screen-text {
+    margin: 0;
+    font-size: clamp(17px, 2vw, 24px);
+    line-height: 1.15;
+    font-weight: 500;
+    letter-spacing: -.018em;
+  }
+
+  .visual-wrap {
+    position: relative;
+    z-index: 2;
+    min-height: 430px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 4px;
+  }
+
+  .visual {
+    display: block;
+    width: 100%;
+    max-width: 790px;
+    max-height: 470px;
+    object-fit: contain;
+    object-position: center center;
+    filter: drop-shadow(0 12px 22px rgba(20, 20, 20, .08));
+    transition: opacity .24s ease, transform .24s ease;
+  }
+
+  .visual.is-changing {
+    opacity: 0;
+    transform: translateY(8px) scale(.985);
+  }
+
+  .bottom-bar {
+    position: relative;
+    z-index: 4;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    max-width: 760px;
+    margin: 0 auto;
+  }
+
+  .hint {
+    position: absolute;
+    right: calc(50% + 230px / 2 - 18px); /* flush against button left edge, overlapping 18px */
+    width: 186px;
+    background: var(--yellow);
+    color: var(--text);
+    border-radius: 18px;
+    padding: 11px 28px 11px 14px;
+    font-size: 13px;
+    line-height: 1.15;
+    font-weight: 700;
+    box-shadow: 0 12px 26px rgba(20,20,20,.1);
+    transform: rotate(-4deg);
+    z-index: 1;
+    transition: opacity .24s ease;
+  }
+
+  .main-btn {
+    appearance: none;
+    border: 0;
+    min-width: 230px;
+    min-height: 62px;
+    padding: 0 58px 0 28px;
+    border-radius: 999px;
+    background: var(--text);
+    color: #fff;
+    font-family: inherit;
+    font-size: 20px;
+    font-weight: 800;
+    letter-spacing: -.02em;
+    cursor: pointer;
+    position: relative;
+    z-index: 2;
+    box-shadow: 0 14px 28px rgba(0,0,0,.16);
+    transition: transform .18s ease, background .18s ease;
+    white-space: nowrap;
+  }
+
+  .main-btn::after {
+    content: '→';
+    position: absolute;
+    top: 50%;
+    right: 16px;
+    transform: translateY(-50%);
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    background: #fff;
+    color: var(--text);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 22px;
+    font-weight: 900;
+  }
+
+  .main-btn:hover { transform: translateY(-2px); background: #2d2d2d; }
+  .main-btn:active { transform: translateY(0); }
+
+  .dots {
+    position: relative;
+    z-index: 4;
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    margin-top: 14px;
+  }
+
+  .dot {
+    width: 9px;
+    height: 9px;
+    border-radius: 50%;
+    background: rgba(17,17,17,.18);
+    transition: width .2s ease, background .2s ease;
+  }
+
+  .dot.active {
+    width: 28px;
+    border-radius: 999px;
+    background: var(--blue);
+  }
+
+  @media (max-width: 760px) {
+    body { padding: 8px; }
+    .scene { min-height: 600px; padding: 14px 12px 16px; border-radius: 26px; }
+    .star.s1 { left: 12px; top: 88px; font-size: 32px; }
+    .star.s2 { right: 14px; top: 102px; font-size: 26px; }
+    .star.s3 { left: 7%; bottom: 112px; font-size: 22px; }
+    .star.s4 { right: 8%; bottom: 136px; font-size: 30px; }
+    .star.s5 { top: 28px; font-size: 22px; }
+    .star.s6 { display: none; }
+    .top-card {
+      max-width: 100%;
+      min-height: 74px;
+      padding: 16px 16px;
+      margin-bottom: 2px;
+      border-radius: 22px;
+    }
+    .screen-text { font-size: 17px; }
+    .visual-wrap { min-height: 340px; }
+    .visual { max-height: 360px; }
+    .bottom-bar {
+      justify-content: center;
+    }
+    .hint {
+      width: 150px;
+      font-size: 12px;
+      padding: 10px 24px 10px 12px;
+      transform: rotate(-3deg);
+      right: calc(50% + 180px / 2 - 16px);
+    }
+    .main-btn {
+      min-width: 180px;
+      min-height: 54px;
+      font-size: 17px;
+      padding: 0 50px 0 22px;
+    }
+    .main-btn::after {
+      width: 30px;
+      height: 30px;
+      font-size: 18px;
+      right: 12px;
+    }
+  }
+</style>
+</head>
+<body>
+  <main class="community-widget">
+    <section class="scene" aria-label="Интерактив: первый шаг в комьюнити">
+      <span class="star s1">✦</span>
+      <span class="star s2">✦</span>
+      <span class="star s3">✦</span>
+      <span class="star s4">✦</span>
+      <span class="star s5">✶</span>
+      <span class="star s6">✶</span>
+
+      <div id="textCard" class="top-card" aria-live="polite">
+        <p id="screenText" class="screen-text">Подпишись на новости и просто будь в контексте</p>
+      </div>
+
+      <div class="visual-wrap">
+        <img id="visual" class="visual" src="./images/screen1.png" alt="Молодой человек смотрит новости в смартфоне, вокруг парят иконки соцсетей" />
+      </div>
+
+      <div class="bottom-bar">
+        <div id="hint" class="hint">жми и смотри, как ты можешь вливаться</div>
+        <button id="mainBtn" class="main-btn" type="button">Можно так</button>
+      </div>
+
+      <div id="dots" class="dots" aria-hidden="true"></div>
+    </section>
+  </main>
+
+<script>
+  const screens = [
+    {
+      image: './images/screen1.png',
+      button: 'Можно так',
+      text: 'Подпишись на новости и просто будь в контексте',
+      alt: 'Молодой человек смотрит новости в смартфоне, вокруг парят иконки соцсетей'
+    },
+    {
+      image: './images/screen2.png',
+      button: 'А можно вот так',
+      text: 'Выбери канал по интересам: мемы, книги, pets, спорт или английский.',
+      alt: 'Девушка выбирает один из стикеров-каналов'
+    },
+    {
+      image: './images/screen3.png',
+      button: 'И так тоже классно',
+      text: 'Поблагодари коллегу ачивкой за конкретную помощь или вклад',
+      alt: 'Девушка вручает коллеге большую ачивку'
+    },
+    {
+      image: './images/screen4.png',
+      button: 'Можно и без тусовок',
+      text: 'Поделись экспертизой: ответь в чате, отправь полезную ссылку или шаблон',
+      alt: 'Команда обсуждает рабочее сообщение в канале'
+    },
+    {
+      image: './images/screen5.png',
+      button: 'Выбери свой ритм',
+      text: 'Приходи на события, смотри эфиры, подключайся тогда, когда готов.',
+      alt: 'Девушка смотрит корпоративный эфир на большом экране'
+    },
+    {
+      image: './images/screen6.png',
+      button: 'Действуй',
+      text: 'Выбери один шаг, который тебе комфортен прямо сейчас. Комьюнити начинается не с активности во всем, а с маленького движения навстречу.',
+      alt: 'Женщина держит коробку со стикерами: новости, канал, ачивка, событие и экспертиза',
+      final: true
+    }
+  ];
+
+  let current = 0;
+  const visual = document.getElementById('visual');
+  const textCard = document.getElementById('textCard');
+  const screenText = document.getElementById('screenText');
+  const mainBtn = document.getElementById('mainBtn');
+  const hint = document.getElementById('hint');
+  const dots = document.getElementById('dots');
+
+  screens.forEach((_, index) => {
+    const dot = document.createElement('span');
+    dot.className = 'dot' + (index === 0 ? ' active' : '');
+    dots.appendChild(dot);
+  });
+
+  function render(index) {
+    const screen = screens[index];
+    visual.classList.add('is-changing');
+    textCard.classList.add('is-changing');
+
+    setTimeout(() => {
+      visual.src = screen.image;
+      visual.alt = screen.alt;
+      screenText.textContent = screen.text;
+      mainBtn.textContent = screen.button;
+
+      [...dots.children].forEach((dot, dotIndex) => {
+        dot.classList.toggle('active', dotIndex === index);
+      });
+
+      visual.classList.remove('is-changing');
+      textCard.classList.remove('is-changing');
+    }, 180);
+  }
+
+  mainBtn.addEventListener('click', () => {
+    current = current >= screens.length - 1 ? 0 : current + 1;
+    render(current);
+  });
+</script>
+</body>
+</html>

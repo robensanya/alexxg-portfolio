@@ -1,0 +1,939 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>EJM — Skyeng / табы сверху и бот внизу</title>
+<style>
+  :root {
+    --font: 'StratosSkyeng', 'Stratos Skyeng', sans-serif;
+    --brand: #00C1FF;
+    --brand-soft: rgba(0, 193, 255, .12);
+    --brand-mid: rgba(0, 193, 255, .22);
+    --bg: #f5f7f9;
+    --paper: #ffffff;
+    --ink: #111318;
+    --muted: #666d78;
+    --soft: #f2f5f7;
+    --line: rgba(17, 19, 24, .06);
+    --line-strong: rgba(17, 19, 24, .10);
+    --chip: #eef1f4;
+    --shadow: 0 10px 30px rgba(17, 19, 24, .05);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; font-family: var(--font) !important; }
+
+  body {
+    background: transparent;
+    color: var(--ink);
+    padding: 18px;
+    font-size: 16px;
+    font-weight: 400;
+    line-height: 1.45;
+  }
+
+  .ejm-shell {
+    max-width: 980px;
+    margin: 0 auto;
+    min-height: 250px;
+    border: none;
+    background: var(--paper);
+    border-radius: 20px;
+    box-shadow: var(--shadow);
+    overflow: hidden;
+    transition: min-height .34s cubic-bezier(.4,0,.2,1);
+  }
+
+  .ejm-shell.has-active {
+    min-height: 620px;
+  }
+
+  .ejm-topbar {
+    display: grid;
+    grid-template-columns: minmax(0,1fr) auto;
+    gap: 12px;
+    align-items: center;
+    padding: 18px 18px 6px;
+    border-bottom: none;
+    background: #fff;
+  }
+
+  .search-box { position: relative; }
+
+  .search-ico {
+    position: absolute;
+    left: 18px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 16px;
+    color: var(--muted);
+  }
+
+  .ejm-search {
+    width: 100%;
+    border: none;
+    background: var(--chip);
+    border-radius: 999px;
+    padding: 16px 18px 16px 46px;
+    font-size: 16px;
+    font-weight: 400;
+    color: var(--ink);
+    outline: none;
+    transition: border-color .16s ease, box-shadow .16s ease, background .16s ease;
+  }
+
+  .ejm-search::placeholder {
+    color: #818891;
+    font-weight: 400;
+  }
+
+  .ejm-search:focus {
+    box-shadow: 0 0 0 3px rgba(0,193,255,.28);
+    background: #fff;
+  }
+
+  .clear-btn {
+    display: none;
+    border: none;
+    background: var(--chip);
+    color: var(--ink);
+    border-radius: 999px;
+    padding: 12px 16px;
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: transform .15s ease, background .15s ease, border-color .15s ease;
+  }
+
+  .clear-btn:hover {
+    transform: translateY(-1px);
+    background: #e4e9ee;
+  }
+
+  .clear-btn.visible { display: inline-flex; }
+
+  .stage-rail {
+    display: flex;
+    gap: 10px;
+    padding: 26px 18px 22px;
+    background: transparent;
+    border-bottom: none;
+    overflow-x: auto;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    transition: padding .28s cubic-bezier(.4,0,.2,1), gap .28s cubic-bezier(.4,0,.2,1), border-color .2s ease;
+  }
+
+  .stage-rail::-webkit-scrollbar {
+    display: none;
+  }
+
+  .stage-rail.has-active {
+    gap: 8px;
+    padding: 14px 18px 6px;
+    border-bottom: none;
+  }
+
+  .stage-tab {
+    flex: 1 0 148px;
+    min-width: 130px;
+    min-height: 102px;
+    border: none;
+    background: var(--soft);
+    border-radius: 18px;
+    padding: 24px 14px;
+    cursor: pointer;
+    display: grid;
+    grid-template-columns: 36px minmax(0,1fr);
+    gap: 10px;
+    align-items: center;
+    text-align: left;
+    color: var(--ink);
+    transition: background .18s ease, color .18s ease, border-radius .24s ease, transform .18s ease, opacity .18s ease, box-shadow .18s ease, padding .24s ease, min-height .24s ease;
+  }
+
+  .stage-rail.has-active .stage-tab {
+    min-height: 56px;
+    padding: 13px 12px 15px;
+  }
+
+  .stage-tab:hover:not(.active) {
+    transform: translateY(-2px);
+    background: #e9f7fd;
+    box-shadow: 0 8px 18px rgba(17,19,24,.05);
+  }
+
+  .stage-tab.dimmed { opacity: .38; filter: grayscale(1); }
+  .stage-tab.match { opacity: 1; filter: none; }
+
+  .stage-tab.active {
+    position: relative;
+    z-index: 2;
+    background: var(--brand);
+    color: #fff;
+    border-radius: 18px;
+    box-shadow: 0 10px 24px rgba(0,193,255,.25);
+  }
+
+  .stage-num {
+    width: 36px;
+    height: 36px;
+    border-radius: 999px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 13px;
+    font-weight: 600;
+    border: none;
+    background: var(--brand);
+    color: #fff;
+  }
+
+  .stage-tab.active .stage-num {
+    background: rgba(255,255,255,.92);
+    color: var(--brand);
+  }
+
+  .stage-copy { min-width: 0; }
+
+  .stage-name {
+    display: block;
+    font-size: 16px;
+    line-height: 1.18;
+    font-weight: 500;
+    letter-spacing: -.015em;
+  }
+
+  .content {
+    padding: 26px;
+    background: #fff;
+  }
+
+
+
+  .content.is-empty { display: none; }
+
+  .stage-panel { display: none; animation: fadeIn .22s ease both; }
+  .stage-panel.active { display: block; }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(6px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .stage-head {
+    margin-bottom: 20px;
+    display: grid;
+    grid-template-columns: minmax(0,1fr);
+    gap: 8px;
+  }
+
+  .stage-kicker {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--muted);
+    letter-spacing: .01em;
+  }
+
+  .stage-title {
+    font-size: clamp(28px, 4vw, 38px);
+    line-height: 1.04;
+    font-weight: 600;
+    letter-spacing: -.035em;
+  }
+
+  .stage-title mark {
+    color: var(--brand);
+    background: none;
+    border-radius: 0;
+    padding: 0;
+  }
+
+  .stage-desc {
+    max-width: 640px;
+    color: #3f4650;
+    font-size: 16px;
+    line-height: 1.55;
+    font-weight: 400;
+  }
+
+  .task-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .task {
+    background: var(--soft);
+    border: none;
+    border-radius: 18px;
+    overflow: hidden;
+    box-shadow: none;
+    transition: background .18s ease, box-shadow .18s ease, transform .18s ease;
+  }
+
+  .task.hidden { display:none; }
+
+  .task.open {
+    background: #fff;
+    box-shadow: 0 14px 34px rgba(17,19,24,.10);
+  }
+
+  .task-head {
+    display: grid;
+    grid-template-columns: 44px minmax(0,1fr) 36px;
+    gap: 14px;
+    align-items: center;
+    padding: 16px;
+    cursor: pointer;
+  }
+
+  .task-icon {
+    width: 44px;
+    height: 44px;
+    border-radius: 999px;
+    background: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+  }
+
+  .task-name {
+    display: block;
+    font-size: 16px;
+    line-height: 1.25;
+    font-weight: 500;
+    letter-spacing: -.015em;
+  }
+
+  .task-route {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px 10px;
+    margin-top: 7px;
+    color: var(--muted);
+    font-size: 13px;
+    font-weight: 400;
+  }
+
+  .task-route span + span::before {
+    content: '→';
+    margin-right: 10px;
+    color: var(--brand);
+    opacity: .95;
+  }
+
+  .task-toggle {
+    width: 36px;
+    height: 36px;
+    border-radius: 999px;
+    background: var(--brand-soft);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform .25s ease, background .16s ease;
+  }
+
+  .task.open .task-icon { background: var(--brand-soft); }
+
+  .task.open .task-toggle { background: var(--brand); transform: rotate(180deg); }
+
+  .task.open .task-toggle svg { stroke: #fff; }
+
+  .task-toggle svg {
+    width: 17px;
+    height: 17px;
+    stroke: #05536b;
+    stroke-width: 2.2;
+    fill: none;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+
+  .task-body {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height .3s cubic-bezier(.4,0,.2,1);
+  }
+
+  .task-body-inner {
+    margin: 0 16px 16px;
+    border-radius: 16px;
+    background: var(--soft);
+    border: none;
+    padding: 16px;
+    display: grid;
+    grid-template-columns: minmax(0,1fr) auto;
+    gap: 16px;
+    align-items: center;
+  }
+
+  .route-label {
+    display: block;
+    color: var(--muted);
+    font-size: 13px;
+    font-weight: 500;
+    margin-bottom: 6px;
+  }
+
+  .route-value {
+    font-size: 16px;
+    line-height: 1.35;
+    font-weight: 400;
+    letter-spacing: -.01em;
+  }
+
+  .task-actions {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+  }
+
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 42px;
+    padding: 0 18px;
+    border-radius: 999px;
+    text-decoration: none;
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 0;
+    transition: transform .15s ease, box-shadow .15s ease, opacity .15s ease, background .15s ease;
+    border: none;
+    background: var(--chip);
+    color: var(--ink);
+    white-space: nowrap;
+  }
+
+  .btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 16px rgba(17,19,24,.10);
+  }
+
+  .btn.primary { background: var(--brand); color: #fff; }
+
+  .btn.bot {
+    background: rgba(255,255,255,.2);
+    color: #fff;
+    box-shadow: inset 0 0 0 1px rgba(255,255,255,.55);
+  }
+
+  .btn.bot:hover {
+    background: rgba(255,255,255,.3);
+  }
+
+  .btn.disabled { opacity: .45; pointer-events: none; }
+
+
+
+  .task-note {
+    margin-top: 10px;
+    color: var(--muted);
+    font-size: 13px;
+    line-height: 1.4;
+    font-weight: 400;
+  }
+
+  .extra-links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 12px;
+  }
+
+  .btn.secondary {
+    background: var(--chip);
+    color: var(--ink);
+  }
+
+  .support-card {
+    margin-top: 18px;
+    border: none;
+    background: linear-gradient(120deg, #00C1FF, #0091DB);
+    border-radius: 18px;
+    padding: 18px;
+    display: grid;
+    grid-template-columns: minmax(0,1fr) auto;
+    gap: 16px;
+    align-items: center;
+  }
+
+  .support-title {
+    font-size: 16px;
+    line-height: 1.3;
+    font-weight: 600;
+    color: #fff;
+    letter-spacing: -.01em;
+  }
+
+  .support-desc {
+    margin-top: 4px;
+    color: rgba(255,255,255,.85);
+    font-size: 13px;
+    line-height: 1.35;
+    font-weight: 400;
+  }
+
+  .empty-state {
+    display: none;
+    border: none;
+    background: var(--soft);
+    border-radius: 18px;
+    padding: 24px;
+    font-size: 16px;
+    font-weight: 400;
+    color: var(--muted);
+    text-align: center;
+  }
+
+  .empty-state.visible { display:block; }
+
+  @media (max-width: 760px) {
+    body { padding: 10px; }
+    .ejm-shell { border-radius: 24px; }
+    .ejm-topbar { grid-template-columns: 1fr; padding: 12px; }
+    .clear-btn.visible { display:flex; justify-content:center; }
+    .stage-rail {
+      overflow-x: auto;
+      scrollbar-width: none;
+      -ms-overflow-style: none;
+      padding: 18px 12px 16px;
+      gap: 10px;
+    }
+    .stage-rail::-webkit-scrollbar { display: none; }
+    .stage-rail.has-active {
+      padding: 10px 12px 0;
+      gap: 8px;
+    }
+    .stage-tab { flex-basis: 190px; min-width: 190px; }
+    .stage-tab:hover:not(.active) { transform: translateY(-1px); }
+    .content { padding: 18px; }
+    .task-body-inner { grid-template-columns: 1fr; }
+    .task-actions { justify-content: stretch; }
+    .btn { flex: 1; }
+    .support-card { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<div class="ejm-shell">
+  <div class="ejm-topbar">
+    <div class="search-box">
+      <span class="search-ico">⌕</span>
+      <input id="searchInput" class="ejm-search" type="search" placeholder="Найти: отпуск, справка, доступы, HR-портал, зарплата…" autocomplete="off">
+    </div>
+    <button class="clear-btn" id="clearBtn" type="button">Сбросить поиск</button>
+  </div>
+
+  <nav class="stage-rail" id="stageRail" aria-label="Этапы пути сотрудника"></nav>
+  <main class="content" id="content"></main>
+</div>
+
+<script>
+const STAGES = [
+  {
+    num: 1,
+    short: 'Вход в компанию',
+    titlePlain: 'Я только выхожу',
+    titleHl: 'на работу',
+    desc: 'Оформление, доступы, обучение, знакомство с командой и первые ориентиры в компании.',
+    people: 'Руководитель, buddy, чат HR-портала',
+    color: 'lime',
+    tasks: [
+      {
+        name: 'Подписать кадровый документ', icon: '📝', category: 'Документы',
+        tool: 'HR-портал', link: '#', keywords: 'договор подпись эцп оформление hr портал кадровый документ',
+        where: 'HR-портал или ссылка от HR/кадровой команды',
+        prepare: 'Проверь данные в документе и наличие доступа к электронной подписи.',
+        helper: 'HR-help или ответственный HR-специалист',
+        fallback: 'Если ссылка не открывается, напиши в HR-help и приложи скрин ошибки.'
+      },
+      {
+        name: 'Получить доступы в инструменты', icon: '🔑', category: 'Доступы',
+        tool: 'система доступов', link: '#', keywords: 'доступы сервисы логин права инструмент заявка',
+        where: 'система доступов → заявка на доступы и сервисы',
+        prepare: 'Укажи нужный сервис, роль и зачем нужен доступ.',
+        helper: 'Руководитель или техподдержка по доступам',
+        fallback: 'Если не знаешь, какой доступ нужен, сначала уточни у руководителя или buddy.'
+      },
+      {
+        name: 'Пройти онбординг и обучение', icon: '🎓', category: 'Обучение',
+        tool: 'система обучения', link: '#', keywords: 'онбординг обучение курс адаптация новичок',
+        where: 'система обучения',
+        prepare: 'Открой назначенные курсы и проходи их в рекомендованном порядке.',
+        helper: 'Buddy, руководитель или команда обучения',
+        fallback: 'Если курса нет в назначениях, напиши руководителю или в чат поддержки обучения.'
+      },
+      {
+        name: 'Изучить глоссарий терминов Skyeng', icon: '📚', category: 'База знаний',
+        tool: 'внутренняя база знаний', link: '#', keywords: 'глоссарий термины skyeng база знаний инструкция регламент где найти',
+        where: 'внутренняя база знаний → Глоссарий терминов Skyeng',
+        prepare: 'Открой глоссарий и проверь ключевые термины, которые встречаются в рабочих процессах.',
+        helper: 'Buddy или руководитель',
+        fallback: 'Если не находишь статью, спроси в командном чате, где лежит актуальная инструкция.'
+      },
+      {
+        name: 'Найти команду и структуру', icon: '🏢', category: 'Люди',
+        tool: 'HR-портал — структура', link: '#', keywords: 'команда структура оргструктура люди руководитель',
+        where: 'HR-портал → структура компании',
+        prepare: 'Найди свою команду, руководителя и смежные роли.',
+        helper: 'Руководитель или buddy',
+        fallback: 'Если структура не совпадает с реальностью, уточни у руководителя.'
+      }
+    ]
+  },
+  {
+    num: 2,
+    short: 'Повседневная работа',
+    titlePlain: 'Я работаю и решаю',
+    titleHl: 'обычные вопросы',
+    desc: 'Задачи, зарплата, отпуска, больничные, бенефиты, документы и регулярные рабочие запросы.',
+    people: 'чат HR-портала, руководитель, HR-help, техподдержка',
+    color: 'sky',
+    tasks: [
+      {
+        name: 'Оформить отпуск, больничный или day off', icon: '🏖️', category: 'Отсутствия',
+        tool: 'HR-портал — Мои отсутствия', link: '#', keywords: 'отпуск больничный day off отсутствие выходной отгул',
+        where: 'HR-портал → Мои отсутствия',
+        prepare: 'Выбери тип отсутствия, даты и проверь правила согласования.',
+        helper: 'Руководитель или чат HR-портала',
+        fallback: 'Если не получается отправить заявку, напиши в чат HR-портала и укажи даты.'
+      },
+      {
+        name: 'Задать вопрос по зарплате и выплатам', icon: '💰', category: 'Деньги',
+        tool: 'чат HR-портала', link: '#', keywords: 'зарплата выплаты деньги расчет премия компенсация аванс',
+        where: 'чат HR-портала',
+        prepare: 'Сформулируй период, тип выплаты и что именно не сходится.',
+        helper: 'Поддержка в чате HR-портала',
+        fallback: 'Если вопрос чувствительный, попроси перевести диалог в приватный канал.'
+      },
+      {
+        name: 'Заказать справку или кадровый документ', icon: '📄', category: 'Документы',
+        tool: 'HR-портал → HR-help', link: '#', keywords: 'справка документ кадровый ндфл подтверждение занятости hr help',
+        where: 'HR-портал → HR-help',
+        prepare: 'Укажи тип справки, язык, сроки и куда ее нужно предоставить.',
+        helper: 'HR-help',
+        fallback: 'Если не знаешь название документа, опиши ситуацию: для банка, визы, аренды и т.д.'
+      },
+      {
+        name: 'Подписать кадровый документ', icon: '📝', category: 'Документы',
+        tool: 'HR-портал', link: '#', keywords: 'подписать документ эцп кадровый приказ договор',
+        where: 'HR-портал',
+        prepare: 'Проверь данные и подпиши документ электронной подписью.',
+        helper: 'HR-help',
+        fallback: 'Если документ не отображается, напиши в HR-help и укажи, какой документ ждешь.'
+      },
+      {
+        name: 'Использовать бенефиты', icon: '🎁', category: 'Бенефиты',
+        tool: 'Skyeng Benefits', link: '#', keywords: 'бенефиты benefits скидки дмс компенсации бонусы льготы',
+        where: 'Skyeng Benefits',
+        prepare: 'Выбери нужный бенефит и проверь условия использования.',
+        helper: 'чат HR-портала или поддержка Benefits',
+        fallback: 'Если не получается войти, проверь корпоративный логин или напиши в поддержку.'
+      },
+      {
+        name: 'Получить или расширить доступы', icon: '🔑', category: 'Доступы',
+        tool: 'система доступов', link: '#', keywords: 'доступ права сервис инструмент заявка расширить доступ',
+        where: 'система доступов → заявка на доступы',
+        prepare: 'Укажи сервис, уровень доступа и бизнес-причину.',
+        helper: 'Руководитель или техподдержка',
+        fallback: 'Если заявку отклонили, попроси руководителя подтвердить необходимость доступа.'
+      },
+      {
+        name: 'Оформить командировку', icon: '✈️', category: 'Командировки',
+        tool: 'система доступов — оформить заявку', link: '#', keywords: 'командировка поездка билеты отель travel оформление заявка авансовый отчет ассистенты',
+        where: 'система доступов → оформить заявку на командировку',
+        extraLinks: [
+          { label: 'Задача ассистентам на авансовый отчет ↗', url: '#' },
+          { label: 'Подробнее о флоу командировок ↗', url: '#' }
+        ],
+        prepare: 'Подготовь даты, город, цель поездки и согласование руководителя.',
+        helper: 'HR-help и руководитель',
+        fallback: 'Если поездка срочная, дополнительно напиши руководителю и отметь срочность в запросе.'
+      }
+    ]
+  },
+  {
+    num: 3,
+    short: 'Рост и оценка',
+    titlePlain: 'Я хочу расти или',
+    titleHl: 'прохожу оценку',
+    desc: 'Обратная связь, оценка, грейды, JD, план развития и обучение для следующего шага.',
+    people: 'Главный партнер — руководитель; также HR BP и команда обучения',
+    color: 'lavender',
+    tasks: [
+      {
+        name: 'Пройти оценку или оценить коллегу', icon: '⭐', category: 'Оценка',
+        tool: 'система оценки — Мои оценки', link: '#', keywords: 'оценка performance review ревью оценить коллегу фидбек обратная связь',
+        where: 'система оценки → Мои оценки',
+        prepare: 'Открой назначенную оценку, собери факты и примеры работы.',
+        helper: 'Руководитель',
+        fallback: 'Если форма не открывается, напиши руководителю или в чат HR-портала.'
+      },
+      {
+        name: 'Посмотреть каталог JD и грейды', icon: '📋', category: 'Грейды',
+        tool: 'Каталог JD', link: '#', keywords: 'jd грейд должность уровень компетенции карьерный рост',
+        where: 'Каталог JD и грейды',
+        prepare: 'Найди свою роль и сравни ожидания текущего и следующего уровня.',
+        helper: 'Руководитель или HR BP',
+        fallback: 'Если не находишь свою роль, уточни актуальное название должности у руководителя.'
+      },
+      {
+        name: 'Пройти обучение', icon: '🎓', category: 'Обучение',
+        tool: 'система обучения', link: '#', keywords: 'обучение курс развитие навыки',
+        where: 'система обучения',
+        prepare: 'Выбери курс под цель развития или назначение от руководителя.',
+        helper: 'Команда обучения или руководитель',
+        fallback: 'Если нужного курса нет, попроси руководителя подсказать альтернативные материалы.'
+      }
+    ]
+  },
+  {
+    num: 4,
+    short: 'Изменения',
+    titlePlain: 'У меня меняется',
+    titleHl: 'рабочий путь',
+    desc: 'Смена роли, команды, руководителя, графика, формата работы или условий.',
+    people: 'Руководитель, HR BP, чат HR-портала',
+    color: 'pink',
+    tasks: [
+      {
+        name: 'Подписать документ об изменениях', icon: '📝', category: 'Документы',
+        tool: 'HR-портал', link: '#', keywords: 'изменения перевод доп соглашение документ роль график условия',
+        where: 'HR-портал',
+        prepare: 'Проверь новые условия: роль, ставку, график, дату вступления изменений.',
+        helper: 'HR BP или HR-help',
+        fallback: 'Если данные не совпадают с договоренностями, не подписывай сразу — уточни у HR BP.'
+      },
+      {
+        name: 'Получить новые доступы после смены роли', icon: '🔑', category: 'Доступы',
+        tool: 'система доступов', link: '#', keywords: 'новая роль доступы перевод команда права',
+        where: 'система доступов → заявка на доступы',
+        prepare: 'Укажи новую роль, команду и инструменты, которые нужны для работы.',
+        helper: 'Новый руководитель или техподдержка',
+        fallback: 'Если не знаешь список доступов, попроси новый чек-лист у руководителя.'
+      },
+      {
+        name: 'Связаться с HR по изменениям', icon: '💬', category: 'Поддержка',
+        tool: 'HR-портал → HR-help / HR BP', link: '#', keywords: 'hr bp изменения роль команда график условия перевод помощь',
+        where: 'HR-портал → HR-help или напрямую HR BP',
+        prepare: 'Коротко опиши, что меняется и какой вопрос нужно решить.',
+        helper: 'HR BP и руководитель',
+        fallback: 'Если вопрос срочный, продублируй руководителю и попроси направить к нужному HR.'
+      }
+    ]
+  },
+  {
+    num: 5,
+    short: 'Доп. информация',
+    titlePlain: 'Дополнительная',
+    titleHl: 'информация',
+    desc: 'Передача дел, документы, техника, доступы и финальные выплаты при завершении работы.',
+    people: 'Руководитель, чат HR-портала, корпоративный мессенджер, HR-help',
+    color: 'yellow',
+    tasks: [
+      {
+        name: 'Подписать документ об увольнении', icon: '📝', category: 'Документы',
+        tool: 'HR-портал', link: '#', keywords: 'увольнение уход завершение документ подпись',
+        where: 'HR-портал',
+        prepare: 'Проверь дату увольнения, основание и финальные условия.',
+        helper: 'HR-help или HR BP',
+        fallback: 'Если есть расхождения, уточни до подписания.'
+      },
+      {
+        name: 'Сдать технику и пропуск', icon: '💻', category: 'Техника',
+        tool: 'корпоративный мессенджер', link: '#', keywords: 'техника ноутбук пропуск сдать офис helpdesk увольнение',
+        where: 'корпоративный мессенджер → office-helpdesk',
+        prepare: 'Уточни список техники, способ возврата и сроки.',
+        helper: 'корпоративный мессенджер и руководитель',
+        fallback: 'Если работаешь удаленно, попроси инструкцию по отправке техники.'
+      },
+      {
+        name: 'Задать вопрос по финальным выплатам', icon: '💰', category: 'Деньги',
+        tool: 'HR-портал → HR-help', link: '#', keywords: 'финальные выплаты расчет компенсация отпуск увольнение деньги',
+        where: 'HR-портал → HR-help',
+        prepare: 'Укажи дату увольнения и что именно хочешь проверить в расчете.',
+        helper: 'HR-help',
+        fallback: 'Если вопрос не решается в общем канале, попроси приватный разбор.'
+      }
+    ]
+  }
+];
+
+const BOT_LINK = '#';
+let activeStage = null;
+let openTasks = {};
+let searchValue = '';
+
+const colorVars = {
+  lime: ['#00C1FF','rgba(0,193,255,.12)'],
+  sky: ['#00C1FF','rgba(0,193,255,.12)'],
+  lavender: ['#00C1FF','rgba(0,193,255,.12)'],
+  pink: ['#00C1FF','rgba(0,193,255,.12)'],
+  yellow: ['#00C1FF','rgba(0,193,255,.12)']
+};
+
+function norm(v) { return (v || '').toString().toLowerCase().trim(); }
+function taskText(t) { return norm([t.name, t.category, t.tool, t.where, t.keywords].join(' ')); }
+function stageMatches(stage, q) { return !q || stage.tasks.some(t => taskText(t).includes(q)); }
+function filteredTasks(stage) {
+  const q = norm(searchValue);
+  return stage.tasks.map((t, idx) => ({ t, idx, match: !q || taskText(t).includes(q) })).filter(x => x.match);
+}
+
+function setAccent(el, color) {
+  const [accent, soft] = colorVars[color] || colorVars.lime;
+  el.style.setProperty('--accent', accent);
+  el.style.setProperty('--accent-soft', soft);
+}
+
+function buildRail() {
+  const rail = document.getElementById('stageRail');
+  const q = norm(searchValue);
+  rail.classList.toggle('has-active', activeStage !== null && activeStage !== undefined);
+  rail.innerHTML = '';
+  STAGES.forEach((s, i) => {
+    const match = stageMatches(s, q);
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'stage-tab' + (i === activeStage ? ' active' : '') + (q && match ? ' match' : '') + (q && !match ? ' dimmed' : '');
+    btn.dataset.color = s.color;
+    btn.innerHTML = `
+      <span class="stage-num">${String(s.num).padStart(2,'0')}</span>
+      <span class="stage-copy">
+        <span class="stage-name">${s.short}</span>
+      </span>`;
+    btn.addEventListener('click', () => { activeStage = i; render(); });
+    rail.appendChild(btn);
+  });
+}
+
+function buildContent() {
+  const content = document.getElementById('content');
+  content.innerHTML = '';
+  if (activeStage === null || activeStage === undefined) {
+    content.classList.add('is-empty');
+    return;
+  }
+  content.classList.remove('is-empty');
+  STAGES.forEach((s, i) => {
+    const panel = document.createElement('section');
+    panel.className = 'stage-panel' + (i === activeStage ? ' active' : '');
+    setAccent(panel, s.color);
+    const tasks = filteredTasks(s);
+    let taskHtml = tasks.map((x) => {
+      const t = x.t;
+      const key = `${i}-${x.idx}`;
+      const isOpen = !!openTasks[key];
+      const toolBtn = t.link && t.link !== '#'
+        ? `<a class="btn primary" href="${t.link}" target="_blank" rel="noopener">Открыть инструмент ↗</a>`
+        : `<span class="btn primary disabled">Нет прямой ссылки</span>`;
+      const extraLinks = Array.isArray(t.extraLinks) && t.extraLinks.length
+        ? `<div class="extra-links">${t.extraLinks.map(link => `<a class="btn secondary" href="${link.url}" target="_blank" rel="noopener">${link.label}</a>`).join('')}</div>`
+        : '';
+      return `
+        <article class="task ${isOpen ? 'open' : ''}" id="task-${key}">
+          <div class="task-head" onclick="toggleTask('${key}')">
+            <span class="task-icon">${t.icon}</span>
+            <span>
+              <span class="task-name">${t.name}</span>
+              <span class="task-route"><span>${t.category}</span><span>${t.tool}</span></span>
+            </span>
+            <span class="task-toggle" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M7 10l5 5 5-5"/></svg></span>
+          </div>
+          <div class="task-body" id="body-${key}">
+            <div class="task-body-inner">
+              <div>
+                <span class="route-label">Куда идти</span>
+                <div class="route-value">${t.where}</div>
+                ${extraLinks}
+              </div>
+              <div class="task-actions">
+                ${toolBtn}
+              </div>
+            </div>
+          </div>
+        </article>`;
+    }).join('');
+
+    panel.innerHTML = `
+      <div class="stage-head">
+        <div class="stage-kicker">${String(s.num).padStart(2,'0')} / путь сотрудника</div>
+        <h2 class="stage-title">${s.titlePlain} <mark>${s.titleHl}</mark></h2>
+        <p class="stage-desc">${s.desc}</p>
+      </div>
+      <div class="task-list">${taskHtml}</div>
+      <div class="empty-state ${tasks.length ? '' : 'visible'}">В этой вкладке совпадений нет. Попробуй другой запрос или посмотри подсвеченные этапы слева.</div>
+      <div class="support-card">
+        <div>
+          <div class="support-title">Если возникли вопросы - обращайся к боту</div>
+          <div class="support-desc">Он поможет сориентироваться, куда идти и что выбрать.</div>
+        </div>
+        <a class="btn bot" href="${BOT_LINK}" target="_blank" rel="noopener">Открыть бота ↗</a>
+      </div>
+    `;
+    content.appendChild(panel);
+  });
+  requestAnimationFrame(syncOpenHeights);
+}
+
+function syncOpenHeights() {
+  document.querySelectorAll('.task-body').forEach(el => {
+    const key = el.id.replace('body-','');
+    el.style.maxHeight = openTasks[key] ? el.scrollHeight + 'px' : '0';
+  });
+}
+
+function toggleTask(key) {
+  openTasks[key] = !openTasks[key];
+  const task = document.getElementById('task-' + key);
+  const body = document.getElementById('body-' + key);
+  if (!task || !body) return;
+  task.classList.toggle('open', openTasks[key]);
+  body.style.maxHeight = openTasks[key] ? body.scrollHeight + 'px' : '0';
+}
+
+function chooseFirstMatchingStage() {
+  const q = norm(searchValue);
+  if (!q) return;
+  const idx = STAGES.findIndex(s => stageMatches(s, q));
+  activeStage = idx !== -1 ? idx : null;
+}
+
+function updateShellState() {
+  const shell = document.querySelector('.ejm-shell');
+  shell.classList.toggle('has-active', activeStage !== null && activeStage !== undefined);
+}
+
+function render() { updateShellState(); buildRail(); buildContent(); }
+
+const input = document.getElementById('searchInput');
+const clear = document.getElementById('clearBtn');
+input.addEventListener('input', () => {
+  searchValue = input.value;
+  openTasks = {};
+  chooseFirstMatchingStage();
+  clear.classList.toggle('visible', !!norm(searchValue));
+  render();
+});
+clear.addEventListener('click', () => {
+  input.value = '';
+  searchValue = '';
+  activeStage = null;
+  openTasks = {};
+  clear.classList.remove('visible');
+  render();
+  input.focus();
+});
+
+render();
+</script>
+
+</body>
+</html>

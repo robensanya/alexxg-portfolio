@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="220" height="64" viewBox="0 0 220 64" fill="none">
+  <rect width="220" height="64" rx="16" fill="white"/>
+  <path d="M20 18c0-2.2 2.4-3.6 4.3-2.5L42 26.2c1.9 1.1 1.9 3.9 0 5L24.3 41.9C22.4 43 20 41.6 20 39.4V18Z" fill="#34A8FF"/>
+  <path d="M34 18c0-2.2 2.4-3.6 4.3-2.5L56 26.2c1.9 1.1 1.9 3.9 0 5L38.3 41.9C36.4 43 34 41.6 34 39.4V18Z" fill="#53D6DA"/>
+  <text x="74" y="39" font-family="Arial, Helvetica, sans-serif" font-size="28" font-weight="700" fill="#111111">Skyeng</text>
+</svg>
