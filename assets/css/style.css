@@ -41,7 +41,10 @@ html {
 
 body {
   margin: 0;
-  background: var(--bg);
+  background-color: var(--bg);
+  background-image: radial-gradient(rgba(17, 17, 17, 0.07) 1.5px, transparent 1.5px);
+  background-size: 26px 26px;
+  background-position: -13px -13px;
   color: var(--ink);
   font-family: var(--font);
   font-weight: 500;
@@ -227,7 +230,7 @@ p {
 .hero-photo-wrap::before {
   content: "";
   position: absolute;
-  inset: -14px;
+  inset: -6px;
   border-radius: 50%;
   background: var(--accent);
   transform: rotate(-8deg);
@@ -240,7 +243,40 @@ p {
   height: 100%;
   border-radius: 50%;
   object-fit: cover;
-  border: 1.5px solid var(--accent);
+  border: 1px solid var(--accent);
+  animation: hero-float 4.5s ease-in-out infinite;
+}
+
+@keyframes hero-float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
+}
+
+.hero-inner > * {
+  opacity: 0;
+  animation: hero-fade-up 700ms ease-out forwards;
+}
+
+.hero-inner > *:nth-child(1) { animation-delay: 0ms; }
+.hero-inner > *:nth-child(2) { animation-delay: 90ms; }
+.hero-inner > *:nth-child(3) { animation-delay: 180ms; }
+.hero-inner > *:nth-child(4) { animation-delay: 270ms; }
+.hero-inner > *:nth-child(5) { animation-delay: 360ms; }
+
+@keyframes hero-fade-up {
+  from { opacity: 0; transform: translateY(16px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-photo {
+    animation: none;
+  }
+
+  .hero-inner > * {
+    animation: none;
+    opacity: 1;
+  }
 }
 
 @media (max-width: 860px) {
