@@ -1,6 +1,6 @@
 # Портфолио — Александра Гуляева
 
-Личный сайт-портфолио AI-creator и Instructional Designer. Чистые HTML/CSS/JS,
+Личный сайт-портфолио AI-creator. Чистые HTML/CSS/JS,
 без сборщиков и npm — репозиторий открывается через GitHub Pages сразу, без билда.
 
 ## Скриншот
@@ -19,10 +19,8 @@
 /assets/video/           — видео-вставки главной страницы
 /demos/                  — самостоятельные демо-копии проектов
   /ejm/                  — Employee Journey Map
-  /ljm/                  — Leader Journey Map
-  /onboarding/           — Онбординг Skyeng (курс, 5 модулей)
+  /onboarding/           — Онбординг Skyeng (курс, 2 модуля)
   /ai-first/             — AI-first: курс по работе с AI (3 модуля)
-  /korpuniver/           — Корпоративный университет: курс о культуре (SCORM)
   /korpuniver-landing/   — Корпоративный университет Skyeng 2025 (лендинг)
   /trainer-catalog/      — Каталог AI-тренажёров
   /yandex360/            — Обучение Яндекс 360

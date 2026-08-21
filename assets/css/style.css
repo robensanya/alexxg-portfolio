@@ -438,6 +438,7 @@ p {
 }
 
 .project-card {
+  position: relative;
   background: var(--card);
   border: var(--border);
   border-radius: var(--radius);
@@ -448,6 +449,27 @@ p {
   gap: 14px;
   transition: transform 160ms ease, box-shadow 160ms ease;
 }
+
+.format-badge {
+  position: absolute;
+  top: -14px;
+  right: 20px;
+  padding: 6px 14px;
+  border: var(--border);
+  border-radius: 10px;
+  font-weight: 800;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  box-shadow: var(--shadow-sm);
+  transform: rotate(3deg);
+  z-index: 1;
+}
+
+.project-card:nth-of-type(4n+1) .format-badge { background: var(--pink); }
+.project-card:nth-of-type(4n+2) .format-badge { background: var(--violet); }
+.project-card:nth-of-type(4n+3) .format-badge { background: var(--cyan); }
+.project-card:nth-of-type(4n+4) .format-badge { background: var(--yellow); }
 
 .project-card:hover {
   transform: translate(3px, 3px);
