@@ -555,11 +555,13 @@ p {
 }
 
 .project-card .tag {
-  font-size: 11px;
+  font-size: 12.5px;
   font-weight: 700;
-  padding: 4px 10px;
-  border: 1.5px solid rgba(17, 17, 17, 0.4);
-  background: color-mix(in srgb, var(--card-accent, var(--bg)) 45%, white);
+  text-transform: none;
+  letter-spacing: 0;
+  padding: 7px 14px;
+  border: none;
+  background: color-mix(in srgb, var(--card-accent, var(--bg)) 60%, white);
 }
 
 .project-card .project-title {
