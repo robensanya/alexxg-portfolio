@@ -408,10 +408,17 @@ p {
   background: var(--card);
   border: var(--border);
   border-radius: var(--radius);
+  box-shadow: var(--shadow);
   padding: 28px;
   display: flex;
   flex-direction: column;
   gap: 12px;
+  transition: transform 160ms ease, box-shadow 160ms ease;
+}
+
+.skill-card:hover {
+  transform: translate(3px, 3px);
+  box-shadow: 0 0 0 var(--ink);
 }
 
 .skill-card .skill-title {
@@ -568,14 +575,33 @@ p {
   background: var(--card);
   border: var(--border);
   border-radius: var(--radius);
+  box-shadow: var(--shadow);
   padding: 26px;
+  transition: transform 160ms ease, box-shadow 160ms ease;
 }
 
+.approach-item:hover {
+  transform: translate(3px, 3px);
+  box-shadow: 0 0 0 var(--ink);
+}
+
+.approach-item:nth-child(1) { background: var(--pink); }
+.approach-item:nth-child(2) { background: var(--cyan); }
+.approach-item:nth-child(3) { background: var(--yellow); }
+
 .approach-item .approach-num {
-  font-size: 34px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  border: var(--border);
+  background: var(--card);
+  font-size: 22px;
   font-weight: 900;
   color: var(--ink);
-  -webkit-text-stroke: 1px var(--ink);
+  transform: rotate(-4deg);
 }
 
 .approach-item .approach-title {
@@ -638,6 +664,19 @@ p {
   font-size: 13px;
   font-weight: 700;
   opacity: 0.6;
+}
+
+.footer-inner {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.footer-star {
+  width: 14px;
+  height: 14px;
+  margin-left: 0;
+  transform: rotate(12deg);
 }
 
 /* ---------------- Scroll reveal ---------------- */
