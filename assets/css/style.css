@@ -506,6 +506,11 @@ p {
   transition: transform 160ms ease, box-shadow 160ms ease;
 }
 
+.project-card:nth-of-type(4n+1) { --card-accent: var(--pink); }
+.project-card:nth-of-type(4n+2) { --card-accent: var(--violet); }
+.project-card:nth-of-type(4n+3) { --card-accent: var(--cyan); }
+.project-card:nth-of-type(4n+4) { --card-accent: var(--yellow); }
+
 .format-badge {
   position: absolute;
   top: -14px;
@@ -520,12 +525,8 @@ p {
   box-shadow: var(--shadow-sm);
   transform: rotate(3deg);
   z-index: 1;
+  background: var(--card-accent);
 }
-
-.project-card:nth-of-type(4n+1) .format-badge { background: var(--pink); }
-.project-card:nth-of-type(4n+2) .format-badge { background: var(--violet); }
-.project-card:nth-of-type(4n+3) .format-badge { background: var(--cyan); }
-.project-card:nth-of-type(4n+4) .format-badge { background: var(--yellow); }
 
 .project-card:hover {
   transform: translate(3px, 3px);
@@ -551,6 +552,14 @@ p {
   border: 2px solid var(--ink);
   border-radius: 999px;
   background: var(--bg);
+}
+
+.project-card .tag {
+  font-size: 11px;
+  font-weight: 700;
+  padding: 4px 10px;
+  border: 1.5px solid rgba(17, 17, 17, 0.4);
+  background: color-mix(in srgb, var(--card-accent, var(--bg)) 45%, white);
 }
 
 .project-card .project-title {
@@ -583,15 +592,11 @@ p {
 }
 
 .project-card .btn {
-  padding: 10px 20px;
+  padding: 11px 22px;
   font-size: 14px;
   box-shadow: var(--shadow-sm);
+  background: var(--card-accent, var(--card));
 }
-
-.project-card:nth-of-type(4n+1) .btn { background: var(--pink); }
-.project-card:nth-of-type(4n+2) .btn { background: var(--violet); }
-.project-card:nth-of-type(4n+3) .btn { background: var(--cyan); }
-.project-card:nth-of-type(4n+4) .btn { background: var(--yellow); }
 
 .project-card .btn:hover {
   background: var(--accent);
