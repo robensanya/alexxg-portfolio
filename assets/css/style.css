@@ -235,6 +235,7 @@ p {
   background: var(--accent);
   transform: rotate(-8deg);
   z-index: -1;
+  animation: circle-spin 14s linear infinite;
 }
 
 .hero-photo {
@@ -244,12 +245,11 @@ p {
   border-radius: 50%;
   object-fit: cover;
   border: 1px solid var(--accent);
-  animation: hero-float 4.5s ease-in-out infinite;
 }
 
-@keyframes hero-float {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-10px); }
+@keyframes circle-spin {
+  from { transform: rotate(-8deg); }
+  to { transform: rotate(352deg); }
 }
 
 .hero-inner > * {
@@ -269,7 +269,7 @@ p {
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .hero-photo {
+  .hero-photo-wrap::before {
     animation: none;
   }
 
