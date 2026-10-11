@@ -501,6 +501,188 @@ p {
 .skill-card:nth-child(3) { background: var(--cyan); }
 .skill-card:nth-child(4) { background: var(--yellow); }
 
+/* ---------------- Featured case ---------------- */
+
+.case-feature {
+  --card-accent: var(--accent);
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 5fr) minmax(0, 6fr);
+  gap: clamp(24px, 4vw, 48px);
+  background: var(--card);
+  border: var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: clamp(24px, 4vw, 44px);
+}
+
+.case-intro {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.case-intro .format-badge {
+  left: 24px;
+  right: auto;
+  transform: rotate(-3deg);
+}
+
+.case-title {
+  font-size: clamp(26px, 3.4vw, 36px);
+  font-weight: 900;
+}
+
+.case-lead {
+  font-size: 16px;
+}
+
+.case-intro .project-tag-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.case-intro .tag,
+.pipeline-step .tag {
+  font-size: 12.5px;
+  font-weight: 700;
+  text-transform: none;
+  letter-spacing: 0;
+  padding: 7px 14px;
+  border: none;
+  background: color-mix(in srgb, var(--card-accent, var(--bg)) 55%, white);
+}
+
+.case-links {
+  margin-top: auto;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.case-links .btn {
+  padding: 11px 22px;
+  font-size: 14px;
+  box-shadow: var(--shadow-sm);
+}
+
+.case-steps {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 14px;
+}
+
+.case-step {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 16px;
+  align-items: start;
+  padding: 18px 20px;
+  border: var(--border);
+  border-radius: 18px;
+}
+
+.case-step:nth-child(1) { background: var(--pink); }
+.case-step:nth-child(2) { background: var(--violet); }
+.case-step:nth-child(3) { background: var(--cyan); }
+.case-step:nth-child(4) { background: var(--yellow); }
+
+.case-step-num {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  border: var(--border);
+  background: var(--card);
+  font-weight: 900;
+  font-size: 16px;
+}
+
+.case-step h4 {
+  margin: 0 0 4px;
+  font-size: 17px;
+  font-weight: 800;
+}
+
+.case-step p {
+  font-size: 14.5px;
+}
+
+@media (max-width: 860px) {
+  .case-feature {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ---------------- AI pipeline ---------------- */
+
+.section-lead {
+  max-width: 720px;
+  font-size: 17px;
+  margin-bottom: var(--gap);
+}
+
+.pipeline {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: var(--gap);
+}
+
+.pipeline-step {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  background: var(--card);
+  border: var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 22px;
+  transition: transform 160ms ease, box-shadow 160ms ease;
+}
+
+.pipeline-step:hover {
+  transform: translate(3px, 3px);
+  box-shadow: 0 0 0 var(--ink);
+}
+
+.pipeline-step:nth-child(5n+1) { --card-accent: var(--pink); }
+.pipeline-step:nth-child(5n+2) { --card-accent: var(--violet); }
+.pipeline-step:nth-child(5n+3) { --card-accent: var(--cyan); }
+.pipeline-step:nth-child(5n+4) { --card-accent: var(--yellow); }
+.pipeline-step:nth-child(5n+5) { --card-accent: var(--accent); }
+
+.pipeline-num {
+  align-self: flex-start;
+  padding: 4px 12px;
+  border: var(--border);
+  border-radius: 999px;
+  background: var(--card-accent);
+  font-weight: 900;
+  font-size: 14px;
+}
+
+.pipeline-step h3 {
+  font-size: 19px;
+  font-weight: 800;
+}
+
+.pipeline-step p {
+  font-size: 14.5px;
+}
+
+.pipeline-step .project-tag-row {
+  margin-top: auto;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  padding-top: 6px;
+}
+
 /* ---------------- Projects ---------------- */
 
 .projects-grid {
