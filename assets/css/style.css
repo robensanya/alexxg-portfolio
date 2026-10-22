@@ -121,3 +121,19 @@
 .hero-collage .portrait-shape{inset:10px 11% 20px;border-radius:24px}
 .hero-collage .portrait-chip{font-size:9px;padding:9px 11px}
 }
+
+/* Larger brand-color chips against the quiet portrait backdrop. */
+.hero-collage .portrait-chip{font-size:12px;font-weight:800;padding:13px 19px;line-height:1.3;border-color:transparent;box-shadow:0 4px 12px #2025190a}
+.hero-collage .chip-idea{background:var(--accent);color:var(--ink)}
+.hero-collage .chip-learning{background:var(--blue);color:#fff;top:45%}
+.hero-collage .chip-ai{background:var(--accent);color:var(--ink);border-color:transparent;top:63%}
+.hero-collage .chip-web{background:#dedaff;color:#292158;bottom:13%}
+.hero-collage .chip-code{background:var(--blue);color:#fff;bottom:0}
+@media(max-width:1100px) and (min-width:761px){
+.hero-collage .portrait-chip{font-size:11px;padding:11px 15px}
+}
+@media(max-width:480px){
+.hero-collage .portrait-chip{font-size:11px;padding:11px 15px}
+.hero-collage .chip-idea{left:0}
+.hero-collage .chip-code{left:10%}
+}
