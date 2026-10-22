@@ -16,7 +16,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
 
-<link rel="stylesheet" href="assets/css/style.css?v=20261022-4" />
+<link rel="stylesheet" href="assets/css/style.css?v=20261023-interactive" />
 </head>
 <body>
 <a class="skip-link" href="#projects">Перейти к работам</a>
@@ -48,12 +48,14 @@
       <div class="hero-art hero-collage">
         <div class="portrait-shape"><img class="hero-photo" src="assets/img/alexandra-smooth.webp" width="1254" height="1254" alt="Александра Гуляева"></div>
         <ul class="portrait-chips" aria-label="Мои направления">
-<li class="portrait-chip chip-idea">От идеи до запуска ↗</li>
-          <li class="portrait-chip chip-learning">Проектирую обучение</li>
-          <li class="portrait-chip chip-ai">AI в рабочих задачах ✳</li>
-          <li class="portrait-chip chip-web">Собираю лендинги ↗</li>
-          <li class="portrait-chip chip-code">Добавляю интерактив</li>
+<li><button type="button" class="portrait-chip chip-idea" aria-describedby="chip-help">От идеи до запуска ↗</button></li>
+          <li><button type="button" class="portrait-chip chip-learning" aria-describedby="chip-help">Проектирую обучение</button></li>
+          <li><button type="button" class="portrait-chip chip-ai" aria-describedby="chip-help">AI в рабочих задачах ✳</button></li>
+          <li><button type="button" class="portrait-chip chip-web" aria-describedby="chip-help">Собираю лендинги ↗</button></li>
+          <li><button type="button" class="portrait-chip chip-code" aria-describedby="chip-help">Добавляю интерактив</button></li>
         </ul>
+        <div class="collage-controls" hidden><span id="chip-help">Подвигайте чипсы ↔ <span class="sr-only">С клавиатуры: стрелки для перемещения, Escape для сброса.</span></span><button type="button" class="collage-reset">Собрать заново ↺</button><button type="button" class="collage-motion" aria-pressed="false" aria-label="Остановить покачивание чипсов">Ⅱ</button></div>
+        <span class="sr-only" id="collage-status" aria-live="polite"></span>
       </div>
     </div>
     <div class="marquee-strip" aria-hidden="true"><div class="marquee-strip-inner"><span>AI-CREATOR ✳ LEARNING DESIGN ✳ WEB & INTERACTIVE ✳ ОТ ИДЕИ К ПРАКТИКЕ ✳ </span><span>AI-CREATOR ✳ LEARNING DESIGN ✳ WEB & INTERACTIVE ✳ ОТ ИДЕИ К ПРАКТИКЕ ✳ </span></div></div>
@@ -358,7 +360,7 @@
   </div>
 </footer>
 
-<script src="assets/js/main.js?v=20261022"></script>
+<script src="assets/js/main.js?v=20261023-interactive"></script>
 </body>
 </html>
 

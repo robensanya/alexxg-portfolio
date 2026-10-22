@@ -137,3 +137,24 @@
 .hero-collage .chip-idea{left:0}
 .hero-collage .chip-code{left:10%}
 }
+
+/* A small interactive collage, with optional motion. */
+.hero-art.hero-collage{margin-bottom:40px}
+.hero-collage .portrait-shape{border-radius:24px;transform:rotate(-4deg);box-shadow:7px 8px 0 #dedaff}
+.hero-collage .portrait-shape .hero-photo{transform:rotate(4deg)}
+.hero-collage.is-interactive .portrait-chip{cursor:grab;touch-action:none;user-select:none;-webkit-user-select:none;animation:chip-sway 5s ease-in-out infinite;animation-delay:var(--delay,0s)}
+.hero-collage .chip-learning{--delay:-1s}
+.hero-collage .chip-ai{--delay:-2s}
+.hero-collage .chip-web{--delay:-3s}
+.hero-collage .chip-code{--delay:-4s}
+@keyframes chip-sway{0%,100%{transform:translateY(0) rotate(-2deg)}50%{transform:translateY(-6px) rotate(2deg)}}
+.hero-collage:hover .portrait-chip,.hero-collage:focus-within .portrait-chip,.hero-collage.motion-paused .portrait-chip{animation-play-state:paused}
+.hero-collage .portrait-chip.is-placed{animation:none;transform:none}
+.hero-collage .portrait-chip.is-dragging{cursor:grabbing;z-index:5;box-shadow:0 10px 25px #1c1d1c20}
+.hero-collage .portrait-chip:focus-visible{outline:3px solid var(--ink);outline-offset:4px}
+.collage-controls{position:absolute;left:0;right:0;bottom:-34px;display:flex;align-items:center;justify-content:center;gap:14px;color:#62645b;font-size:10px}
+.collage-controls[hidden]{display:none}
+.collage-reset,.collage-motion{font:inherit;color:var(--ink);border:0;background:none;cursor:pointer;padding:7px 0}
+.collage-reset{text-decoration:underline;text-underline-offset:3px}
+.collage-motion{border:1px solid var(--line);border-radius:50%;width:28px;height:28px;padding:0}
+@media(prefers-reduced-motion:reduce){.hero-collage.is-interactive .portrait-chip{animation:none}.collage-motion{display:none}}
