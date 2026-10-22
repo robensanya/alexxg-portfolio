@@ -4,3 +4,60 @@
 @media(max-width:760px){section{padding:60px 0}.site-header .container{min-height:90px;flex-wrap:wrap;gap:15px;padding-top:16px;padding-bottom:16px}.site-nav{gap:16px}.site-nav a{font-size:12px}.header-contacts{flex-direction:row;flex-wrap:wrap;width:100%;gap:18px;font-size:11px}.hero{padding-top:35px}.hero-layout{grid-template-columns:1fr;gap:30px;padding-bottom:40px}.hero h1{font-size:clamp(44px,9.5vw,70px)}.hero-art{width:90%;min-height:360px;max-width:430px;justify-self:center;margin:0;transform:rotate(2deg)}.hero-photo{height:100%}.art-star{font-size:85px}.art-note{font-size:17px}.subtitle{font-size:15px}.eyebrow{font-size:10px}.section-heading{display:block}.section-heading p{margin-top:20px}.section-title{font-size:40px}.projects-grid{gap:28px 18px}.project-visual{height:210px;padding:19px}.project-visual strong{font-size:29px}.visual-meta{font-size:8px}.project-title{font-size:22px}.project-desc{font-size:12px}#video .grid-4{grid-template-columns:1fr}.video-card{max-width:500px;width:100%;margin:auto}.approach-list{grid-template-columns:1fr}.approach-num{margin-bottom:10px}.contacts-card{padding:30px 23px}.contacts-list a{font-size:12px;padding:12px 15px}}
 @media(max-width:480px){.projects-grid,.grid-4{grid-template-columns:1fr}.project-visual{height:235px}.project-visual strong{font-size:36px}.project-desc{font-size:14px}.project-title{font-size:26px}.hero-art{min-height:330px}.hero-actions .btn{font-size:12px;padding:13px 17px;gap:15px}.filter{padding:9px 13px;font-size:12px}.site-logo{max-width:130px;font-size:16px}.section-title{font-size:36px}.footer-inner{gap:20px;align-items:start}}
 @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}.marquee-strip-inner{animation:none}*,*:before,*:after{transition:none!important}}
+
+/* Portrait collage: free-standing cutout and overlapping notes */
+.hero-art.hero-collage{background:none;border-radius:0;transform:none;overflow:visible;margin:0;min-height:460px;isolation:isolate}
+.hero-collage .hero-photo{left:0;bottom:0;width:100%;height:92%;transform:none;object-position:center bottom;mask-image:linear-gradient(to bottom,#000 90%,transparent 100%)}
+.hero-collage .art-note{top:0;left:12%;font-size:19px;transform:rotate(-5deg)}
+.hero-collage .art-star{top:45px;right:3%;font-size:75px;z-index:-1}
+.portrait-chips{list-style:none;padding:0;margin:0}
+.portrait-chip{position:absolute;z-index:2;padding:13px 19px;border-radius:999px;font-size:12px;line-height:1.3;font-weight:800;white-space:nowrap;box-shadow:0 5px 15px #1c1d1c0c}
+.chip-learning{left:-2%;top:30%;background:var(--accent);transform:rotate(-9deg)}
+.chip-ai{right:-2%;top:52%;background:var(--blue);color:white;transform:rotate(8deg)}
+.chip-web{left:-1%;bottom:18%;background:#e4e3f8;transform:rotate(-6deg)}
+.chip-code{right:0;bottom:9%;background:var(--ink);color:white;transform:rotate(5deg)}
+.chip-idea{left:13%;bottom:-2%;background:var(--accent);transform:rotate(-3deg)}
+/* Capabilities tied to real work */
+#skills{background:var(--accent)}
+.capabilities-layout{display:grid;grid-template-columns:.8fr 1.6fr;gap:55px;align-items:start}
+.capabilities-intro .section-title{font-size:clamp(38px,4vw,56px);margin-bottom:24px}
+.capabilities-intro>p{font-size:15px;line-height:1.75;max-width:310px}
+.capabilities-sign{display:block;margin-top:32px;font-size:11px;font-weight:800;max-width:240px;border-top:1px solid #1c1d1c40;padding-top:18px}
+.capabilities-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
+.capability{display:flex;flex-direction:column;padding:27px;border-radius:18px;background:var(--bg);min-width:0}
+.capability-number{font-size:10px;letter-spacing:.1em;font-weight:800;color:var(--blue);margin-bottom:28px}
+.capability h3{font-size:26px;letter-spacing:-.04em;line-height:1.12;margin-bottom:16px}
+.capability p{font-size:13px;line-height:1.7;color:#53564e}
+.capability-tools{font-size:10px;margin:22px 0 18px;color:#53564e}
+.capability a{display:flex;justify-content:space-between;gap:12px;padding-top:15px;border-top:1px solid var(--line);font-size:11px;font-weight:800;text-decoration:none;margin-top:auto}
+.capability a:hover{text-decoration:underline}
+.capability-accent{background:var(--blue);color:white}
+.capability-accent .capability-number,.capability-accent .capability-tools{color:var(--accent)}
+.capability-accent p{color:#ffffffdf}
+.capability-accent a{border-color:#ffffff45}
+@media(max-width:1100px){
+.hero-art.hero-collage{min-height:420px}
+.portrait-chip{font-size:10px;padding:11px 13px}
+.capabilities-layout{grid-template-columns:1fr;gap:32px}
+.capabilities-intro>p{max-width:520px}
+.capabilities-sign{max-width:none;margin-top:20px}
+}
+@media(max-width:760px){
+.hero-art.hero-collage{width:100%;max-width:440px;min-height:420px;margin:10px 0 15px}
+.hero-collage .hero-photo{height:94%}
+.hero-collage .art-note{left:12%}
+.portrait-chip{font-size:12px}
+.chip-learning{left:0}
+.chip-ai{right:0}
+.capability{padding:24px}
+}
+@media(max-width:480px){
+.hero-art.hero-collage{min-height:360px;max-width:350px}
+.hero-collage .art-note{font-size:16px}
+.hero-collage .art-star{font-size:60px;right:0}
+.portrait-chip{font-size:10px;padding:11px 13px}
+.capabilities-grid{grid-template-columns:1fr}
+.capability-number{margin-bottom:18px}
+.capability h3{font-size:27px}
+.capability p{font-size:14px}
+}

@@ -16,7 +16,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
 
-<link rel="stylesheet" href="assets/css/style.css?v=20261022" />
+<link rel="stylesheet" href="assets/css/style.css?v=20261022-2" />
 </head>
 <body>
 <a class="skip-link" href="#projects">Перейти к работам</a>
@@ -45,7 +45,18 @@
         <p class="subtitle">Курсы, лендинги и интерактивы для бизнеса.<br>Соединяю методологию, дизайн и AI — от первой структуры до готового продукта.</p>
         <div class="hero-actions"><a class="btn btn-primary" href="#projects">Посмотреть работы <span>↘</span></a><a class="btn" href="https://t.me/etosashenka">Обсудить проект ↗</a></div>
       </div>
-      <div class="hero-art"><span class="art-note">Привет, я Саша!</span><span class="art-star" aria-hidden="true">✳</span><img class="hero-photo" src="assets/img/alexandra-cutout.webp" width="1254" height="1254" alt="Александра Гуляева"><div class="art-label">Идея. Структура. Дизайн. Код.</div></div>
+      <div class="hero-art hero-collage">
+        <span class="art-note">Привет, я Саша!</span>
+        <span class="art-star" aria-hidden="true">✳</span>
+        <img class="hero-photo" src="assets/img/alexandra-cutout.webp" width="1254" height="1254" alt="Александра Гуляева">
+        <ul class="portrait-chips" aria-label="Мои направления">
+          <li class="portrait-chip chip-learning">Проектирую обучение</li>
+          <li class="portrait-chip chip-ai">AI в рабочих задачах ✳</li>
+          <li class="portrait-chip chip-web">Собираю лендинги ↗</li>
+          <li class="portrait-chip chip-code">Добавляю интерактив</li>
+          <li class="portrait-chip chip-idea">От идеи до запуска</li>
+        </ul>
+      </div>
     </div>
     <div class="marquee-strip" aria-hidden="true"><div class="marquee-strip-inner"><span>AI-CREATOR ✳ LEARNING DESIGN ✳ WEB & INTERACTIVE ✳ ОТ ИДЕИ К ПРАКТИКЕ ✳ </span><span>AI-CREATOR ✳ LEARNING DESIGN ✳ WEB & INTERACTIVE ✳ ОТ ИДЕИ К ПРАКТИКЕ ✳ </span></div></div>
   </section>
@@ -261,26 +272,42 @@
     </div>
   </section>
 
-  <!-- ЧТО Я УМЕЮ -->
   <section id="skills">
-    <div class="container">
-      <h2 class="section-title reveal"><span class="title-tag">Скиллы</span>Что я умею<svg class="title-star" viewBox="0 0 100 100" aria-hidden="true"><path d="M50 0 L61 39 L100 50 L61 61 L50 100 L39 61 L0 50 L39 39 Z" /></svg></h2>
-      <div class="grid-4">
-        <article class="skill-card reveal">
-          <h3 class="skill-title">Методология</h3>
-          <p class="skill-body">Матрица целей, сценарии обучения, структура модулей — курс проектируется от задачи бизнеса, а не от шаблона слайда.</p>
+    <div class="container capabilities-layout">
+      <div class="capabilities-intro">
+        <span class="eyebrow">02 / ЧТО Я УМЕЮ</span>
+        <h2 class="section-title">Чем могу<br>быть полезна</h2>
+        <p>Разбираюсь в задаче, выстраиваю содержание и собираю продукт, которым удобно пользоваться.</p>
+        <span class="capabilities-sign">Методология + дизайн + технологии</span>
+      </div>
+      <div class="capabilities-grid">
+        <article class="capability">
+          <span class="capability-number">01 / ОБУЧЕНИЕ</span>
+          <h3>Объяснить сложное</h3>
+          <p>Превращаю материалы экспертов в понятный курс: цели, сценарий, практические задания и проверка знаний.</p>
+          <div class="capability-tools">Articulate Rise · SCORM · LMS</div>
+          <a href="demos/onboarding/index.html">Пример: онбординг Skyeng <span aria-hidden="true">↗</span></a>
         </article>
-        <article class="skill-card reveal">
-          <h3 class="skill-title">Фронтенд</h3>
-          <p class="skill-body">Пишу кастомные интерактивные компоненты руками: HTML/CSS/JS без конструктора — значит, не завишу от его ограничений.</p>
+        <article class="capability">
+          <span class="capability-number">02 / ВЕБ-ДИЗАЙН</span>
+          <h3>Собрать всё в одном месте</h3>
+          <p>Проектирую лендинги и каталоги: от структуры и текста до визуала и понятной навигации.</p>
+          <div class="capability-tools">Figma · Tilda · HTML/CSS</div>
+          <a href="demos/korpuniver-landing/index.html">Пример: корпоративный университет <span aria-hidden="true">↗</span></a>
         </article>
-        <article class="skill-card reveal">
-          <h3 class="skill-title">LMS</h3>
-          <p class="skill-body">Articulate Rise, SCORM, Equeo — знаю технические ограничения платформ и умею их обходить кастомным кодом.</p>
+        <article class="capability">
+          <span class="capability-number">03 / ИНТЕРАКТИВ</span>
+          <h3>Вовлечь в действие</h3>
+          <p>Собираю квизы, навигаторы и прототипы с поиском, фильтрами и игровой механикой. Можно сразу попробовать.</p>
+          <div class="capability-tools">HTML/CSS/JS · Cursor · Claude</div>
+          <a href="demos/ejm/index.html">Пример: карта пути сотрудника <span aria-hidden="true">↗</span></a>
         </article>
-        <article class="skill-card reveal">
-          <h3 class="skill-title">AI-инструменты</h3>
-          <p class="skill-body">Собираю прототипы и контент в разы быстрее с помощью AI и обучаю этому команду — от промптинга до готовых интерактивов.</p>
+        <article class="capability capability-accent">
+          <span class="capability-number">04 / AI-ПРАКТИКА</span>
+          <h3>Помочь освоить AI</h3>
+          <p>Создаю контент с AI и обучаю работе с ним: от формулировки запроса до применения в повседневных задачах.</p>
+          <div class="capability-tools">ChatGPT · Claude · Gemini</div>
+          <a href="demos/ai-first/index.html">Пример: курс AI-first <span aria-hidden="true">↗</span></a>
         </article>
       </div>
     </div>
