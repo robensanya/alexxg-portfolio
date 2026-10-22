@@ -20,70 +20,37 @@
 })();
 
 (() => {
-  const stage = document.querySelector('.hero-collage');
+  const stage = document.querySelector('.portrait-deck');
   if (!stage) return;
-  const chips = [...stage.querySelectorAll('.portrait-chip')];
-  const controls = stage.querySelector('.collage-controls');
-  const status = stage.querySelector('#collage-status');
-  const motion = stage.querySelector('.collage-motion');
-  let active = null;
-  const clamp = (value, max) => Math.max(0, Math.min(Math.max(0, max), value));
-  function place(chip, x, y) {
-    chip.classList.add('is-placed');
-    chip.style.left = clamp(x, stage.clientWidth - chip.offsetWidth) + 'px';
-    chip.style.top = clamp(y, stage.clientHeight - chip.offsetHeight) + 'px';
-    chip.style.right = 'auto';
-    chip.style.bottom = 'auto';
+  const cards = [...stage.querySelectorAll('.thesis-card')];
+  const button = stage.querySelector('.deck-pause');
+  const reduced = window.matchMedia('(prefers-reduced-motion: reduce)');
+  let index = 0, timer = null, paused = false, hovered = false, visible = true;
+  function schedule() {
+    clearTimeout(timer);
+    timer = null;
+    if (paused || hovered || !visible || document.hidden || reduced.matches) return;
+    timer = setTimeout(() => {
+      cards[index].classList.remove('is-active');
+      index = (index + 1) % cards.length;
+      cards[index].classList.add('is-active');
+      schedule();
+    }, 2500);
   }
-  function finish() {
-    if (!active) return;
-    const { chip, id } = active;
-    active = null;
-    chip.classList.remove('is-dragging');
-    if (chip.hasPointerCapture(id)) chip.releasePointerCapture(id);
+  stage.addEventListener('pointerenter', event => { if (event.pointerType === 'mouse') { hovered = true; schedule(); } });
+  stage.addEventListener('pointerleave', () => { hovered = false; schedule(); });
+  button.addEventListener('click', () => {
+    paused = !paused;
+    button.setAttribute('aria-pressed', String(paused));
+    button.setAttribute('aria-label', paused ? 'Включить смену карточек' : 'Остановить смену карточек');
+    button.textContent = paused ? '▷' : 'Ⅱ';
+    schedule();
+  });
+  document.addEventListener('visibilitychange', schedule);
+  reduced.addEventListener('change', schedule);
+  if ('IntersectionObserver' in window) {
+    new IntersectionObserver(entries => { visible = entries[0].isIntersecting; schedule(); }, { threshold: 0.1 }).observe(stage);
   }
-  function reset() {
-    finish();
-    chips.forEach(chip => { chip.removeAttribute('style'); chip.classList.remove('is-placed'); });
-  }
-  chips.forEach(chip => {
-    chip.addEventListener('pointerdown', event => {
-      if (active || !event.isPrimary || event.button !== 0) return;
-      const box = chip.getBoundingClientRect();
-      const parent = stage.getBoundingClientRect();
-      place(chip, box.left - parent.left, box.top - parent.top);
-      active = { chip, id: event.pointerId, dx: event.clientX - box.left, dy: event.clientY - box.top };
-      chip.classList.add('is-dragging');
-      chip.setPointerCapture(event.pointerId);
-    });
-    chip.addEventListener('pointermove', event => {
-      if (!active || active.chip !== chip || active.id !== event.pointerId) return;
-      const box = stage.getBoundingClientRect();
-      place(chip, event.clientX - box.left - active.dx, event.clientY - box.top - active.dy);
-    });
-    ['pointerup', 'pointercancel', 'lostpointercapture'].forEach(name => chip.addEventListener(name, () => {
-      if (active && active.chip === chip) finish();
-    }));
-    chip.addEventListener('keydown', event => {
-      if (event.key === 'Escape') { reset(); status.textContent = 'Чипсы на исходных местах'; return; }
-      const directions = { ArrowLeft: [-1, 0], ArrowRight: [1, 0], ArrowUp: [0, -1], ArrowDown: [0, 1] };
-      if (!directions[event.key]) return;
-      event.preventDefault();
-      const box = chip.getBoundingClientRect(), parent = stage.getBoundingClientRect();
-      const [x, y] = directions[event.key], step = event.shiftKey ? 20 : 8;
-      place(chip, box.left - parent.left + x * step, box.top - parent.top + y * step);
-    });
-  });
-  stage.querySelector('.collage-reset').addEventListener('click', () => {
-    reset(); status.textContent = 'Чипсы на исходных местах';
-  });
-  motion.addEventListener('click', () => {
-    const paused = stage.classList.toggle('motion-paused');
-    motion.setAttribute('aria-pressed', String(paused));
-    motion.setAttribute('aria-label', paused ? 'Включить покачивание чипсов' : 'Остановить покачивание чипсов');
-    motion.textContent = paused ? '▷' : 'Ⅱ';
-  });
-  window.addEventListener('resize', reset);
-  controls.hidden = false;
-  stage.classList.add('is-interactive');
+  button.hidden = false;
+  schedule();
 })();

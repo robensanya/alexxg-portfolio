@@ -138,23 +138,45 @@
 .hero-collage .chip-code{left:10%}
 }
 
-/* A small interactive collage, with optional motion. */
-.hero-art.hero-collage{margin-bottom:40px}
-.hero-collage .portrait-shape{border-radius:24px;transform:rotate(-4deg);box-shadow:7px 8px 0 #dedaff}
-.hero-collage .portrait-shape .hero-photo{transform:rotate(4deg)}
-.hero-collage.is-interactive .portrait-chip{cursor:grab;touch-action:none;user-select:none;-webkit-user-select:none;animation:chip-sway 5s ease-in-out infinite;animation-delay:var(--delay,0s)}
-.hero-collage .chip-learning{--delay:-1s}
-.hero-collage .chip-ai{--delay:-2s}
-.hero-collage .chip-web{--delay:-3s}
-.hero-collage .chip-code{--delay:-4s}
-@keyframes chip-sway{0%,100%{transform:translateY(0) rotate(-2deg)}50%{transform:translateY(-6px) rotate(2deg)}}
-.hero-collage:hover .portrait-chip,.hero-collage:focus-within .portrait-chip,.hero-collage.motion-paused .portrait-chip{animation-play-state:paused}
-.hero-collage .portrait-chip.is-placed{animation:none;transform:none}
-.hero-collage .portrait-chip.is-dragging{cursor:grabbing;z-index:5;box-shadow:0 10px 25px #1c1d1c20}
-.hero-collage .portrait-chip:focus-visible{outline:3px solid var(--ink);outline-offset:4px}
-.collage-controls{position:absolute;left:0;right:0;bottom:-34px;display:flex;align-items:center;justify-content:center;gap:14px;color:#62645b;font-size:10px}
-.collage-controls[hidden]{display:none}
-.collage-reset,.collage-motion{font:inherit;color:var(--ink);border:0;background:none;cursor:pointer;padding:7px 0}
-.collage-reset{text-decoration:underline;text-underline-offset:3px}
-.collage-motion{border:1px solid var(--line);border-radius:50%;width:28px;height:28px;padding:0}
-@media(prefers-reduced-motion:reduce){.hero-collage.is-interactive .portrait-chip{animation:none}.collage-motion{display:none}}
+
+/* Portrait meets the ticker; changing thesis cards sit behind it. */
+.hero .hero-layout{padding-bottom:0;align-items:stretch}
+.hero .hero-inner{align-self:center;padding-bottom:58px}
+.portrait-deck{position:relative;height:520px;min-width:0;width:100%;max-width:510px;justify-self:center;align-self:end;isolation:isolate}
+.thesis-stack{position:absolute;top:16px;left:3%;right:3%;height:210px;z-index:0}
+.thesis-stack::before,.thesis-stack::after{content:"";position:absolute;inset:0;border-radius:22px;background:#dedaff;transform:rotate(-5deg)}
+.thesis-stack::after{background:#e4e7dc;transform:rotate(4deg)}
+.thesis-card{position:absolute;inset:0;z-index:1;border-radius:22px;padding:24px 28px;overflow:hidden;opacity:0;transform:translateY(12px) rotate(3deg);transition:opacity .4s ease,transform .5s ease;pointer-events:none;background:var(--blue);color:#fff}
+.thesis-card.is-active{opacity:1;transform:translateY(0) rotate(-2deg);z-index:2}
+.thesis-index{display:block;font-size:10px;font-weight:800;letter-spacing:.14em;margin-bottom:15px}
+.thesis-card strong{display:block;position:relative;z-index:1;font-size:clamp(25px,2.6vw,36px);line-height:1.12;letter-spacing:-.045em;max-width:85%}
+.thesis-symbol{position:absolute;right:15px;bottom:6px;font-size:110px;line-height:1;opacity:.14}
+.thesis-1,.thesis-3{background:var(--accent);color:var(--ink)}
+.thesis-2{background:#dedaff;color:#292158}
+.thesis-4{background:var(--blue);color:#fff}
+.deck-portrait{position:absolute;z-index:3;bottom:0;left:-2%;width:104%;height:370px;object-fit:contain;object-position:center bottom;pointer-events:none}
+.deck-pause{position:absolute;z-index:4;bottom:18px;right:0;width:30px;height:30px;border:1px solid var(--line);border-radius:50%;background:var(--bg);color:var(--ink);font:600 12px Manrope,sans-serif;cursor:pointer}
+.deck-pause[hidden]{display:none}
+@media(max-width:1100px) and (min-width:761px){
+.portrait-deck{height:490px}
+.thesis-stack{height:195px;left:0;right:0}
+.thesis-card{padding:22px}
+.thesis-card strong{font-size:28px}
+.deck-portrait{height:340px}
+}
+@media(max-width:760px){
+.hero .hero-layout{gap:24px;padding-bottom:0}
+.hero .hero-inner{padding-bottom:0}
+.portrait-deck{height:460px;max-width:440px}
+.thesis-stack{top:12px;height:190px}
+.thesis-card strong{font-size:31px}
+.deck-portrait{height:330px}
+}
+@media(max-width:480px){
+.portrait-deck{height:420px;max-width:350px}
+.thesis-stack{height:185px;left:2%;right:2%}
+.thesis-card{padding:20px 22px}
+.thesis-card strong{font-size:28px;max-width:90%}
+.deck-portrait{height:290px}
+}
+@media(prefers-reduced-motion:reduce){.thesis-card{transition:none}.deck-pause{display:none}}

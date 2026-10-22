@@ -16,7 +16,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
 
-<link rel="stylesheet" href="assets/css/style.css?v=20261023-interactive" />
+<link rel="stylesheet" href="assets/css/style.css?v=20261023-deck" />
 </head>
 <body>
 <a class="skip-link" href="#projects">Перейти к работам</a>
@@ -45,17 +45,17 @@
         <p class="subtitle">Курсы, лендинги и интерактивы для бизнеса.<br>Соединяю методологию, дизайн и AI — от первой структуры до готового продукта.</p>
         <div class="hero-actions"><a class="btn btn-primary" href="#projects">Посмотреть работы <span>↘</span></a><a class="btn" href="https://t.me/etosashenka">Обсудить проект ↗</a></div>
       </div>
-      <div class="hero-art hero-collage">
-        <div class="portrait-shape"><img class="hero-photo" src="assets/img/alexandra-smooth.webp" width="1254" height="1254" alt="Александра Гуляева"></div>
-        <ul class="portrait-chips" aria-label="Мои направления">
-<li><button type="button" class="portrait-chip chip-idea" aria-describedby="chip-help">От идеи до запуска ↗</button></li>
-          <li><button type="button" class="portrait-chip chip-learning" aria-describedby="chip-help">Проектирую обучение</button></li>
-          <li><button type="button" class="portrait-chip chip-ai" aria-describedby="chip-help">AI в рабочих задачах ✳</button></li>
-          <li><button type="button" class="portrait-chip chip-web" aria-describedby="chip-help">Собираю лендинги ↗</button></li>
-          <li><button type="button" class="portrait-chip chip-code" aria-describedby="chip-help">Добавляю интерактив</button></li>
-        </ul>
-        <div class="collage-controls" hidden><span id="chip-help">Подвигайте чипсы ↔ <span class="sr-only">С клавиатуры: стрелки для перемещения, Escape для сброса.</span></span><button type="button" class="collage-reset">Собрать заново ↺</button><button type="button" class="collage-motion" aria-pressed="false" aria-label="Остановить покачивание чипсов">Ⅱ</button></div>
-        <span class="sr-only" id="collage-status" aria-live="polite"></span>
+      <div class="portrait-deck">
+        <div class="thesis-stack" aria-hidden="true">
+          <div class="thesis-card thesis-0 is-active"><span class="thesis-index">01 / 05</span><strong>От идеи до запуска</strong><span class="thesis-symbol">✳</span></div>
+          <div class="thesis-card thesis-1"><span class="thesis-index">02 / 05</span><strong>Проектирую обучение</strong><span class="thesis-symbol">✳</span></div>
+          <div class="thesis-card thesis-2"><span class="thesis-index">03 / 05</span><strong>AI в рабочих задачах</strong><span class="thesis-symbol">✳</span></div>
+          <div class="thesis-card thesis-3"><span class="thesis-index">04 / 05</span><strong>Собираю лендинги</strong><span class="thesis-symbol">✳</span></div>
+          <div class="thesis-card thesis-4"><span class="thesis-index">05 / 05</span><strong>Добавляю интерактив</strong><span class="thesis-symbol">✳</span></div>
+        </div>
+        <ul class="sr-only" aria-label="Мои направления"><li>От идеи до запуска</li><li>Проектирую обучение</li><li>AI в рабочих задачах</li><li>Собираю лендинги</li><li>Добавляю интерактив</li></ul>
+        <img class="deck-portrait" src="assets/img/alexandra-smooth.webp" width="1254" height="1254" alt="Александра Гуляева">
+        <button type="button" class="deck-pause" hidden aria-label="Остановить смену карточек" aria-pressed="false">Ⅱ</button>
       </div>
     </div>
     <div class="marquee-strip" aria-hidden="true"><div class="marquee-strip-inner"><span>AI-CREATOR ✳ LEARNING DESIGN ✳ WEB & INTERACTIVE ✳ ОТ ИДЕИ К ПРАКТИКЕ ✳ </span><span>AI-CREATOR ✳ LEARNING DESIGN ✳ WEB & INTERACTIVE ✳ ОТ ИДЕИ К ПРАКТИКЕ ✳ </span></div></div>
@@ -360,7 +360,7 @@
   </div>
 </footer>
 
-<script src="assets/js/main.js?v=20261023-interactive"></script>
+<script src="assets/js/main.js?v=20261023-deck"></script>
 </body>
 </html>
 
