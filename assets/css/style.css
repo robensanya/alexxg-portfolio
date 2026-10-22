@@ -83,3 +83,17 @@
 .hero-art.hero-collage{height:350px;max-width:350px}
 .hero-collage .portrait-chip{font-size:10px;padding:10px 12px}
 }
+
+/* A contained, asymmetric lime portrait shape with five overlapping chips. */
+.hero-art.hero-collage{height:440px}
+.hero-art.hero-collage::after{display:none}
+.portrait-shape{position:absolute;inset:20px 10% 12px 12%;background:var(--accent);border-radius:28px 100px 28px 65px;overflow:hidden}
+.hero-collage .portrait-shape .hero-photo{left:-15%;bottom:0;width:130%;height:98%;object-fit:contain;object-position:center bottom;mask-image:none;-webkit-mask-image:none}
+.hero-collage .chip-idea{left:0;right:auto;top:9%;bottom:auto;background:var(--blue);color:white;transform:rotate(-6deg)}
+.hero-collage .chip-learning{left:auto;right:-1%;top:40%;bottom:auto;background:var(--bg);border:1px solid var(--ink);transform:rotate(6deg)}
+.hero-collage .chip-ai{left:-1%;right:auto;top:60%;bottom:auto;transform:rotate(-5deg)}
+.hero-collage .chip-web{left:auto;right:0;top:auto;bottom:22%;transform:rotate(5deg)}
+.hero-collage .chip-code{left:16%;right:auto;top:auto;bottom:0;transform:rotate(-3deg)}
+@media(max-width:1100px) and (min-width:761px){.hero-art.hero-collage{height:380px}.portrait-shape{border-radius:24px 75px 24px 50px}}
+@media(max-width:760px){.hero-art.hero-collage{height:410px}}
+@media(max-width:480px){.hero-art.hero-collage{height:350px}.portrait-shape{inset:15px 9% 12px 10%;border-radius:22px 70px 22px 45px}}
