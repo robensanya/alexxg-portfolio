@@ -61,3 +61,25 @@
 .capability h3{font-size:27px}
 .capability p{font-size:14px}
 }
+
+/* Ground the portrait with a crisp baseline; keep labels around the body. */
+.hero-art.hero-collage{min-height:0;height:440px;align-self:center;max-width:500px;width:100%;justify-self:center;margin:0}
+.hero-collage .hero-photo{left:4%;bottom:20px;width:92%;height:calc(100% - 20px);object-fit:contain;object-position:center bottom;mask-image:none;-webkit-mask-image:none}
+.hero-art.hero-collage::after{content:"";position:absolute;left:9%;right:5%;bottom:19px;height:2px;background:var(--ink);z-index:1}
+.hero-collage .portrait-chip{box-shadow:none;font-size:11px;padding:12px 16px}
+.hero-collage .chip-learning{left:0;top:49%;bottom:auto;transform:rotate(-6deg)}
+.hero-collage .chip-ai{right:0;top:65%;bottom:auto;transform:rotate(5deg)}
+.hero-collage .chip-web{left:1%;top:auto;bottom:17%;transform:rotate(-4deg)}
+.hero-collage .chip-code{right:3%;top:auto;bottom:5px;transform:rotate(3deg)}
+@media(max-width:1100px) and (min-width:761px){
+.hero-art.hero-collage{height:380px}
+.hero-collage .portrait-chip{font-size:9px;padding:10px 12px}
+}
+@media(max-width:760px){
+.hero-art.hero-collage{height:410px;max-width:420px;margin:0}
+.hero-collage .portrait-chip{font-size:11px}
+}
+@media(max-width:480px){
+.hero-art.hero-collage{height:350px;max-width:350px}
+.hero-collage .portrait-chip{font-size:10px;padding:10px 12px}
+}
