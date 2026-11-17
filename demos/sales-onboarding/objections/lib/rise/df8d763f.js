@@ -1,0 +1,1 @@
+"use strict";(globalThis.wpRiseJsonp||=[]).push([["datadogProfiler"],{43143(Rt,U,c){c.r(U);c.d(U,{DEFAULT_RUM_PROFILER_CONFIGURATION:()=>config,createRumProfiler:()=>disabled});const config={sampleIntervalMs:10,collectIntervalMs:60000,minProfileDurationMs:5000};function disabled(){return{start(){},stop(){},isStopped:()=>true,isRunning:()=>false,isPaused:()=>false}}}}]);
