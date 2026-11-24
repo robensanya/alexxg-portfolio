@@ -1,0 +1,12 @@
+@import url("https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&family=Onest:wght@400;500;600;700;800&display=swap");
+:root {
+--font-display: Onest, Arial, sans-serif;
+--font-text: Montserrat, Arial, sans-serif;
+--blue-saturated:#006dff; --blue-light:#08a6ff; --blue-pale:#a5e4ff; --blue-tint:#def3ff;
+--enterprise:#12112f; --white:#fff; --paper:#fbfdfe; --grey-text:#737373; --grey-300:#d9d9d9; --grey-500:#a4a4a4;
+--lime:#ccf31e; --lime-green:#91ed20; --lime-deep:#aed403; --lime-pale:#e2ff60; --coral:#f75753;
+--gradient-brand:radial-gradient(ellipse at bottom left,#a5e4ff 0%,#08a6ff 40%,#006dff 70%,#143aff 100%);
+--gradient-brand-cover:radial-gradient(ellipse at bottom left,#a5e4ff 0%,#08a6ff 29%,#143aff 100%);
+}
+html{scroll-behavior:smooth} button,input{font:inherit} button:focus-visible,a:focus-visible,input:focus-visible{outline:3px solid #ccf31e;outline-offset:4px}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*,*::before,*::after{animation:none!important;transition:none!important}}

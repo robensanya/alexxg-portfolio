@@ -1,0 +1,608 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<title>CRM для туристических клубов | Александра Гуляева</title>
+<meta name="description" content="CRM для туристических клубов. Дизайн, пользовательские сценарии и интерактивный прототип.">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="design-system/styles.css">
+
+<style>
+  body { margin: 0; background: var(--paper); color: var(--enterprise); font-family: var(--font-text); -webkit-font-smoothing: antialiased; }
+  * { box-sizing: border-box; }
+  a { color: var(--enterprise); }
+  a:hover { color: var(--blue-saturated); }
+  @keyframes floatY { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-14px); } }
+  @keyframes fadeUp { from { opacity: 0; transform: translateY(18px); } to { opacity: 1; transform: translateY(0); } }
+</style>
+</helmet>
+
+<div style="width: 100%; overflow-x: clip; font-family: var(--font-text)">
+
+<div style="padding:10px clamp(16px,4vw,60px);background:#12112f;color:white;display:flex;gap:24px;flex-wrap:wrap;font:500 14px Montserrat,Arial,sans-serif"><a href="../../index.html#tourism-crm" style="color:white;text-decoration:none">К портфолио Александры</a><a href="leadgen.html" style="color:#ccf31e;text-decoration:none">Концепция лидогенерации</a></div>
+<header style="position: sticky; top: 0; z-index: 40; display: flex; align-items: center; gap: 24px; flex-wrap: wrap; justify-content: space-between; padding: 14px clamp(16px, 4vw, 60px); background: rgba(251,253,254,0.88); backdrop-filter: blur(18px); border-bottom: 1px solid var(--grey-300)">
+  <a href="#top" style="display: flex; align-items: center; gap: 12px; text-decoration: none; flex-shrink: 0">
+    <span style="font-family:var(--font-display);font-weight:800;font-size:22px;letter-spacing:-.04em;white-space:nowrap">ТАЙГА / CRM</span>
+  </a>
+  <nav style="display: flex; flex-wrap: wrap; align-items: center; gap: 10px clamp(14px, 2vw, 30px); font-size: 15px; font-weight: 500; letter-spacing: -0.01em; min-width: 0; flex: 1 1 auto; justify-content: flex-end">
+    <a href="#pain" style="text-decoration: none; white-space: nowrap">Для чего портал</a>
+    <a href="#tour" style="text-decoration: none; white-space: nowrap">Тур по порталу</a>
+    <a href="#calc" style="text-decoration: none; white-space: nowrap">Считаем недобор</a>
+    <a href="#plan" style="text-decoration: none; white-space: nowrap">Внедрение</a>
+  </nav>
+  <a href="#cta" style="display: inline-flex; align-items: center; padding: 12px 22px; border-radius: 40px; background: var(--lime); color: var(--enterprise); font-weight: 700; font-size: 15px; text-decoration: none; letter-spacing: -0.01em; white-space: nowrap; flex-shrink: 0" style-hover="background: var(--lime-pale)">Записаться на разбор</a>
+</header>
+
+<section id="top" style="position: relative; padding: clamp(48px, 7vw, 104px) clamp(16px, 4vw, 60px) clamp(56px, 7vw, 110px); background: var(--gradient-brand-cover); color: var(--white); overflow: hidden">
+  <div style="position: relative; z-index: 2; max-width: 1400px; margin: 0 auto; display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 320px), 1fr)); gap: clamp(32px, 4vw, 64px); align-items: center">
+    <div style="min-width: 0; animation: fadeUp 0.7s ease both">
+      <div style="display: inline-flex; align-items: center; gap: 10px; padding: 9px 18px; border-radius: 68px; background: rgba(255,255,255,0.2); backdrop-filter: blur(57.5px); font-size: 15px; font-weight: 600; letter-spacing: -0.02em; margin-bottom: 26px">
+        <span style="width: 8px; height: 8px; border-radius: 50%; background: var(--lime); display: block"></span>
+        Для школ выживания и туристических клубов
+      </div>
+      <h1 style="margin: 0 0 22px; font-family: var(--font-display); font-weight: 800; font-size: clamp(36px, 6.4vw, 80px); line-height: 1; letter-spacing: -0.03em; text-wrap: balance">Ни одной потерянной заявки за сезон</h1>
+      <p style="margin: 0 0 34px; max-width: 34ch; font-size: clamp(17px, 1.5vw, 22px); line-height: 1.5; font-weight: 500; letter-spacing: -0.02em; color: rgba(255,255,255,0.92)">CRM-портал держит заявки из Telegram, сайта и звонков в одном окне, напоминает об оплате, следит за снаряжением и подстраховывает инструктора, пока он вне связи.</p>
+      <div style="display: flex; flex-wrap: wrap; gap: 14px; margin-bottom: 40px">
+        <a href="#cta" style="display: inline-flex; align-items: center; padding: 17px 32px; border-radius: 48px; background: var(--lime); color: var(--enterprise); font-weight: 700; font-size: 17px; text-decoration: none; letter-spacing: -0.02em" style-hover="background: var(--lime-pale)">Получить бесплатно</a>
+        <a href="#tour" style="display: inline-flex; align-items: center; padding: 17px 32px; border-radius: 48px; background: rgba(255,255,255,0.2); backdrop-filter: blur(57.5px); color: var(--white); font-weight: 700; font-size: 17px; text-decoration: none; letter-spacing: -0.02em; border: 1px solid rgba(255,255,255,0.45)" style-hover="background: rgba(255,255,255,0.32)">Тур по порталу</a>
+      </div>
+      <div style="display: flex; flex-wrap: wrap; gap: clamp(20px, 3vw, 44px)">
+        <div>
+          <div style="font-family: var(--font-display); font-weight: 800; font-size: clamp(28px, 3vw, 40px); line-height: 1; letter-spacing: -0.03em">4 часа</div>
+          <div style="font-size: 14px; font-weight: 500; color: rgba(255,255,255,0.8); margin-top: 6px">в неделю освобождается<br>у администратора</div>
+        </div>
+        <div>
+          <div style="font-family: var(--font-display); font-weight: 800; font-size: clamp(28px, 3vw, 40px); line-height: 1; letter-spacing: -0.03em">0</div>
+          <div style="font-size: 14px; font-weight: 500; color: rgba(255,255,255,0.8); margin-top: 6px">заявок, потерянных<br>в личке инструктора</div>
+        </div>
+        <div>
+          <div style="font-family: var(--font-display); font-weight: 800; font-size: clamp(28px, 3vw, 40px); line-height: 1; letter-spacing: -0.03em">+2</div>
+          <div style="font-size: 14px; font-weight: 500; color: rgba(255,255,255,0.8); margin-top: 6px">человека в группе<br>за счёт автодобора</div>
+        </div>
+      </div>
+    </div>
+    <div style="position: relative; min-width: 0; display: flex; justify-content: center; align-items: center">
+      <div style="position: relative; width: min(100%, 480px); aspect-ratio: 1; display: grid; place-items: center; animation: floatY 7s ease-in-out infinite">
+        <img src="assets/3d-sphere.webp" alt="" style="width: 100%; height: auto; display: block">
+        <img src="assets/hero-mountain-3d.webp" alt="Гора с заснеженной вершиной" style="position: absolute; left: 12%; top: -6%; width: 36%; height: 36%; z-index: 2; transform: rotate(-18deg); transform-origin: 50% 100%;object-fit:contain">
+      </div>
+      <div style="position: absolute; left: 0; bottom: 6%; padding: 14px 20px; border-radius: 28px; background: rgba(255,255,255,0.2); backdrop-filter: blur(57.5px); border: 1px solid rgba(255,255,255,0.35); max-width: 260px">
+        <div style="font-size: 13px; font-weight: 700; letter-spacing: -0.02em; color: var(--lime)">Telegram · 21:40</div>
+        <div style="font-size: 15px; font-weight: 500; line-height: 1.35; margin-top: 4px">«Два места на Эльбрус в июле ещё есть?» — заявка уже в CRM</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="pain" style="padding: clamp(56px, 7vw, 110px) clamp(16px, 4vw, 60px)">
+  <div style="max-width: 1400px; margin: 0 auto">
+    <div style="display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 24px; margin-bottom: clamp(32px, 4vw, 56px)">
+      <div style="min-width: 0; max-width: 760px">
+        <div style="font-family: var(--font-display); font-weight: 800; font-size: 15px; letter-spacing: 0.04em; color: var(--blue-saturated); margin-bottom: 14px">ЗНАКОМО?</div>
+        <h2 style="margin: 0; font-family: var(--font-display); font-weight: 800; font-size: clamp(28px, 4vw, 50px); line-height: 1.08; letter-spacing: -0.03em; color: var(--enterprise); text-wrap: balance">На маршруте не&nbsp;теряется никто. В&nbsp;переписке — постоянно</h2>
+      </div>
+      <p style="margin: 0; max-width: 340px; font-size: 16px; line-height: 1.55; font-weight: 500; color: var(--grey-text)">Шесть ситуаций, в которых клуб теряет деньги тише всего. А дальше расскажем, что в каждой из них делает портал.</p>
+    </div>
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(270px, 1fr)); gap: clamp(14px, 1.6vw, 22px)">
+      <div style="position: relative; padding: 30px; border-radius: 30px; background: #F2F4F7; border: 1px solid #E2E6EC; min-width: 0">
+        <div style="display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; margin-bottom: 20px">
+          <div style="width: 52px; height: 52px; border-radius: 12px; background: #FFE3E2; color: #B02A26; display: grid; place-items: center; font-family: var(--font-display); font-weight: 800; font-size: 15px; flex-shrink: 0; width: auto; height: auto; padding: 7px 14px; border-radius: 30px; letter-spacing: -0.01em">4 часа в неделю</div>
+        </div>
+        <h3 style="margin: 0 0 10px; font-family: var(--font-display); font-weight: 700; font-size: 21px; line-height: 1.2; letter-spacing: -0.02em">Заявки в пяти местах</h3>
+        <p style="margin: 0; font-size: 15px; line-height: 1.55; font-weight: 500; color: var(--grey-text)">Telegram инструктора, комментарии в VK, письма, звонки на личный номер. Кто-то ответил, кто-то нет — не проверить.</p>
+      </div>
+      <div style="position: relative; padding: 30px; border-radius: 30px; background: #F2F4F7; border: 1px solid #E2E6EC; min-width: 0">
+        <div style="display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; margin-bottom: 20px"><div style="width: 52px; height: 52px; border-radius: 12px; background: #FFE3E2; color: #B02A26; display: grid; place-items: center; font-family: var(--font-display); font-weight: 800; font-size: 15px; flex-shrink: 0; width: auto; height: auto; padding: 7px 14px; border-radius: 30px; letter-spacing: -0.01em">−2 места в группе</div></div>
+        <h3 style="margin: 0 0 10px; font-family: var(--font-display); font-weight: 700; font-size: 21px; line-height: 1.2; letter-spacing: -0.02em">Группа недобрана</h3>
+        <p style="margin: 0; font-size: 15px; line-height: 1.55; font-weight: 500; color: var(--grey-text)">До выхода пять дней, в группе четыре человека из восьми. Поход или в минус, или переносится — и оба варианта плохие.</p>
+      </div>
+      <div style="position: relative; padding: 30px; border-radius: 30px; background: #F2F4F7; border: 1px solid #E2E6EC; min-width: 0">
+        <div style="width: 52px; height: 52px; border-radius: 12px; background: #FFE3E2; color: #B02A26; display: grid; place-items: center; font-family: var(--font-display); font-weight: 800; font-size: 15px; width: auto; height: auto; padding: 7px 14px; border-radius: 30px; margin-bottom: 20px; justify-self: start; letter-spacing: -0.01em">Закупка в последний день</div>
+        <h3 style="margin: 0 0 10px; font-family: var(--font-display); font-weight: 700; font-size: 21px; line-height: 1.2; letter-spacing: -0.02em">Снаряжение живёт в голове</h3>
+        <p style="margin: 0; font-size: 15px; line-height: 1.55; font-weight: 500; color: var(--grey-text)">Сколько спальников на складе, у кого палатка с прошлой смены, что пора списать. Узнаётся утром на выходе.</p>
+      </div>
+      <div style="position: relative; padding: 30px; border-radius: 30px; background: #F2F4F7; border: 1px solid #E2E6EC; min-width: 0">
+        <div style="width: 52px; height: 52px; border-radius: 12px; background: #FFE3E2; color: #B02A26; display: grid; place-items: center; font-family: var(--font-display); font-weight: 800; font-size: 15px; width: auto; height: auto; padding: 7px 14px; border-radius: 30px; margin-bottom: 20px; justify-self: start; letter-spacing: -0.01em">Риск не выйти на маршрут</div>
+        <h3 style="margin: 0 0 10px; font-family: var(--font-display); font-weight: 700; font-size: 21px; line-height: 1.2; letter-spacing: -0.02em">Документы перед выходом</h3>
+        <p style="margin: 0; font-size: 15px; line-height: 1.55; font-weight: 500; color: var(--grey-text)">Договор, согласие на риски, медсправка, регистрация группы в МЧС. Собирается вручную и всегда в последний вечер.</p>
+      </div>
+      <div style="position: relative; padding: 30px; border-radius: 30px; background: #F2F4F7; border: 1px solid #E2E6EC; min-width: 0">
+        <div style="width: 52px; height: 52px; border-radius: 12px; background: #FFE3E2; color: #B02A26; display: grid; place-items: center; font-family: var(--font-display); font-weight: 800; font-size: 15px; width: auto; height: auto; padding: 7px 14px; border-radius: 30px; margin-bottom: 20px; justify-self: start; letter-spacing: -0.01em">Клиенты уходят к соседям</div>
+        <h3 style="margin: 0 0 10px; font-family: var(--font-display); font-weight: 700; font-size: 21px; line-height: 1.2; letter-spacing: -0.02em">Инструкторы вне связи</h3>
+        <p style="margin: 0; font-size: 15px; line-height: 1.55; font-weight: 500; color: var(--grey-text)">Пока ведущий на маршруте, он недоступен четыре дня. Вопросы его групп висят, клиенты уходят к соседям.</p>
+      </div>
+      <div style="display: flex; flex-direction: column; padding: 30px; border-radius: 30px; background: var(--enterprise); color: var(--white); min-width: 0; overflow: hidden">
+        <div style="display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; margin-bottom: 20px"><div style="width: 52px; height: 52px; border-radius: 12px; background: var(--lime); color: var(--enterprise); display: grid; place-items: center; font-family: var(--font-display); font-weight: 800; font-size: 15px; flex-shrink: 0; width: auto; height: auto; padding: 7px 14px; border-radius: 30px; letter-spacing: -0.01em">Итого за сезон</div></div>
+        <h3 style="margin: 0 0 10px; font-family: var(--font-display); font-weight: 700; font-size: 21px; line-height: 1.2; letter-spacing: -0.02em">Упущенной выручки — на два похода</h3>
+        <p style="margin: 0; font-size: 15px; line-height: 1.55; font-weight: 500; color: rgba(255,255,255,0.75)">И ещё сотни людей, которые прошли ваши маршруты и растворились: никто не знает, кому предложить зимний курс, а кому — второй уровень.</p>
+        <div style="align-self: flex-end; width: clamp(104px, 42%, 150px); aspect-ratio: 1; margin: 20px -6px -8px auto"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="tour" style="padding: clamp(56px, 7vw, 110px) clamp(16px, 4vw, 60px); background: var(--blue-tint)">
+  <div style="max-width: 1400px; margin: 0 auto">
+    <div style="display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 24px; margin-bottom: clamp(28px, 3vw, 44px)">
+      <div style="min-width: 0; max-width: 820px">
+        <div style="font-family: var(--font-display); font-weight: 800; font-size: 15px; letter-spacing: 0.04em; color: var(--blue-saturated); margin-bottom: 14px">ТУР ПО ПОРТАЛУ</div>
+        <h2 style="margin: 0 0 16px; font-family: var(--font-display); font-weight: 800; font-size: clamp(28px, 4vw, 50px); line-height: 1.08; letter-spacing: -0.03em; color: var(--enterprise); text-wrap: balance">Посмотрите изнутри, ничего не&nbsp;устанавливая</h2>
+        <p style="margin: 0; max-width: 60ch; font-size: 16px; line-height: 1.55; font-weight: 500; color: var(--grey-text)">Это рабочее место клуба на CRM-платформе. Переключайте разделы, открывайте обращения — внутри живые сценарии: недобор на Эльбрус, палатки, инструктор вне связи.</p>
+      </div>
+      <sc-if value="{{ showDemoBadge }}" hint-placeholder-val="{{ true }}">
+        <div style="display: inline-flex; align-items: center; gap: 10px; padding: 10px 18px; border-radius: 68px; background: var(--white); font-size: 14px; font-weight: 600; color: var(--enterprise)">
+          <span style="width: 8px; height: 8px; border-radius: 50%; background: var(--blue-saturated); display: block"></span>
+          Демо-режим · данные примерные
+        </div>
+      </sc-if>
+    </div>
+
+    <div style="border-radius: 30px; overflow: hidden; background: var(--white); display: grid; grid-template-columns: minmax(0, 1fr); min-width: 0">
+      <div style="display: flex; align-items: center; gap: 10px; padding: 14px 20px; background: var(--blue-saturated)">
+        <span style="display: block; color: var(--white); margin-right: 10px; flex-shrink: 0"><span style="font-family:var(--font-display);font-weight:800;font-size:22px;letter-spacing:-.04em;white-space:nowrap">ТАЙГА / CRM</span></span>
+        <div style="flex: 1; min-width: 0; font-size: 13px; font-weight: 600; color: rgba(255,255,255,0.85); overflow: hidden; text-overflow: ellipsis; white-space: nowrap">taiga-school.example</div>
+        <div style="display: flex; gap: 6px">
+          <span style="width: 10px; height: 10px; border-radius: 50%; background: rgba(255,255,255,0.4); display: block"></span>
+          <span style="width: 10px; height: 10px; border-radius: 50%; background: rgba(255,255,255,0.4); display: block"></span>
+          <span style="width: 10px; height: 10px; border-radius: 50%; background: rgba(255,255,255,0.4); display: block"></span>
+        </div>
+      </div>
+      <div style="display: grid; grid-template-columns: minmax(0, 1fr); min-width: 0">
+        <div style="display: flex; flex-wrap: wrap; min-width: 0">
+          <div style="flex: 0 0 240px; min-width: 200px; padding: 18px 14px; background: #12112F">
+            <div style="font-size: 11px; font-weight: 700; letter-spacing: 0.06em; color: rgba(255,255,255,0.4); padding: 0 14px 10px">РАБОЧИЕ РАЗДЕЛЫ</div>
+            <sc-for list="{{ navItems }}" as="item" hint-placeholder-count="5">
+              <button type="button" onClick="{{ item.onClick }}" style="{{ item.style }}">
+                <div style="{{ item.labelStyle }}">{{ item.label }}</div>
+                <div style="{{ item.subStyle }}">{{ item.sub }}</div>
+              </button>
+            </sc-for>
+            <div style="margin: 18px 14px 0; padding-top: 16px; border-top: 1px solid rgba(255,255,255,0.12); font-size: 12px; line-height: 1.5; font-weight: 500; color: rgba(255,255,255,0.45)">Ничего дополнительно покупать не нужно: всё это есть в самом CRM-портале.</div>
+          </div>
+          <div style="flex: 1 1 420px; min-width: 0; background: #F4F6F9; padding: clamp(14px, 2vw, 22px)">
+
+            <sc-if value="{{ isCrm }}" hint-placeholder-val="{{ true }}">
+              <div style="min-width: 0">
+                <div style="display: flex; flex-wrap: wrap; align-items: center; gap: 12px; justify-content: space-between; margin-bottom: 18px">
+                  <div style="font-family: var(--font-display); font-weight: 800; font-size: 20px; letter-spacing: -0.02em; color: var(--enterprise)">Все обращения за сегодня</div>
+                  <div style="font-size: 13px; font-weight: 600; color: var(--grey-text)">Нажмите строку — покажу, что портал сделал без вас</div>
+                </div>
+                <div style="padding: 16px 18px; border-radius: 20px; background: var(--white); border: 1px solid #ECEFF3; margin-bottom: 16px">
+                  <div style="font-size: 13px; font-weight: 700; letter-spacing: 0.02em; color: var(--grey-text); margin-bottom: 14px">ПЯТЬ ОБРАЩЕНИЙ НИЖЕ — ПО ШАГАМ</div>
+                  <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(185px, 1fr)); gap: 16px 14px">
+                    <sc-for list="{{ stages }}" as="st" hint-placeholder-count="4">
+                      <div style="min-width: 0">
+                        <div style="{{ st.barStyle }}"></div>
+                        <div style="display: flex; align-items: baseline; gap: 8px"><span style="font-family: var(--font-display); font-weight: 800; font-size: 22px; line-height: 1; color: var(--enterprise)">{{ st.count }}</span><span style="font-size: 13px; font-weight: 700; letter-spacing: -0.02em; color: var(--enterprise)">{{ st.title }}</span></div>
+                      </div>
+                    </sc-for>
+                  </div>
+                </div>
+                <div style="margin-bottom: 16px">
+                  <sc-for list="{{ rows }}" as="card" hint-placeholder-count="5">
+                    <button type="button" onClick="{{ card.onClick }}" style="{{ card.style }}">
+                      <div style="min-width: 0">
+                        <div style="font-size: 14px; font-weight: 700; letter-spacing: -0.02em; color: var(--enterprise)">{{ card.name }}</div>
+                        <div style="font-size: 12px; font-weight: 500; line-height: 1.35; color: var(--grey-text); margin-top: 3px">{{ card.route }}</div>
+                      </div>
+                      <div style="min-width: 0; display: flex; flex-wrap: wrap; gap: 8px; align-items: center">
+                        <div style="{{ card.chStyle }}">{{ card.ch }}</div>
+                        <div style="display: flex; align-items: center; gap: 7px; font-size: 12px; font-weight: 700; color: var(--enterprise)"><span style="{{ card.dotStyle }}"></span>{{ card.stage }}</div>
+                      </div>
+                      <div style="min-width: 0; font-size: 14px; font-weight: 700; color: var(--blue-saturated); text-align: right">{{ card.sum }}</div>
+                    </button>
+                  </sc-for>
+                </div>
+                <div style="padding: 20px; border-radius: 20px; background: var(--white); border: 1px solid #ECEFF3; min-width: 0">
+                  <div style="display: flex; flex-wrap: wrap; gap: 10px; align-items: baseline; justify-content: space-between; margin-bottom: 14px">
+                    <div style="min-width: 0">
+                      <div style="font-family: var(--font-display); font-weight: 800; font-size: 18px; letter-spacing: -0.02em; color: var(--enterprise)">{{ dealName }}</div>
+                      <div style="font-size: 13px; font-weight: 500; color: var(--grey-text); margin-top: 2px">{{ dealRoute }}</div>
+                    </div>
+                    <div style="font-family: var(--font-display); font-weight: 800; font-size: 20px; color: var(--blue-saturated)">{{ dealSum }}</div>
+                  </div>
+                  <div style="display: grid; gap: 10px">
+                    <sc-for list="{{ dealLog }}" as="row" hint-placeholder-count="3">
+                      <div style="display: flex; gap: 12px; align-items: flex-start; min-width: 0">
+                        <div style="flex: 0 0 24px; height: 24px; border-radius: 50%; background: var(--blue-tint); color: var(--blue-saturated); display: grid; place-items: center; font-size: 12px; font-weight: 700">{{ row.i }}</div>
+                        <div style="font-size: 14px; line-height: 1.45; font-weight: 500; color: var(--enterprise); min-width: 0">{{ row.t }}</div>
+                      </div>
+                    </sc-for>
+                  </div>
+                </div>
+              </div>
+            </sc-if>
+
+            <sc-if value="{{ isGroup }}" hint-placeholder-val="{{ false }}">
+              <div style="min-width: 0">
+                <div style="font-family: var(--font-display); font-weight: 800; font-size: 20px; letter-spacing: -0.02em; color: var(--enterprise); margin-bottom: 6px">Наборы групп</div>
+                <div style="font-size: 13px; font-weight: 600; color: var(--grey-text); margin-bottom: 18px">Каждый маршрут — элемент смарт-процесса со своей ёмкостью и точкой безубыточности</div>
+                <div style="display: grid; gap: 12px">
+                  <div style="padding: 20px; border-radius: 20px; background: var(--white); border: 1px solid #ECEFF3; min-width: 0">
+                    <div style="display: flex; flex-wrap: wrap; justify-content: space-between; gap: 8px; margin-bottom: 12px">
+                      <div style="font-size: 15px; font-weight: 700; letter-spacing: -0.02em">Выживание в тайге · 12–16 июля</div>
+                      <div style="font-size: 14px; font-weight: 700; color: var(--blue-saturated)">6 из 8</div>
+                    </div>
+                    <div style="height: 10px; border-radius: 10px; background: #ECEFF3; overflow: hidden"><div style="width: 75%; height: 100%; background: var(--blue-saturated)"></div></div>
+                    <div style="font-size: 13px; font-weight: 500; color: var(--grey-text); margin-top: 10px">Порог 5 человек пройден. Робот открыл продажу двух оставшихся мест в боте и на сайте.</div>
+                  </div>
+                  <div style="padding: 20px; border-radius: 20px; background: var(--white); border: 2px solid var(--coral); min-width: 0">
+                    <div style="display: flex; flex-wrap: wrap; justify-content: space-between; gap: 8px; margin-bottom: 12px">
+                      <div style="font-size: 15px; font-weight: 700; letter-spacing: -0.02em">Эльбрус с юга · 2–9 августа</div>
+                      <div style="font-size: 14px; font-weight: 700; color: var(--coral)">4 из 10 · выход через 12 дней</div>
+                    </div>
+                    <div style="height: 10px; border-radius: 10px; background: #ECEFF3; overflow: hidden"><div style="width: 40%; height: 100%; background: var(--coral)"></div></div>
+                    <div style="font-size: 13px; font-weight: 500; color: var(--enterprise); margin-top: 10px">Недобор. Портал сам поднял 38 клиентов с опытом высоты из базы и поставил задачу на обзвон — вручную этот список никто бы не собрал.</div>
+                  </div>
+                  <div style="padding: 20px; border-radius: 20px; background: var(--white); border: 1px solid #ECEFF3; min-width: 0">
+                    <div style="display: flex; flex-wrap: wrap; justify-content: space-between; gap: 8px; margin-bottom: 12px">
+                      <div style="font-size: 15px; font-weight: 700; letter-spacing: -0.02em">Базовый курс выживания · 5 июля</div>
+                      <div style="font-size: 14px; font-weight: 700; color: var(--lime-deep)">9 из 9 · лист ожидания 4</div>
+                    </div>
+                    <div style="height: 10px; border-radius: 10px; background: #ECEFF3; overflow: hidden"><div style="width: 100%; height: 100%; background: var(--lime-green)"></div></div>
+                    <div style="font-size: 13px; font-weight: 500; color: var(--grey-text); margin-top: 10px">Группа закрыта. Четверо из листа ожидания автоматически предложены на следующую дату.</div>
+                  </div>
+                </div>
+              </div>
+            </sc-if>
+
+            <sc-if value="{{ isGear }}" hint-placeholder-val="{{ false }}">
+              <div style="min-width: 0">
+                <div style="font-family: var(--font-display); font-weight: 800; font-size: 20px; letter-spacing: -0.02em; color: var(--enterprise); margin-bottom: 6px">Склад снаряжения</div>
+                <div style="font-size: 13px; font-weight: 600; color: var(--grey-text); margin-bottom: 18px">Выдача привязана к участнику и походу. Не вернул — видно в карточке клиента</div>
+                <div style="border-radius: 20px; background: var(--white); border: 1px solid #ECEFF3; overflow: hidden">
+                  <div style="display: grid; grid-template-columns: minmax(0, 2fr) minmax(0, 1fr) minmax(0, 1fr); gap: 10px; padding: 12px 18px; background: #F8FAFC; font-size: 12px; font-weight: 700; letter-spacing: 0.02em; color: var(--grey-text)">
+                    <div style="min-width: 0">Позиция</div><div style="min-width: 0">Свободно</div><div style="min-width: 0">Статус</div>
+                  </div>
+                  <div style="display: grid; grid-template-columns: minmax(0, 2fr) minmax(0, 1fr) minmax(0, 1fr); gap: 10px; padding: 14px 18px; border-top: 1px solid #ECEFF3; font-size: 14px; font-weight: 600; align-items: center">
+                    <div style="min-width: 0">Спальник −15°</div><div style="min-width: 0">7 из 14</div><div style="min-width: 0; font-size: 13px; font-weight: 700; color: var(--lime-deep)">Хватает</div>
+                  </div>
+                  <div style="display: grid; grid-template-columns: minmax(0, 2fr) minmax(0, 1fr) minmax(0, 1fr); gap: 10px; padding: 14px 18px; border-top: 1px solid #ECEFF3; font-size: 14px; font-weight: 600; align-items: center">
+                    <div style="min-width: 0">Палатка 3-местная</div><div style="min-width: 0">1 из 6</div><div style="min-width: 0; font-size: 13px; font-weight: 700; color: var(--coral)">Закупить к 10.07</div>
+                  </div>
+                  <div style="display: grid; grid-template-columns: minmax(0, 2fr) minmax(0, 1fr) minmax(0, 1fr); gap: 10px; padding: 14px 18px; border-top: 1px solid #ECEFF3; font-size: 14px; font-weight: 600; align-items: center">
+                    <div style="min-width: 0">Горелка газовая</div><div style="min-width: 0">9 из 12</div><div style="min-width: 0; font-size: 13px; font-weight: 700; color: var(--lime-deep)">Хватает</div>
+                  </div>
+                  <div style="display: grid; grid-template-columns: minmax(0, 2fr) minmax(0, 1fr) minmax(0, 1fr); gap: 10px; padding: 14px 18px; border-top: 1px solid #ECEFF3; font-size: 14px; font-weight: 600; align-items: center">
+                    <div style="min-width: 0">Аптечка групповая</div><div style="min-width: 0">3 из 5</div><div style="min-width: 0; font-size: 13px; font-weight: 700; color: var(--blue-saturated)">Срок годности — 2 шт.</div>
+                  </div>
+                  <div style="display: grid; grid-template-columns: minmax(0, 2fr) minmax(0, 1fr) minmax(0, 1fr); gap: 10px; padding: 14px 18px; border-top: 1px solid #ECEFF3; font-size: 14px; font-weight: 600; align-items: center">
+                    <div style="min-width: 0">Спутниковый трекер</div><div style="min-width: 0">2 из 3</div><div style="min-width: 0; font-size: 13px; font-weight: 700; color: var(--grey-text)">1 у Дорохова</div>
+                  </div>
+                </div>
+                <div style="margin-top: 12px; padding: 16px 20px; border-radius: 20px; background: var(--blue-tint); font-size: 14px; line-height: 1.5; font-weight: 600; color: var(--enterprise)">За 5 дней до выхода портал сверяет состав группы со складом и сам ставит задачу «докупить 2 палатки» ответственному за снаряжение.</div>
+              </div>
+            </sc-if>
+
+            <sc-if value="{{ isStaff }}" hint-placeholder-val="{{ false }}">
+              <div style="min-width: 0">
+                <div style="font-family: var(--font-display); font-weight: 800; font-size: 20px; letter-spacing: -0.02em; color: var(--enterprise); margin-bottom: 6px">Инструкторы и загрузка</div>
+                <div style="font-size: 13px; font-weight: 600; color: var(--grey-text); margin-bottom: 18px">Пока ведущий на маршруте, его сделки и чаты переходят дежурному — клиент не ждёт четыре дня</div>
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px">
+                  <div style="padding: 20px; border-radius: 20px; background: var(--white); border: 1px solid #ECEFF3; min-width: 0">
+                    <div style="font-size: 15px; font-weight: 700; letter-spacing: -0.02em">Сергей Панов</div>
+                    <div style="font-size: 12px; font-weight: 600; color: var(--coral); margin: 4px 0 12px">На маршруте до 16.07 · вне связи</div>
+                    <div style="font-size: 13px; line-height: 1.5; font-weight: 500; color: var(--grey-text)">3 сделки переданы Кате. Задачи на после возврата — в очереди.</div>
+                  </div>
+                  <div style="padding: 20px; border-radius: 20px; background: var(--white); border: 1px solid #ECEFF3; min-width: 0">
+                    <div style="font-size: 15px; font-weight: 700; letter-spacing: -0.02em">Катя Верещагина</div>
+                    <div style="font-size: 12px; font-weight: 600; color: var(--lime-deep); margin: 4px 0 12px">Дежурная · в офисе</div>
+                    <div style="font-size: 13px; line-height: 1.5; font-weight: 500; color: var(--grey-text)">11 активных сделок, среднее время ответа — 6 минут.</div>
+                  </div>
+                  <div style="padding: 20px; border-radius: 20px; background: var(--white); border: 1px solid #ECEFF3; min-width: 0">
+                    <div style="font-size: 15px; font-weight: 700; letter-spacing: -0.02em">Дмитрий Хан</div>
+                    <div style="font-size: 12px; font-weight: 600; color: var(--blue-saturated); margin: 4px 0 12px">Свободен с 18.07</div>
+                    <div style="font-size: 13px; line-height: 1.5; font-weight: 500; color: var(--grey-text)">Сертификат первой помощи истекает 02.09 — напоминание уже стоит.</div>
+                  </div>
+                  <div style="padding: 20px; border-radius: 20px; background: var(--enterprise); color: var(--white); min-width: 0">
+                    <div style="font-size: 15px; font-weight: 700; letter-spacing: -0.02em; color: var(--lime)">Нагрузка сезона</div>
+                    <div style="font-size: 13px; line-height: 1.5; font-weight: 500; color: rgba(255,255,255,0.75); margin-top: 10px">Отчёт показывает, кто ведёт больше групп и у кого выше повторные продажи. Премия считается по данным, а не по памяти.</div>
+                  </div>
+                </div>
+              </div>
+            </sc-if>
+
+            <sc-if value="{{ isRobot }}" hint-placeholder-val="{{ false }}">
+              <div style="min-width: 0">
+                <div style="font-family: var(--font-display); font-weight: 800; font-size: 20px; letter-spacing: -0.02em; color: var(--enterprise); margin-bottom: 6px">Что портал делает без вас</div>
+                <div style="font-size: 13px; font-weight: 600; color: var(--grey-text); margin-bottom: 18px">Цепочка от первого сообщения до отзыва — семь роботов, ни одного напоминания вручную</div>
+                <div style="display: grid; gap: 10px">
+                  <div style="display: flex; gap: 14px; align-items: flex-start; padding: 16px 18px; border-radius: 18px; background: var(--white); border: 1px solid #ECEFF3; min-width: 0">
+                    <div style="flex: 0 0 auto; padding: 4px 10px; border-radius: 20px; background: var(--blue-tint); color: var(--blue-saturated); font-size: 12px; font-weight: 700">0 мин</div>
+                    <div style="min-width: 0; font-size: 14px; line-height: 1.5; font-weight: 600">Заявка из бота, сайта или звонка падает в CRM с источником и темой</div>
+                  </div>
+                  <div style="display: flex; gap: 14px; align-items: flex-start; padding: 16px 18px; border-radius: 18px; background: var(--white); border: 1px solid #ECEFF3; min-width: 0">
+                    <div style="flex: 0 0 auto; padding: 4px 10px; border-radius: 20px; background: var(--blue-tint); color: var(--blue-saturated); font-size: 12px; font-weight: 700">1 мин</div>
+                    <div style="min-width: 0; font-size: 14px; line-height: 1.5; font-weight: 600">Автоответ с программой маршрута, ценой и списком требований к участнику</div>
+                  </div>
+                  <div style="display: flex; gap: 14px; align-items: flex-start; padding: 16px 18px; border-radius: 18px; background: var(--white); border: 1px solid #ECEFF3; min-width: 0">
+                    <div style="flex: 0 0 auto; padding: 4px 10px; border-radius: 20px; background: var(--blue-tint); color: var(--blue-saturated); font-size: 12px; font-weight: 700">2 ч</div>
+                    <div style="min-width: 0; font-size: 14px; line-height: 1.5; font-weight: 600">Не ответили клиенту — задача дежурному и уведомление руководителю</div>
+                  </div>
+                  <div style="display: flex; gap: 14px; align-items: flex-start; padding: 16px 18px; border-radius: 18px; background: var(--white); border: 1px solid #ECEFF3; min-width: 0">
+                    <div style="flex: 0 0 auto; padding: 4px 10px; border-radius: 20px; background: var(--blue-tint); color: var(--blue-saturated); font-size: 12px; font-weight: 700">Бронь</div>
+                    <div style="min-width: 0; font-size: 14px; line-height: 1.5; font-weight: 600">Договор и согласие на риски — на подпись онлайн, оплата ссылкой, место держится 48 часов</div>
+                  </div>
+                  <div style="display: flex; gap: 14px; align-items: flex-start; padding: 16px 18px; border-radius: 18px; background: var(--white); border: 1px solid #ECEFF3; min-width: 0">
+                    <div style="flex: 0 0 auto; padding: 4px 10px; border-radius: 20px; background: var(--blue-tint); color: var(--blue-saturated); font-size: 12px; font-weight: 700">−7 дней</div>
+                    <div style="min-width: 0; font-size: 14px; line-height: 1.5; font-weight: 600">Памятка по снаряжению, точка сбора, проверка медсправки и контактов близких</div>
+                  </div>
+                  <div style="display: flex; gap: 14px; align-items: flex-start; padding: 16px 18px; border-radius: 18px; background: var(--white); border: 1px solid #ECEFF3; min-width: 0">
+                    <div style="flex: 0 0 auto; padding: 4px 10px; border-radius: 20px; background: var(--blue-tint); color: var(--blue-saturated); font-size: 12px; font-weight: 700">+2 дня</div>
+                    <div style="min-width: 0; font-size: 14px; line-height: 1.5; font-weight: 600">Опрос впечатлений, просьба об отзыве, возврат снаряжения на склад</div>
+                  </div>
+                  <div style="display: flex; gap: 14px; align-items: flex-start; padding: 16px 18px; border-radius: 18px; background: var(--lime); min-width: 0">
+                    <div style="flex: 0 0 auto; padding: 4px 10px; border-radius: 20px; background: var(--enterprise); color: var(--lime); font-size: 12px; font-weight: 700">+4 мес</div>
+                    <div style="min-width: 0; font-size: 14px; line-height: 1.5; font-weight: 700; color: var(--enterprise)">Прошёл базовый курс — приглашение на второй уровень. Это и есть повторные продажи</div>
+                  </div>
+                </div>
+              </div>
+            </sc-if>
+
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<sc-if value="{{ showCalc }}" hint-placeholder-val="{{ true }}">
+<section id="calc" style="padding: clamp(56px, 7vw, 110px) clamp(16px, 4vw, 60px)">
+  <div style="max-width: 1400px; margin: 0 auto; display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr)); gap: clamp(28px, 3vw, 56px); align-items: start">
+    <div style="min-width: 0">
+      <div style="font-family: var(--font-display); font-weight: 800; font-size: 15px; letter-spacing: 0.04em; color: var(--blue-saturated); margin-bottom: 14px">СЧЁТ НЕДОБОРА</div>
+      <h2 style="margin: 0 0 18px; font-family: var(--font-display); font-weight: 800; font-size: clamp(28px, 4vw, 50px); line-height: 1.08; letter-spacing: -0.03em; text-wrap: balance">Пустые места в&nbsp;группе тоже стоят денег</h2>
+      <p style="margin: 0 0 22px; max-width: 46ch; font-size: 16px; line-height: 1.6; font-weight: 500; color: var(--grey-text)">Подвигайте ползунки под свой клуб. Считаем грубо: сколько выручки уходит из-за незакрытых мест и потерянных заявок за сезон.</p>
+      <div style="display: grid; gap: 22px; max-width: 480px">
+        <div>
+          <div style="display: flex; justify-content: space-between; font-size: 14px; font-weight: 700; margin-bottom: 8px"><span>Походов за сезон</span><span style="color: var(--blue-saturated)">{{ calcGroups }}</span></div>
+          <input type="range" min="2" max="30" value="{{ calcGroups }}" onChange="{{ setGroups }}" onInput="{{ setGroups }}" style="width: 100%; accent-color: #006DFF">
+        </div>
+        <div>
+          <div style="display: flex; justify-content: space-between; font-size: 14px; font-weight: 700; margin-bottom: 8px"><span>Мест в группе</span><span style="color: var(--blue-saturated)">{{ calcSize }}</span></div>
+          <input type="range" min="4" max="24" value="{{ calcSize }}" onChange="{{ setSize }}" onInput="{{ setSize }}" style="width: 100%; accent-color: #006DFF">
+        </div>
+        <div>
+          <div style="display: flex; justify-content: space-between; font-size: 14px; font-weight: 700; margin-bottom: 8px"><span>Цена участия, ₽</span><span style="color: var(--blue-saturated)">{{ calcPrice }}</span></div>
+          <input type="range" min="5000" max="200000" step="1000" value="{{ calcPrice }}" onChange="{{ setPrice }}" onInput="{{ setPrice }}" style="width: 100%; accent-color: #006DFF">
+        </div>
+        <div>
+          <div style="display: flex; justify-content: space-between; font-size: 14px; font-weight: 700; margin-bottom: 8px"><span>Пустых мест и потерянных заявок, %</span><span style="color: var(--blue-saturated)">{{ calcLost }}</span></div>
+          <input type="range" min="5" max="60" value="{{ calcLost }}" onChange="{{ setLost }}" onInput="{{ setLost }}" style="width: 100%; accent-color: #006DFF">
+        </div>
+      </div>
+    </div>
+    <div style="min-width: 0; padding: clamp(26px, 3vw, 44px); border-radius: 30px; background: var(--blue-saturated); color: var(--white)">
+      <div style="font-size: 15px; font-weight: 600; color: rgba(255,255,255,0.85)">Проходит мимо кассы за сезон</div>
+      <div style="font-family: var(--font-display); font-weight: 800; font-size: clamp(34px, 5vw, 66px); line-height: 1; letter-spacing: -0.03em; margin: 10px 0 6px; overflow-wrap: anywhere">{{ lostYear }} ₽</div>
+      <div style="font-size: 15px; font-weight: 600; color: rgba(255,255,255,0.8); margin-bottom: 28px">это около {{ lostMonth }} ₽ в месяц сезона</div>
+      <div style="padding: 20px; border-radius: 24px; background: rgba(255,255,255,0.2); backdrop-filter: blur(57.5px); border: 1px solid rgba(255,255,255,0.3)">
+        <div style="font-size: 15px; line-height: 1.55; font-weight: 600">Портал не заполнит группы магией. Он делает скучное: отвечает за две минуты, напоминает про оплату, поднимает базу прошлых участников. Обычно этого достаточно, чтобы вернуть половину этой суммы.</div>
+      </div>
+      <div style="display: flex; flex-wrap: wrap; gap: 12px; margin-top: 28px">
+        <a href="#cta" style="display: inline-flex; align-items: center; padding: 15px 28px; border-radius: 48px; background: var(--lime); color: var(--enterprise); font-weight: 700; font-size: 16px; text-decoration: none; letter-spacing: -0.02em" style-hover="background: var(--lime-pale)">Посчитать на моих данных</a>
+      </div>
+      <div style="font-size: 12px; font-weight: 500; color: rgba(255,255,255,0.65); margin-top: 18px">Расчёт модельный, для ориентира. Точные цифры считаются по вашей воронке.</div>
+    </div>
+  </div>
+</section>
+</sc-if>
+
+<section style="padding: clamp(56px, 7vw, 110px) clamp(16px, 4vw, 60px); background: var(--blue-tint)">
+  <div style="max-width: 1400px; margin: 0 auto">
+    <h2 style="margin: 0 0 clamp(28px, 3vw, 48px); max-width: 820px; font-family: var(--font-display); font-weight: 800; font-size: clamp(28px, 4vw, 50px); line-height: 1.08; letter-spacing: -0.03em; text-wrap: balance">Один вечер в&nbsp;жизни администратора: до&nbsp;и&nbsp;после</h2>
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr)); gap: clamp(16px, 2vw, 24px)">
+      <div style="padding: clamp(24px, 3vw, 38px); border-radius: 30px; background: var(--white); min-width: 0">
+        <div style="display: inline-block; padding: 7px 16px; border-radius: 30px; background: #FFE9E9; color: var(--coral); font-size: 13px; font-weight: 700; margin-bottom: 22px">Как сейчас</div>
+        <div style="display: grid; gap: 16px">
+          <div style="display: flex; gap: 12px; min-width: 0"><span style="flex: 0 0 auto; font-weight: 700; color: var(--grey-500); font-size: 14px; flex: 0 0 74px; white-space: nowrap">21:40</span><span style="font-size: 15px; line-height: 1.5; font-weight: 500; min-width: 0">Заявка в Telegram инструктора, он на маршруте</span></div>
+          <div style="display: flex; gap: 12px; min-width: 0"><span style="flex: 0 0 auto; font-weight: 700; color: var(--grey-500); font-size: 14px; flex: 0 0 74px; white-space: nowrap">Утро</span><span style="font-size: 15px; line-height: 1.5; font-weight: 500; min-width: 0">Админ ищет, свободны ли места — открывает три таблицы</span></div>
+          <div style="display: flex; gap: 12px; min-width: 0"><span style="flex: 0 0 auto; font-weight: 700; color: var(--grey-500); font-size: 14px; flex: 0 0 74px; white-space: nowrap">+1 день</span><span style="font-size: 15px; line-height: 1.5; font-weight: 500; min-width: 0">Отвечает клиенту. Тот уже записался у конкурента</span></div>
+          <div style="display: flex; gap: 12px; min-width: 0"><span style="flex: 0 0 auto; font-weight: 700; color: var(--grey-500); font-size: 14px; flex: 0 0 74px; white-space: nowrap">Пятница</span><span style="font-size: 15px; line-height: 1.5; font-weight: 500; min-width: 0">Выясняется: палаток на группу не хватает</span></div>
+          <div style="display: flex; gap: 12px; min-width: 0"><span style="flex: 0 0 auto; font-weight: 700; color: var(--grey-500); font-size: 14px; flex: 0 0 74px; white-space: nowrap">Итог</span><span style="font-size: 15px; line-height: 1.5; font-weight: 700; color: var(--coral); min-width: 0">Группа 6 из 8, вечер потрачен на переписку</span></div>
+        </div>
+      </div>
+      <div style="padding: clamp(24px, 3vw, 38px); border-radius: 30px; background: var(--blue-saturated); color: var(--white); min-width: 0">
+        <div style="display: inline-block; padding: 7px 16px; border-radius: 30px; background: var(--lime); color: var(--enterprise); font-size: 13px; font-weight: 700; margin-bottom: 22px">С порталом</div>
+        <div style="display: grid; gap: 16px">
+          <div style="display: flex; gap: 12px; min-width: 0"><span style="flex: 0 0 auto; font-weight: 700; color: var(--lime); font-size: 14px; flex: 0 0 74px; white-space: nowrap">21:40</span><span style="font-size: 15px; line-height: 1.5; font-weight: 500; min-width: 0">Заявка в CRM, бот сразу прислал программу и свободные даты</span></div>
+          <div style="display: flex; gap: 12px; min-width: 0"><span style="flex: 0 0 auto; font-weight: 700; color: var(--lime); font-size: 14px; flex: 0 0 74px; white-space: nowrap">21:41</span><span style="font-size: 15px; line-height: 1.5; font-weight: 500; min-width: 0">Задача дежурному: перезвонить до 11:00</span></div>
+          <div style="display: flex; gap: 12px; min-width: 0"><span style="flex: 0 0 auto; font-weight: 700; color: var(--lime); font-size: 14px; flex: 0 0 74px; white-space: nowrap">10:20</span><span style="font-size: 15px; line-height: 1.5; font-weight: 500; min-width: 0">Звонок, бронь, ссылка на оплату — место держится 48 часов</span></div>
+          <div style="display: flex; gap: 12px; min-width: 0"><span style="flex: 0 0 auto; font-weight: 700; color: var(--lime); font-size: 14px; flex: 0 0 74px; white-space: nowrap">Авто</span><span style="font-size: 15px; line-height: 1.5; font-weight: 500; min-width: 0">Склад сверился с составом, задача «докупить палатки» поставлена</span></div>
+          <div style="display: flex; gap: 12px; min-width: 0"><span style="flex: 0 0 auto; font-weight: 700; color: var(--lime); font-size: 14px; flex: 0 0 74px; white-space: nowrap">Итог</span><span style="font-size: 15px; line-height: 1.5; font-weight: 700; color: var(--lime); min-width: 0">Группа 8 из 8, вечер свободен</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="plan" style="padding: clamp(56px, 7vw, 110px) clamp(16px, 4vw, 60px)">
+  <div style="max-width: 1400px; margin: 0 auto">
+    <div style="display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 24px; margin-bottom: clamp(30px, 3vw, 50px)">
+      <div style="min-width: 0; max-width: 720px">
+        <div style="font-family: var(--font-display); font-weight: 800; font-size: 15px; letter-spacing: 0.04em; color: var(--blue-saturated); margin-bottom: 14px">ВНЕДРЕНИЕ</div>
+        <h2 style="margin: 0; font-family: var(--font-display); font-weight: 800; font-size: clamp(28px, 4vw, 50px); line-height: 1.08; letter-spacing: -0.03em; text-wrap: balance">Четыре недели — и&nbsp;портал работает на&nbsp;вас</h2>
+      </div>
+      <p style="margin: 0; max-width: 320px; font-size: 16px; line-height: 1.55; font-weight: 500; color: var(--grey-text)">Начинаем на бесплатном тарифе. Переходить на платный есть смысл, когда портал уже приносит заявки.</p>
+    </div>
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: clamp(14px, 1.6vw, 22px)">
+      <div style="padding: 28px; border-radius: 30px; background: var(--white); border: 1px solid var(--grey-300); min-width: 0">
+        <div style="display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; margin-bottom: 18px"><div style="font-family: var(--font-display); font-weight: 800; font-size: 44px; line-height: 1; color: var(--blue-pale); flex-shrink: 0">1</div></div>
+        <h3 style="margin: 0 0 10px; font-family: var(--font-display); font-weight: 700; font-size: 19px; letter-spacing: -0.02em">Неделя первая</h3>
+        <p style="margin: 0; font-size: 15px; line-height: 1.55; font-weight: 500; color: var(--grey-text)">Собираем все каналы в один чат: Telegram-бот, форма на сайте, звонки, соцсети.</p>
+        <div style="display: flex; gap: 10px; align-items: baseline; margin-top: 18px; padding-top: 16px; border-top: 1px solid var(--grey-300)"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true" style="flex-shrink: 0"><path d="M4 13l5.5 5.5L20 6" stroke="#006DFF" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"></path></svg><span style="font-size: 14px; font-weight: 700; line-height: 1.4; color: var(--enterprise)">Ни одна заявка не теряется</span></div>
+      </div>
+      <div style="padding: 28px; border-radius: 30px; background: var(--white); border: 1px solid var(--grey-300); min-width: 0">
+        <div style="display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; margin-bottom: 18px"><div style="font-family: var(--font-display); font-weight: 800; font-size: 44px; line-height: 1; color: var(--blue-light); flex-shrink: 0">2</div></div>
+        <h3 style="margin: 0 0 10px; font-family: var(--font-display); font-weight: 700; font-size: 19px; letter-spacing: -0.02em">Неделя вторая</h3>
+        <p style="margin: 0; font-size: 15px; line-height: 1.55; font-weight: 500; color: var(--grey-text)">Воронка маршрутов и наборы групп с порогом безубыточности по каждой дате.</p>
+        <div style="display: flex; gap: 10px; align-items: baseline; margin-top: 18px; padding-top: 16px; border-top: 1px solid var(--grey-300)"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true" style="flex-shrink: 0"><path d="M4 13l5.5 5.5L20 6" stroke="#006DFF" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"></path></svg><span style="font-size: 14px; font-weight: 700; line-height: 1.4; color: var(--enterprise)">Недобор видно за две недели</span></div>
+      </div>
+      <div style="padding: 28px; border-radius: 30px; background: var(--white); border: 1px solid var(--grey-300); min-width: 0">
+        <div style="display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; margin-bottom: 18px"><div style="font-family: var(--font-display); font-weight: 800; font-size: 44px; line-height: 1; color: var(--blue-saturated); flex-shrink: 0">3</div></div>
+        <h3 style="margin: 0 0 10px; font-family: var(--font-display); font-weight: 700; font-size: 19px; letter-spacing: -0.02em">Неделя третья</h3>
+        <p style="margin: 0; font-size: 15px; line-height: 1.55; font-weight: 500; color: var(--grey-text)">Склад снаряжения, документы на подпись онлайн, расписание инструкторов и передача дежурства.</p>
+        <div style="display: flex; gap: 10px; align-items: baseline; margin-top: 18px; padding-top: 16px; border-top: 1px solid var(--grey-300)"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true" style="flex-shrink: 0"><path d="M4 13l5.5 5.5L20 6" stroke="#006DFF" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"></path></svg><span style="font-size: 14px; font-weight: 700; line-height: 1.4; color: var(--enterprise)">Документы собираются без вас</span></div>
+      </div>
+      <div style="padding: 28px; border-radius: 30px; background: var(--blue-saturated); color: var(--white); min-width: 0">
+        <div style="display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; margin-bottom: 18px"><div style="font-family: var(--font-display); font-weight: 800; font-size: 44px; line-height: 1; color: var(--lime); flex-shrink: 0">4</div><svg width="40" height="40" viewBox="0 0 34 34" fill="none" aria-hidden="true" style="flex-shrink: 0"><circle cx="17" cy="17" r="17" fill="#CCF31E"></circle><circle cx="11.5" cy="13.5" r="2.3" fill="#08A6FF"></circle><circle cx="22.5" cy="13.5" r="2.3" fill="#08A6FF"></circle><path d="M11 21c1.7 3 9.6 3 12 0" stroke="#08A6FF" stroke-width="2.6" stroke-linecap="round"></path></svg></div>
+        <h3 style="margin: 0 0 10px; font-family: var(--font-display); font-weight: 700; font-size: 19px; letter-spacing: -0.02em">Неделя четвёртая</h3>
+        <p style="margin: 0; font-size: 15px; line-height: 1.55; font-weight: 500; color: rgba(255,255,255,0.88)">Напоминания клиентам, отчёты по сезону, обучение команды — один созвон на полтора часа.</p>
+        <div style="display: flex; gap: 10px; align-items: baseline; margin-top: 18px; padding-top: 16px; border-top: 1px solid rgba(255,255,255,0.3)"><span style="font-size: 14px; font-weight: 700; line-height: 1.4; color: var(--lime)">Дальше портал работает сам</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section style="padding: 0 clamp(16px, 4vw, 60px) clamp(56px, 7vw, 100px)">
+  <div style="max-width: 1400px; margin: 0 auto; border-radius: 30px; background: var(--white); border: 1px solid var(--grey-300); overflow: hidden; display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr))">
+    <div style="position: relative; overflow: hidden; min-width: 0; min-height: 420px; padding: clamp(28px, 3.4vw, 52px) clamp(20px, 2.4vw, 36px) 0 clamp(28px, 3.4vw, 52px); background: var(--gradient-brand); color: var(--white); display: flex; flex-wrap: wrap; align-items: flex-end; column-gap: clamp(12px, 2vw, 28px)">
+      <div style="flex: 1 1 340px; min-width: 0; align-self: center; padding: clamp(10px, 2vw, 24px) 0 clamp(28px, 3.4vw, 52px)">
+      <div style="font-family: var(--font-display); font-weight: 800; font-size: clamp(22px, 2.4vw, 34px); line-height: 1.2; letter-spacing: -0.03em; text-wrap: pretty">Раньше я узнавал о&nbsp;недоборе за&nbsp;два дня до&nbsp;выхода. Теперь — за&nbsp;две недели, и&nbsp;успеваю что-то сделать</div>
+      <div style="display: flex; align-items: center; gap: 14px; margin-top: 26px">
+        <div style="min-width: 0">
+          <div style="font-size: 15px; font-weight: 700">Сергей, школа выживания «Тайга»</div>
+          <div style="font-size: 13px; font-weight: 500; color: rgba(255,255,255,0.8)">9 инструкторов, 40+ походов за сезон</div>
+        </div>
+      </div>
+      </div>
+      <div style="flex: 0 0 auto; align-self: flex-end; width: min(100%, 215px); aspect-ratio: 258 / 310; margin: 0 clamp(4px, 2vw, 20px) 0 auto"><img src="assets/sergey-cutout.webp" alt="Инструктор туристического клуба" style="display: block; width: 100%; height: 100%;object-fit:contain"></div>
+    </div>
+    <div style="min-width: 0; padding: clamp(24px, 3vw, 44px); display: flex; flex-direction: column; gap: 12px; justify-content: center">
+      <div style="font-size: 13px; font-weight: 700; letter-spacing: 0.03em; color: var(--grey-text)">ЧАТ КЛУБА, ВТОРНИК</div>
+      <div style="align-self: flex-start; max-width: 88%; padding: 14px 18px; border-radius: 22px 22px 22px 6px; background: var(--blue-tint); font-size: 15px; line-height: 1.45; font-weight: 500">Катя, у нас на тайгу два места осталось — успеем закрыть?</div>
+      <div style="align-self: flex-end; max-width: 88%; padding: 14px 18px; border-radius: 22px 22px 6px 22px; background: var(--blue-saturated); color: var(--white); font-size: 15px; line-height: 1.45; font-weight: 500">Уже одно. Портал сам поднял прошлогодних, двое написали сами</div>
+      <div style="align-self: flex-start; max-width: 88%; padding: 14px 18px; border-radius: 22px 22px 22px 6px; background: var(--blue-tint); font-size: 15px; line-height: 1.45; font-weight: 500">А палатки? В прошлый раз в пятницу выяснилось</div>
+      <div style="align-self: flex-end; max-width: 88%; padding: 14px 18px; border-radius: 22px 22px 6px 22px; background: var(--blue-saturated); color: var(--white); font-size: 15px; line-height: 1.45; font-weight: 500">Задача на закупку висит с понедельника, две уже в пути</div>
+      <div style="font-size: 12px; font-weight: 500; color: var(--grey-500); margin-top: 6px">Диалог собран как пример, но узнаваемый — такие сообщения мы видим в каждом клубе.</div>
+    </div>
+  </div>
+</section>
+
+<section id="cta" style="padding: clamp(56px, 7vw, 120px) clamp(16px, 4vw, 60px); background: var(--gradient-brand-cover); color: var(--white)">
+  <div style="max-width: 1400px; margin: 0 auto; display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr)); gap: clamp(28px, 3vw, 56px); align-items: center">
+    <div style="min-width: 0">
+      <h2 style="margin: 0 0 18px; font-family: var(--font-display); font-weight: 800; font-size: clamp(30px, 4.6vw, 62px); line-height: 1; letter-spacing: -0.03em; text-wrap: balance">Покажем на ваших маршрутах</h2>
+      <p style="margin: 0 0 28px; max-width: 44ch; font-size: 17px; line-height: 1.55; font-weight: 500; color: rgba(255,255,255,0.88)">Сорок минут созвона: берём два ваших ближайших похода и разбираем, на каком шаге уходят люди. Ничего настраивать не нужно — просто посмотрите.</p>
+      <div style="display: flex; flex-wrap: wrap; gap: 14px">
+        <a href="#top" style="display: inline-flex; align-items: center; padding: 18px 34px; border-radius: 48px; background: var(--lime); color: var(--enterprise); font-weight: 700; font-size: 17px; text-decoration: none; letter-spacing: -0.02em" style-hover="background: var(--lime-pale)">Записаться на разбор</a>
+      </div>
+    </div>
+    <div style="min-width: 0; padding: clamp(24px, 3vw, 40px); border-radius: 30px; background: rgba(255,255,255,0.2); backdrop-filter: blur(57.5px); border: 1px solid rgba(255,255,255,0.3)">
+      <div style="display: flex; gap: 16px; align-items: center; margin-bottom: 20px">
+        <img src="assets/photo-support.webp" alt="" style="width: 64px; height: 64px; border-radius: 50%; object-fit: cover; display: block; flex-shrink: 0">
+        <div style="min-width: 0">
+          <div style="font-size: 16px; font-weight: 700">Разбор ведёт эксперт по CRM</div>
+          <div style="font-size: 14px; font-weight: 500; color: rgba(255,255,255,0.8)">14 внедрений в туризме и активном отдыхе</div>
+        </div>
+      </div>
+      <div style="display: grid; gap: 12px; font-size: 15px; font-weight: 600; line-height: 1.45">
+        <div style="display: flex; gap: 10px"><span style="color: var(--lime); flex-shrink: 0">→</span><span>Карта ваших процессов и мест утечки заявок</span></div>
+        <div style="display: flex; gap: 10px"><span style="color: var(--lime); flex-shrink: 0">→</span><span>Демо-портал с вашими маршрутами внутри</span></div>
+        <div style="display: flex; gap: 10px"><span style="color: var(--lime); flex-shrink: 0">→</span><span>План внедрения на четыре недели и смета</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer style="padding: clamp(32px, 4vw, 56px) clamp(16px, 4vw, 60px); background: var(--paper); border-top: 1px solid var(--grey-300)">
+  <div style="max-width: 1400px; margin: 0 auto; display: flex; flex-wrap: wrap; gap: 24px; align-items: center; justify-content: space-between">
+    <span style="font-family:var(--font-display);font-weight:800;font-size:22px;letter-spacing:-.04em;white-space:nowrap">ТАЙГА / CRM</span>
+    <div style="font-size: 13px; line-height: 1.5; font-weight: 500; color: var(--grey-text); max-width: 620px">Демонстрационный лендинг. Данные в примерах — модельные.</div>
+  </div>
+</footer>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;startScreen&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;crm&quot;,&quot;group&quot;,&quot;gear&quot;,&quot;staff&quot;,&quot;robot&quot;],&quot;default&quot;:&quot;crm&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Тур по порталу&quot;},&quot;showCalc&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Секции&quot;},&quot;showDemoBadge&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Секции&quot;}}">
+class Component extends DCLogic {
+  state = { screen: this.props.startScreen || 'crm', deal: 0, calcGroups: 6, calcSize: 8, calcPrice: 42000, calcLost: 25 };
+
+  nav() {
+    return [
+      { id: 'crm', label: 'Заявки', sub: 'Все каналы в одном окне' },
+      { id: 'group', label: 'Наборы групп', sub: 'Кто идёт и кого не хватает' },
+      { id: 'gear', label: 'Снаряжение', sub: 'Что на складе и у кого' },
+      { id: 'staff', label: 'Инструкторы', sub: 'График и подстраховка' },
+      { id: 'robot', label: 'Что идёт само', sub: 'Напоминания и документы' }
+    ];
+  }
+
+  deals() {
+    return [
+      { id: 0, name: 'Марина Ковалёва', route: 'Базовый курс выживания · 3 дня', sum: '18 000 ₽', ch: 'Telegram', chBg: '#08A6FF', stage: 'Ответили', dot: '#A5E4FF',
+        log: ['21:40 — написала в Telegram-бот, лид создан автоматически', '21:40 — робот отправил программу курса и цену', '21:41 — задача администратору: перезвонить до 11:00', 'Источник: reels про костёр в дождь'] },
+      { id: 1, name: 'Артём Лунёв', route: 'Эльбрус с юга · 7 дней', sum: '96 000 ₽', ch: 'Сайт', chBg: '#143AFF', stage: 'Ответили', dot: '#A5E4FF',
+        log: ['Заявка с формы «Подобрать поход»', 'Робот прислал чек-лист подготовки и требования к форме', 'Вопрос из анкеты: «нет опыта высоты» → тег «нужен созвон»'] },
+      { id: 2, name: 'Группа «Сколково»', route: 'Корпоративный тимбилдинг · 2 дня', sum: '340 000 ₽', ch: 'Звонок', chBg: '#BE52FF', stage: 'Выбирают дату', dot: '#08A6FF',
+        log: ['Входящий звонок записан, расшифровка в карточке', 'ИИ-ассистент выделил: 24 человека, нужен трансфер, дата гибкая', 'Счёт и КП собраны из шаблона за 2 минуты'] },
+      { id: 3, name: 'Илья Дорохов', route: 'Зимний навигатор · 4 дня', sum: '31 500 ₽', ch: 'WhatsApp', chBg: '#006DFF', stage: 'Держим место', dot: '#006DFF',
+        log: ['Бронь держится 48 часов, таймер в карточке', 'Робот напомнил об оплате за 12 часов до конца брони', 'Если не оплатит — место вернётся в свободные автоматически'] },
+      { id: 4, name: 'Нина и Павел', route: 'Выживание в тайге · 5 дней', sum: '74 000 ₽', ch: 'Telegram', chBg: '#08A6FF', stage: 'Идут в поход', dot: '#CCF31E',
+        log: ['Оплата прошла, договор и согласие на риски подписаны онлайн', 'Выданы: 2 спальника −15°, каремат, горелка', 'За 3 дня до выхода придёт памятка и точка сбора'] }
+    ];
+  }
+
+  stages() {
+    return [
+      { title: 'Ответили', count: '2', bar: '#A5E4FF' },
+      { title: 'Выбирают дату', count: '1', bar: '#08A6FF' },
+      { title: 'Держим место', count: '1', bar: '#006DFF' },
+      { title: 'Идут в поход', count: '2', bar: '#CCF31E' }
+    ];
+  }
+
+  renderVals() {
+    const s = this.state;
+    const navItems = this.nav().map(n => {
+      const on = n.id === s.screen;
+      return {
+        label: n.label, sub: n.sub,
+        onClick: () => this.setState({ screen: n.id }),
+        style: 'display: block; width: 100%; text-align: left; border: 0; cursor: pointer; padding: 12px 14px; border-radius: 14px; margin-bottom: 4px; font-family: inherit; transition: background 160ms ease; background: ' + (on ? 'rgba(255,255,255,0.18)' : 'transparent'),
+        labelStyle: 'font-size: 15px; font-weight: 700; letter-spacing: -0.02em; color: ' + (on ? '#FFFFFF' : 'rgba(255,255,255,0.72)'),
+        subStyle: 'font-size: 12px; font-weight: 500; margin-top: 2px; color: ' + (on ? 'rgba(255,255,255,0.7)' : 'rgba(255,255,255,0.45)')
+      };
+    });
+
+    const stages = this.stages().map(c => ({
+      title: c.title, count: c.count,
+      barStyle: 'height: 6px; border-radius: 6px; background: ' + c.bar + '; margin-bottom: 12px'
+    }));
+
+    const rows = this.deals().map(card => ({
+      name: card.name, route: card.route, sum: card.sum, ch: card.ch, stage: card.stage,
+      dotStyle: 'width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; background: ' + card.dot,
+      onClick: () => this.setState({ deal: card.id }),
+      style: 'display: grid; grid-template-columns: minmax(0, 2.2fr) minmax(0, 1.4fr) minmax(0, 0.9fr); gap: 14px; align-items: center; width: 100%; text-align: left; cursor: pointer; padding: 14px 16px; border-radius: 16px; background: #FFFFFF; margin-bottom: 8px; font-family: inherit; transition: border-color 160ms ease; border: 2px solid ' + (card.id === s.deal ? '#006DFF' : '#ECEFF3'),
+      chStyle: 'display: inline-block; padding: 3px 9px; border-radius: 20px; font-size: 11px; font-weight: 700; letter-spacing: -0.01em; color: #FFFFFF; background: ' + card.chBg
+    }));
+
+    const deal = this.deals()[s.deal];
+    const lost = Math.round(s.calcGroups * s.calcSize * s.calcPrice * (s.calcLost / 100));
+    const fmt = n => n.toLocaleString('ru-RU').replace(/,/g, ' ');
+
+    return {
+      navItems, stages, rows,
+      showCalc: this.props.showCalc ?? true,
+      showDemoBadge: this.props.showDemoBadge ?? true,
+      isCrm: s.screen === 'crm', isGroup: s.screen === 'group', isGear: s.screen === 'gear',
+      isStaff: s.screen === 'staff', isRobot: s.screen === 'robot',
+      dealName: deal.name, dealRoute: deal.route, dealSum: deal.sum, dealLog: deal.log.map((t, i) => ({ t: t, i: i + 1 })),
+      calcGroups: s.calcGroups, calcSize: s.calcSize, calcPrice: fmt(s.calcPrice), calcLost: s.calcLost,
+      lostYear: fmt(lost), lostMonth: fmt(Math.round(lost / 6)),
+      setGroups: e => this.setState({ calcGroups: +e.target.value }),
+      setSize: e => this.setState({ calcSize: +e.target.value }),
+      setPrice: e => this.setState({ calcPrice: +e.target.value }),
+      setLost: e => this.setState({ calcLost: +e.target.value })
+    };
+  }
+}
+</script>
+</body>
+</html>
