@@ -369,7 +369,7 @@
         </div>
         <div>
           <div style="display: flex; justify-content: space-between; font-size: 14px; font-weight: 700; margin-bottom: 8px"><span>Цена участия, ₽</span><span style="color: var(--blue-saturated)">{{ calcPrice }}</span></div>
-          <input type="range" min="5000" max="200000" step="1000" value="{{ calcPrice }}" onChange="{{ setPrice }}" onInput="{{ setPrice }}" style="width: 100%; accent-color: #006DFF">
+          <input type="range" min="5000" max="200000" step="1000" value="{{ calcPriceRaw }}" onChange="{{ setPrice }}" onInput="{{ setPrice }}" style="width: 100%; accent-color: #006DFF">
         </div>
         <div>
           <div style="display: flex; justify-content: space-between; font-size: 14px; font-weight: 700; margin-bottom: 8px"><span>Пустых мест и потерянных заявок, %</span><span style="color: var(--blue-saturated)">{{ calcLost }}</span></div>
@@ -594,7 +594,7 @@ class Component extends DCLogic {
       isCrm: s.screen === 'crm', isGroup: s.screen === 'group', isGear: s.screen === 'gear',
       isStaff: s.screen === 'staff', isRobot: s.screen === 'robot',
       dealName: deal.name, dealRoute: deal.route, dealSum: deal.sum, dealLog: deal.log.map((t, i) => ({ t: t, i: i + 1 })),
-      calcGroups: s.calcGroups, calcSize: s.calcSize, calcPrice: fmt(s.calcPrice), calcLost: s.calcLost,
+      calcGroups: s.calcGroups, calcSize: s.calcSize, calcPrice: fmt(s.calcPrice), calcPriceRaw: s.calcPrice, calcLost: s.calcLost,
       lostYear: fmt(lost), lostMonth: fmt(Math.round(lost / 6)),
       setGroups: e => this.setState({ calcGroups: +e.target.value }),
       setSize: e => this.setState({ calcSize: +e.target.value }),
