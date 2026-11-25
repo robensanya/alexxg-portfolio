@@ -1,1 +1,43 @@
-<!doctype html><html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Первичное обучение команды продаж | Александра Гуляева</title><link rel="stylesheet" href="../../assets/css/style.css"><style>main{padding:48px 0}.projects-grid{grid-template-columns:repeat(auto-fit,minmax(260px,1fr))}.project-card{padding:28px}h1{font-size:clamp(2rem,5vw,3.5rem);margin:32px 0}p{line-height:1.6}.project-footer{margin-top:24px}</style></head><body><main class="container"><a href="../../instructional-designer.html#projects">← В портфолио</a><h1>Первичное обучение команды продаж</h1><p>Два полных учебных модуля в исходном оформлении Articulate Rise.</p><div class="projects-grid"><article class="project-card"><span class="eyebrow">ЭТАП 3</span><h2>Выявление потребности</h2><p>Вопросы, которые помогают понять запрос клиента, и практика ведения диалога.</p><div class="project-footer"><a class="btn" href="needs/index.html">Открыть модуль →</a></div></article><article class="project-card"><span class="eyebrow">ЭТАП 5</span><h2>Работа с возражениями</h2><p>Разбор возражений, аргументация и упражнения для подготовки к звонкам.</p><div class="project-footer"><a class="btn" href="objections/index.html">Открыть модуль →</a></div></article></div><p class="demo-note">Версия для портфолио: персональные данные и внутренние идентификаторы обезличены. Записи реальных разговоров, видео внутренних систем и закрытые ссылки скрыты.</p></main></body></html>
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Первичное обучение команды продаж | Александра Гуляева</title>
+  <style>
+    * { box-sizing: border-box }
+    body { margin: 0; height: 100vh; height: 100dvh; display: flex; flex-direction: column; color: #221f21; font: 500 1rem/1.35 system-ui, sans-serif }
+    header { display: flex; align-items: center; justify-content: space-between; gap: .5rem 1rem; flex-wrap: wrap; padding: .65rem clamp(.7rem, 3vw, 2rem); border-bottom: 1px solid #ddd }
+    a { color: inherit }
+    nav { display: flex; gap: .2rem; padding: .2rem; background: #f1efec; border-radius: .8rem }
+    nav a { display: grid; place-items: center; padding: .55rem .8rem; border-radius: .6rem; text-decoration: none; text-align: center; font-size: .9rem }
+    [aria-current] { background: #282425; color: white }
+    iframe { flex: 1; min-height: 0; width: 100%; border: 0 }
+  </style>
+</head>
+<body>
+  <header>
+    <a href="../../index.html#sales-onboarding">← В портфолио</a>
+    <nav aria-label="Модули курса">
+      <a href="#needs" aria-current="page">Выявление потребности</a>
+      <a href="#objections">Работа с возражениями</a>
+    </nav>
+  </header>
+  <iframe title="Выявление потребности" allowfullscreen></iframe>
+  <script>
+    const links = [...document.querySelectorAll('nav a')];
+    const frame = document.querySelector('iframe');
+    function showModule() {
+      const selected = links.find(link => link.hash === location.hash) || links[0];
+      for (const link of links) {
+        if (link === selected) link.setAttribute('aria-current', 'page');
+        else link.removeAttribute('aria-current');
+      }
+      frame.title = selected.textContent;
+      frame.src = selected.hash.slice(1) + '/index.html';
+    }
+    window.addEventListener('hashchange', showModule);
+    showModule();
+  </script>
+</body>
+</html>
